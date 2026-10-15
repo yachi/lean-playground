@@ -2,7 +2,7 @@
 
 A playground for doing mathematics in Lean 4 with Mathlib.
 
-API docs: <https://yachi.github.io/lean-playground/> (rebuilt by CI on every push to `main`).
+API docs: <https://yachi.github.io/lean-playground/docs/> (rebuilt by CI on every push to `main`).
 
 ## Setup
 
