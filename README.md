@@ -46,6 +46,23 @@ Two claims are false as stated, so the files prove the corrected forms:
 - **2:03, "exactly 45":** the third-width product is 45.0015, and `riemannProduct_id_fifteen_ne_45` proves it is not 45.
 - **6:17, "n! is about (n/e)^n":** this is true only for n-th roots. `tendsto_factorial_div_pow_atTop` proves that the ratio `n! / (n/e)^n` tends to infinity.
 
+### −1/12 in physics — `LeanPlayground/MinusTwelfth/`
+
+Claims from PBS Space Time, [*Why Does -1/12 Keep Appearing Everywhere In
+Physics?*](https://www.youtube.com/watch?v=w6229Ivy_Lo) (YouTube, 2026-10-08). Lean cannot prove
+physics, so these files prove the mathematical steps that the video states. Each doc comment
+names the physical modelling assumption that a theorem stands in for.
+
+| File | Claims |
+|---|---|
+| `Series.lean` | ½+¼+… = 1. 1+2+3+… diverges (and Lean's `∑'` gives 0, not −1/12). No linear, shift-stable summation method can sum 1, 2, 3, …. Cesàro and Abel sums of the viral argument's series |
+| `Zeta.lean` | ζ(s) = Σ 1/nˢ only for s > 1. The analytic continuation to ℂ \ {1} is unique. ζ(−1) = −1/12, ζ(−3) = 1/120, and the pole at 1 |
+| `Cutoff.lean` | With the cutoff e^(−nε): Σ n·e^(−nε) − 1/ε² → −1/12. The 1D Casimir energy minus its divergent part → −πħc/(24d) |
+| `Physics.lean` | The 1D Casimir energy is negative and the force is attractive. −(D−2)/24 = −1 gives D = 26. With ζ(−1, ½) = 1/24, the superstring gives D = 10. The 3D Casimir energy uses ζ(−3) |
+
+One step uses a formula from the literature and does not derive it: the 3D Casimir prefactor
+−π²ħc/(6d³) (Casimir 1948). `Physics.lean` says so.
+
 ## Update Mathlib
 
 ```fish

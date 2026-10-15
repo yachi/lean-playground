@@ -5,3 +5,7 @@ import LeanPlayground.Productegral.Integrals
 import LeanPlayground.Productegral.Limits
 import LeanPlayground.Productegral.MulCalculus
 import LeanPlayground.Productegral.Decrease
+import LeanPlayground.MinusTwelfth.Series
+import LeanPlayground.MinusTwelfth.Zeta
+import LeanPlayground.MinusTwelfth.Cutoff
+import LeanPlayground.MinusTwelfth.Physics
