@@ -22,7 +22,8 @@ lake build
 - `LeanPlayground/` — playground files. Each file starts with `module`, then `public import` of only
   the Mathlib modules it uses (not all of `Mathlib`), so checks and the CI docs build stay small.
   To find them, put `#min_imports in` before a declaration. It can miss tactic extensions
-  (for example `positivity`) and lemmas that are used only through dot notation.
+  (for example `positivity`) and lemmas that are used only through dot notation. It can also
+  suggest too many. To check that a list is minimal, remove each import in turn and compile.
 - `LeanPlayground.lean` — the library root. Import every new file here so `lake build` checks it.
 
 ## Formalizations
