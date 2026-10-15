@@ -1,0 +1,5 @@
+[tools]
+"github:leanprover/elan" = "4.2.4"
+
+[env]
+_.path = ["~/.elan/bin"]

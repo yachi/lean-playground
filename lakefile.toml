@@ -1,0 +1,19 @@
+name = "LeanPlayground"
+version = "0.1.0"
+keywords = ["math"]
+defaultTargets = ["LeanPlayground"]
+
+[leanOptions]
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+weak.linter.style.header = false # playground files need no Mathlib copyright header
+maxSynthPendingDepth = 3
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.35.0"
+
+[[lean_lib]]
+name = "LeanPlayground"
