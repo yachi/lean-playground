@@ -1,6 +1,9 @@
 module
 
 public import LeanPlayground.Productegral.Defs
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 public section
 

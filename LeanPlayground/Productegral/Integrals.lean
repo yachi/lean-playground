@@ -1,6 +1,9 @@
 module
 
 public import LeanPlayground.Productegral.Defs
+public import Mathlib.Analysis.Complex.ExponentialBounds
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 
 public section
 

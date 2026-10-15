@@ -1,6 +1,8 @@
 module
 
 public import LeanPlayground.Productegral.Defs
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Tactic.NormNum.RealSqrt
 
 public section
 

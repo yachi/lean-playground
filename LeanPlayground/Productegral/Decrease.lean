@@ -1,6 +1,7 @@
 module
 
 public import LeanPlayground.Productegral.Limits
+public import Mathlib.Analysis.Complex.ExponentialBounds
 
 public section
 

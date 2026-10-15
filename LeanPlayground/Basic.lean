@@ -1,6 +1,9 @@
 module
 
-public import Mathlib
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Data.Nat.Prime.Infinite
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.Positivity.Basic
 
 public section
 

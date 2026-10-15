@@ -1,6 +1,8 @@
 module
 
 public import LeanPlayground.Productegral.Defs
+public import Mathlib.Analysis.Real.Pi.Bounds
+public import Mathlib.Analysis.SpecialFunctions.Stirling
 
 public section
 
