@@ -4,3 +4,4 @@ import LeanPlayground.Productegral.Finite
 import LeanPlayground.Productegral.Integrals
 import LeanPlayground.Productegral.Limits
 import LeanPlayground.Productegral.MulCalculus
+import LeanPlayground.Productegral.Decrease

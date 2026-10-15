@@ -24,7 +24,7 @@ have heights `1/n, 2/n, …, 5`.
   `riemannProduct_id_fifteen_ne_45`.
 * [2:09-2:15] "It keeps getting smaller" over widths 1, 1/2, 1/3, 1/4, 1/10:
   `riemannProduct_id_chain`. The general closed form `P(5n)^n = (5n)!/n^(5n)` is
-  `riemannProduct_id_pow`; strict decrease for *all* `n` is not proved here.
+  `riemannProduct_id_pow`. Strict decrease for *all* `n` is in `Productegral/Decrease.lean`.
 * [3:24-3:34] `4 ^ 0.01` is "about 1.014": `four_rpow_hundredth_bounds`.
 * [3:34-3:41] "Our new zero is one": `two_mul_half`, `rpow_mul_rpow_neg`.
 -/
