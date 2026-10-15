@@ -1,1 +1,6 @@
 import LeanPlayground.Basic
+import LeanPlayground.Productegral.Defs
+import LeanPlayground.Productegral.Finite
+import LeanPlayground.Productegral.Integrals
+import LeanPlayground.Productegral.Limits
+import LeanPlayground.Productegral.MulCalculus
