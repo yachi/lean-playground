@@ -116,6 +116,13 @@ open. `Basic.lean` proves the classical partial results, not the problem itself.
 Most proofs check every triple of residues modulo `m` with `decide +kernel`. Divisibility by 16
 is not decided by residues modulo any small power of 2, so it is proved by descent.
 
+`Contradiction.lean` assumes a perfect cuboid exists and pushes the assumption as far as these
+methods go. `IsPerfectCuboid.exists_normalForm` gives a primitive one with exactly one odd edge,
+an odd space diagonal, `12640320 = 2⁶·3³·5·7·11·19` dividing `abc`, and longest edge at least 233.
+`no_congruence_obstruction` shows where the argument stops: for every `m`, the triple `(m, 3, 4)`
+satisfies all four equations modulo `m`, because it is congruent to the flat cuboid `(0, 3, 4)`.
+So congruences alone can never give a contradiction.
+
 ## Update Mathlib
 
 ```fish
