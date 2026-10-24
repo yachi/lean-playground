@@ -9,3 +9,4 @@ import LeanPlayground.MinusTwelfth.Series
 import LeanPlayground.MinusTwelfth.Zeta
 import LeanPlayground.MinusTwelfth.Cutoff
 import LeanPlayground.MinusTwelfth.Physics
+import LeanPlayground.RestrictedDivision.Basic
