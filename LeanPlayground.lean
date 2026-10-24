@@ -10,3 +10,8 @@ import LeanPlayground.MinusTwelfth.Zeta
 import LeanPlayground.MinusTwelfth.Cutoff
 import LeanPlayground.MinusTwelfth.Physics
 import LeanPlayground.RestrictedDivision.Basic
+import LeanPlayground.SimonMarais.Lucas
+import LeanPlayground.SimonMarais.OddSum
+import LeanPlayground.SimonMarais.Quad
+import LeanPlayground.SimonMarais.Core
+import LeanPlayground.SimonMarais.Main

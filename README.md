@@ -81,6 +81,25 @@ is the paper's `PA⁻ ⊢` claim by the completeness theorem.
 
 Theorem 2 holds without the paper's hypothesis `x ≠ 0`, so the Lean statement drops it.
 
+### The 2023 Simon Marais open problem — `LeanPlayground/SimonMarais/`
+
+The main theorem of Anthony Pisani, [*On the Open Problem in the 2023 Simon Marais Mathematics
+Competition*](https://arxiv.org/abs/2610.30658) (arXiv, 2026-10). For `n` not a perfect square,
+some real `r` makes both `r^a + √n` and `r^b + √n` rational exactly when `a = b`, or
+`{a, b} = {g, 2g}` with `g` odd. This is `SimonMarais.main`.
+
+| File | Paper |
+|---|---|
+| `Lucas.lean` | Lucas sequences: the cases of Theorem 3 and Corollary 5 that are used (cited from Ballot–Williams there, proved here), and Lemma 6 |
+| `OddSum.lean` | The `p`-adic valuation of the odd binomial sum, used twice in Theorem 13 |
+| `Quad.lean` | Arithmetic in `ℚ(√n)` and the reduction to `r ∈ ℚ(√n)` (Lemma 7) |
+| `Core.lean` | Lemma 8, Theorem 9, Lemmas 10–12, Theorem 13 |
+| `Main.lean` | Theorem 2, both directions |
+
+The paper cites two results on Lucas sequences from Ballot and Williams' book. The files prove
+the special cases that are needed instead of assuming them. Theorem 9 is proved by comparing the
+ratios `(|x| + √n)/(|x| - √n)` instead of with Rolle's theorem.
+
 ## Update Mathlib
 
 ```fish
