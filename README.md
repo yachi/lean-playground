@@ -123,6 +123,20 @@ an odd space diagonal, `12640320 = 2⁶·3³·5·7·11·19` dividing `abc`, and 
 satisfies all four equations modulo `m`, because it is congruent to the flat cuboid `(0, 3, 4)`.
 So congruences alone can never give a contradiction.
 
+Three further files formalize the ingredients of the recent fiber-by-fiber attacks on the problem
+(Peschmann, [arXiv:2604.28072](https://arxiv.org/abs/2604.28072); Cipollini,
+[arXiv:2609.14526](https://arxiv.org/abs/2609.14526)):
+
+| File | Result | Lean |
+|---|---|---|
+| `FermatTriangle.lean` | Fermat's right triangle theorem: no Pythagorean triangle has square area; `m n (m² − n²)` is never a square; `a² ± b²` are not both squares; 1 is not a congruent number | `FermatTriangle.not_isSqAreaTriangle`, `not_isSquare_mul_mul_sq_sub_sq`, `not_isSquare_sq_add_sq_and_sq_sub_sq`, `not_congruent_one` |
+| `MasterTuple.lean` | Every primitive Euler brick comes from two Pythagorean pairs `(a, b)`, `(m, n)` sharing an edge (the *master tuple*), and conversely | `IsEulerBrick.exists_masterTuple`, `isEulerBrick_of_euclidLegs`, `exists_euclidLegs` |
+| `SpaceDiagonal.lean` | In a primitive perfect cuboid every prime factor of the space diagonal is `≡ 1 (mod 4)`, so the diagonal is `≡ 1 (mod 4)` | `IsPerfectCuboid.prime_dvd_space_diagonal`, `space_diagonal_mod_four` |
+
+Fermat's theorem is proved by his infinite descent on primitive triangles (Mathlib has the
+related `not_fermat_42`, but neither statement follows from the other directly). It is the one
+step in the fiber papers that is uniform in `(m, n)`.
+
 ## Update Mathlib
 
 ```fish
