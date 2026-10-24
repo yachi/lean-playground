@@ -15,3 +15,4 @@ import LeanPlayground.SimonMarais.OddSum
 import LeanPlayground.SimonMarais.Quad
 import LeanPlayground.SimonMarais.Core
 import LeanPlayground.SimonMarais.Main
+import LeanPlayground.PerfectCuboid.Basic

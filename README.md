@@ -100,6 +100,22 @@ The paper cites two results on Lucas sequences from Ballot and Williams' book. T
 the special cases that are needed instead of assuming them. Theorem 9 is proved by comparing the
 ratios `(|x| + √n)/(|x| - √n)` instead of with Rolle's theorem.
 
+### The perfect cuboid problem — `LeanPlayground/PerfectCuboid/`
+
+A perfect cuboid has integer edges, face diagonals and space diagonal. Whether one exists is
+open. `Basic.lean` proves the classical partial results, not the problem itself.
+
+| Result | Lean |
+|---|---|
+| (44, 117, 240) is an Euler brick, but its space diagonal √73225 is not an integer | `eulerBrick_44_117_240`, `not_perfectCuboid_44_117_240` |
+| Saunderson's formula: a Pythagorean triple gives an Euler brick; there are infinitely many | `saunderson`, `infinite_eulerBricks` |
+| Every Euler brick: two edges divisible by 3, two by 4; some edge by 5, 9, 11 and 16 | `IsEulerBrick.two_dvd_three`, `two_dvd_four`, `five_dvd`, `nine_dvd`, `eleven_dvd`, `sixteen_dvd` |
+| Every perfect cuboid: some edge divisible by 7 and by 19 | `IsPerfectCuboid.seven_dvd`, `nineteen_dvd` |
+| An edge or the space diagonal divisible by 13; an edge or a diagonal by 17, 29, 37 | `thirteen_dvd`, `seventeen_dvd`, `twentynine_dvd`, `thirtyseven_dvd` |
+
+Most proofs check every triple of residues modulo `m` with `decide +kernel`. Divisibility by 16
+is not decided by residues modulo any small power of 2, so it is proved by descent.
+
 ## Update Mathlib
 
 ```fish
