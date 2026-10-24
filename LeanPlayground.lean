@@ -17,3 +17,6 @@ import LeanPlayground.SimonMarais.Core
 import LeanPlayground.SimonMarais.Main
 import LeanPlayground.PerfectCuboid.Basic
 import LeanPlayground.PerfectCuboid.Contradiction
+import LeanPlayground.PerfectCuboid.FermatTriangle
+import LeanPlayground.PerfectCuboid.MasterTuple
+import LeanPlayground.PerfectCuboid.SpaceDiagonal
