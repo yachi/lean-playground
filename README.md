@@ -64,6 +64,23 @@ names the physical modelling assumption that a theorem stands in for.
 One step uses a formula from the literature and does not derive it: the 3D Casimir prefactor
 −π²ħc/(6d³) (Casimir 1948). `Physics.lean` says so.
 
+### Restricted vs. full division over PA⁻ — `LeanPlayground/RestrictedDivision/`
+
+The whole of Naoya Kato, [*Equivalence of Restricted and Full Division*](https://arxiv.org/abs/2610.24976)
+(arXiv, 2026-10), which answers Visser's Open Question 8.29: over PA⁻, Euclidean division for
+co-prime pairs implies full Euclidean division. `PAMinus` is the paper's exact axiom list
+(pa1–pa13, pa15), and `PAMinus.pa17Minus_iff_pa17` proves the equivalence in every model, which
+is the paper's `PA⁻ ⊢` claim by the completeness theorem.
+
+| Paper | Lean |
+|---|---|
+| Lemma 1 | `le_antisymm'`, `le_of_add_le_add_right`, `mul_zero'`, `zero_le'`, `lt_iff_add_one_le` |
+| Theorem 2 | `euc_iff_euc_affine` |
+| Corollary 3 | `cop_sq`, `euc_iff_euc_sq` |
+| Corollary 4 | `pa17Minus_iff_pa17` |
+
+Theorem 2 holds without the paper's hypothesis `x ≠ 0`, so the Lean statement drops it.
+
 ## Update Mathlib
 
 ```fish
