@@ -146,6 +146,8 @@ have a plain meaning: a brick lies on it when two of its edges are in the ratio
 | `MasterTupleGcd.lean` | §2: `f₁ = L · R` with `L, R` sums of two squares; `g₊ · g₋ = gcd(U₁, U₂)` with `g₊, g₋` coprime; `g₊² ∣ R`, `g₋² ∣ L`; scaling | `MasterTupleGcd.f₁_eq`, `gcd_mul_gcd`, `coprime_gPlus_gMinus`, `gPlus_sq_dvd`, `gMinus_sq_dvd`, `IsPerfectCuboid.mul`, `of_mul` |
 | `Fiber.lean` | §§3–4: the genus-3 curve `H_{m,n}`, its quotients `E₃` and `E_uV`, the trivial points, and Theorem 4.5: if `E₃` has no rational point with `w ≠ 0` (or `E_uV` has no nontrivial lift), no perfect cuboid lies on the fiber | `Fiber.onH_iff_onE3`, `OnH.toEuV`, `IsPerfectCuboid.onH`, `eq_trivial_of_e3Trivial`, `IsPerfectCuboid.not_onFiber_of_e3Trivial`, `IsEulerBrick.exists_fiber`, `not_isPerfectCuboid_of_forall` |
 
+| `FiberTwoOne.lean` | The fiber `(2, 1)`, unconditionally: no perfect cuboid has two edges in ratio `3 : 4`, because `p² + 16q²` and `p² + 25q²` are never both squares for `p, q ≠ 0` (an elementary descent on the rank-0 curve `y² = x(x + 16)(x + 25)`) | `not_isPerfectCuboid_three_four`, `not_sq_add_sixteen_sq_and_sq_add_twentyfive_sq`, `not_isSquare_sq_add_sixteen_and_sq_add_twentyfive` |
+
 Theorem 4.5 is formalized *conditionally*. Its hypotheses (`E3Trivial m n`, `EuVLiftTrivial m n`)
 say that an elliptic curve has rank 0 and known torsion. Peschmann checks them for 1,072 fibers
 with PARI and, via modularity and Kolyvagin's theorem, with modular symbols; Mathlib cannot do

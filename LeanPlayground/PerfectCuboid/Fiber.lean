@@ -366,7 +366,8 @@ example (t y : ℚ) :
 
 /-- The fiber `(2, 1)` is "two edges in the ratio `3 : 4`": conditionally on `E₃` for `(2, 1)`
 (rank `0` and torsion of order `4`, which Peschmann verifies with PARI), no perfect cuboid has
-two edges `X, Z` with `3Z = 4X`. -/
+two edges `X, Z` with `3Z = 4X`. `FiberTwoOne.lean` proves this unconditionally
+(`not_isPerfectCuboid_three_four`) by a descent by hand. -/
 theorem IsPerfectCuboid.three_mul_ne_of_e3Trivial (hE : E3Trivial 2 1) {X Y Z : ℕ}
     (h : IsPerfectCuboid X Y Z) : 3 * Z ≠ 4 * X := by
   intro h34
