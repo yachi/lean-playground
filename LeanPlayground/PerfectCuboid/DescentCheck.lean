@@ -261,8 +261,14 @@ def classIII (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
 def classIV (q lam c3 c4 σ : ℕ) : Bool :=
   lam == 1 && c3 == 1 && c4 == 1 && isSq σ && isSq q
 
+/-- The fifth surviving shape, a variant of the first: `λ = p`, all `cᵢ = 1`, `σ (q − p)` a
+square, and `(q − p)² ≤ 2pq`. -/
+def classV (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
+  lam == p && c1 == 1 && c2 == 1 && c3 == 1 && c4 == 1 && isSq (σ * (q - p)) &&
+    decide ((q - p) ^ 2 ≤ 2 * (p * q))
+
 /-- The whole case list of the pair `(p, q)` with `q² − p² = a²`: every tuple
-`(λ, c₁, c₂, c₃, c₄, σ)` that the descent can produce is of one of the four surviving shapes or is
+`(λ, c₁, c₂, c₃, c₄, σ)` that the descent can produce is of one of the five surviving shapes or is
 ruled out by a congruence. -/
 def fiberCheck (p q a : ℕ) (mods : List (ℕ × ℕ)) : Bool :=
   (mods.all fun x ↦ 0 < x.1 && 2 ≤ x.2 && x.1 % x.2 == 0) &&
@@ -275,6 +281,7 @@ def fiberCheck (p q a : ℕ) (mods : List (ℕ × ℕ)) : Bool :=
           classII q lam c3 (lam / Nat.gcd p lam / c3) σ ||
           classIII p q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ ||
           classIV q lam c3 (lam / Nat.gcd p lam / c3) σ ||
+          classV p q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ ||
           tupleOK mods q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ
 
 theorem fiberCheck_mods {p q a : ℕ} {mods : List (ℕ × ℕ)} (h : fiberCheck p q a mods = true) :
@@ -291,7 +298,7 @@ theorem fiberCheck_spec {p q a : ℕ} {mods : List (ℕ × ℕ)} (h : fiberCheck
     (hσd : σ ∣ (lam / Nat.gcd p lam) ^ 2 * a ^ 2) :
     classI p q lam c1 c2 c3 c4 σ = true ∨ classII q lam c3 c4 σ = true ∨
       classIII p q lam c1 c2 c3 c4 σ = true ∨ classIV q lam c3 c4 σ = true ∨
-      tupleOK mods q lam c1 c2 c3 c4 σ = true := by
+      classV p q lam c1 c2 c3 c4 σ = true ∨ tupleOK mods q lam c1 c2 c3 c4 σ = true := by
   have hg : 0 < Nat.gcd p lam := Nat.gcd_pos_of_pos_left _ hp
   have hp' : 0 < p / Nat.gcd p lam := Nat.div_pos (Nat.gcd_le_left _ hp) hg
   have hl' : 0 < lam / Nat.gcd p lam := Nat.div_pos (Nat.gcd_le_right _ hlam) hg

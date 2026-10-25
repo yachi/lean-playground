@@ -33,9 +33,9 @@ This is the descent of `FiberTwoOne` with `4, 5` replaced by `p, q`.
 4. (`exists_sigma`) The second equation becomes `α² X = δ² Y`, so `X = −σ δ²`, `Y = −σ α²`:
    `q c₃² γ² − λ c₁² β² = σ δ²` and `q c₄² β² − λ c₂² γ² = σ α²`. Multiplying the two
    inequalities that `σ ≤ 0` would give yields `p² ≥ q²`, so `σ > 0`; also `σ ∣ λ'² a²`.
-5. Each tuple `(λ, c₁, c₂, c₃, c₄, σ)` is now either of one of four shapes, or impossible by a
+5. Each tuple `(λ, c₁, c₂, c₃, c₄, σ)` is now either of one of five shapes, or impossible by a
    congruence. The congruences are checked by `fiberCheck`
-   (`LeanPlayground.PerfectCuboid.DescentCheck`). The four shapes give a smaller solution:
+   (`LeanPlayground.PerfectCuboid.DescentCheck`). The five shapes give a smaller solution:
    * (`classI_step`) `λ = p`, `cᵢ = 1`, `σ = (q − p) s²`: the new solution is
      `M' = βγ + s²αδ`, `e' = (β² − γ²)/(q − p)`, with
      `(βγ + s²αδ)(βγ − s²αδ) = pq e'²`. This is the translate by a `4`-torsion point.
@@ -47,9 +47,12 @@ This is the descent of `FiberTwoOne` with `4, 5` replaced by `p, q`.
      translate by a `4`-torsion point.
    * (`classIV_step`) only when `q = w²`: `λ = 1`, `c₃ = c₄ = 1`, `σ = s²`. The new solution is
      `M' = w c₁ α`, `e' = δ`.
+   * (`classV_step`) `λ = p`, `cᵢ = 1`, `σ (q − p) = h²`, and `(q − p)² ≤ 2pq`: shape I without
+     the division by `q − p`, so `M' = (q − p)βγ + σαδ`, `e' = β² − γ²`.
    In the shapes I, II and IV, `p² e'² < 4 (k₁k₂)² ≤ p² e²`. In shape III we use the other bound
-   `(j₁j₂)² ≤ q² e²` of step 1 instead: there `j₁j₂ = ±q αβγδ` and `e'² < (αβγδ)²`. So `|e|`
-   always decreases.
+   `(j₁j₂)² ≤ q² e²` of step 1 instead: there `j₁j₂ = ±q αβγδ` and `e'² < (αβγδ)²`. In shape V,
+   `e` is a multiple of `j₁j₂ = ±k₁k₂ = ±αβγδ` (from `k₁k₂ ∣ pe`, `j₁j₂ ∣ qe` and
+   `gcd(p, q) = 1`), and again `e'² < (αβγδ)²`. So `|e|` always decreases.
 
 ## Main results
 
@@ -75,7 +78,8 @@ theorem exists_point {p p₀ q M e r s : ℤ} (hp : p = 2 * p₀) (hp₀ : 0 < p
     (h : IsSol p q M e r s) :
     ∃ k1 k2 j1 j2 : ℤ, k1 ≠ 0 ∧ k2 ≠ 0 ∧ j1 ≠ 0 ∧ j2 ≠ 0 ∧ IsCoprime k1 k2 ∧ IsCoprime j1 j2 ∧
       k1 ^ 2 ≠ k2 ^ 2 ∧ p * (j1 * j2) * (k1 ^ 2 - k2 ^ 2) = q * (k1 * k2) * (j1 ^ 2 - j2 ^ 2) ∧
-      4 * (k1 * k2) ^ 2 ≤ p ^ 2 * e ^ 2 ∧ (j1 * j2) ^ 2 ≤ q ^ 2 * e ^ 2 := by
+      4 * (k1 * k2) ^ 2 ≤ p ^ 2 * e ^ 2 ∧ (j1 * j2) ^ 2 ≤ q ^ 2 * e ^ 2 ∧ k1 * k2 ∣ p * e ∧
+      j1 * j2 ∣ q * e := by
   subst hp
   obtain ⟨hM, he, hr, hs⟩ := h
   have he2 : 0 < e ^ 2 := by positivity
@@ -137,9 +141,11 @@ theorem exists_point {p p₀ q M e r s : ℤ} (hp : p = 2 * p₀) (hp₀ : 0 < p
     (isCoprime_mul_sq_sub hj).dvd_of_dvd_mul_right ⟨2 * M, by linear_combination R2⟩
   have hle' : (j1 * j2) ^ 2 ≤ (q * e) ^ 2 :=
     Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdvd' (mul_ne_zero hq.ne' he))
-  refine ⟨k1, k2, j1, j2, hk1, hk2, hj1, hj2, hk, hj, hne, hC, ?_, ?_⟩
+  refine ⟨k1, k2, j1, j2, hk1, hk2, hj1, hj2, hk, hj, hne, hC, ?_, ?_, ?_, hdvd'⟩
   · linear_combination 4 * hle
   · linear_combination hle'
+  · rw [mul_assoc]
+    exact dvd_mul_of_dvd_right hdvd 2
 
 /-! ### Step 2: the number `λ` -/
 
@@ -500,6 +506,82 @@ theorem classIV_step {p w a s c1 c2 α β γ δ : ℤ} (hpc : p = c1 * c2) (hp :
     rw [e4]
     nlinarith
 
+/-- `λ = p`, `cᵢ = 1`, `σ (q − p) = h²` and `(q − p)² ≤ 2pq`: the variant of `classI_step`
+without dividing by `q − p`. The new solution is `M' = (q − p)βγ + σαδ`, `e' = β² − γ²`, with
+`((q − p)βγ + σαδ)((q − p)βγ − σαδ) = pq e'²`. Here `|e'| < |αβγδ|`, which is enough because
+for `λ = p` the old `e` is a multiple of `k₁k₂ = αβγδ`. -/
+theorem classV_step {p q σ h α β γ δ : ℤ} (hp : 0 < p) (hpq : p < q) (hσ : 0 < σ)
+    (hh : σ * (q - p) = h ^ 2) (hsmall : (q - p) ^ 2 ≤ 2 * (p * q)) (hα : α ≠ 0) (hβ : β ≠ 0)
+    (hγ : γ ≠ 0) (hδ : δ ≠ 0) (hbg : IsCoprime β γ) (hne : (α * β) ^ 2 ≠ (γ * δ) ^ 2)
+    (E1 : q * γ ^ 2 - p * β ^ 2 = σ * δ ^ 2) (E2 : q * β ^ 2 - p * γ ^ 2 = σ * α ^ 2) :
+    ∃ M e r t, IsSol p q M e r t ∧ e ^ 2 < (α * β * (γ * δ)) ^ 2 := by
+  have hq : 0 < q := hp.trans hpq
+  have G1 : ((q - p) * β * γ + σ * α * δ) ^ 2 + p ^ 2 * (β ^ 2 - γ ^ 2) ^ 2 =
+      (h * (α * γ + β * δ)) ^ 2 := by
+    linear_combination (α * γ + β * δ) ^ 2 * hh +
+      (-α ^ 2 * σ - β ^ 2 * p + β ^ 2 * q) * E1 + p * (β - γ) * (β + γ) * E2
+  have G2 : ((q - p) * β * γ + σ * α * δ) ^ 2 + q ^ 2 * (β ^ 2 - γ ^ 2) ^ 2 =
+      (h * (α * β + γ * δ)) ^ 2 := by
+    linear_combination (α * β + δ * γ) ^ 2 * hh +
+      (-α ^ 2 * σ - γ ^ 2 * p + γ ^ 2 * q) * E1 + q * (β - γ) * (β + γ) * E2
+  have G3 : p * q * (β ^ 2 - γ ^ 2) ^ 2 =
+      (q - p) ^ 2 * (β ^ 2 * γ ^ 2) - σ ^ 2 * (α ^ 2 * δ ^ 2) := by
+    linear_combination -(α ^ 2 * σ) * E1 - (-β ^ 2 * p + γ ^ 2 * q) * E2
+  have hb2 := one_le_sq hβ
+  have hg2 := one_le_sq hγ
+  have ha2 := one_le_sq hα
+  have hd2 := one_le_sq hδ
+  -- `α² δ² = 1` is impossible
+  have had : 2 ≤ α ^ 2 * δ ^ 2 := by
+    by_contra hlt
+    have ha1 : α ^ 2 = 1 := by nlinarith
+    have hd1 : δ ^ 2 = 1 := by nlinarith
+    have h0 : γ ^ 2 = β ^ 2 := by
+      have : (q + p) * (γ ^ 2 - β ^ 2) = 0 := by
+        linear_combination E1 - E2 + σ * hd1 - σ * ha1
+      have hqp : q + p ≠ 0 := by linarith
+      linear_combination (mul_eq_zero.mp this).resolve_left hqp
+    have hu : IsUnit (β ^ 2) := by
+      rw [← isCoprime_self]
+      have := hbg.pow (m := 2) (n := 2)
+      rwa [h0] at this
+    rw [Int.isUnit_iff] at hu
+    have hb1 : β ^ 2 = 1 := hu.resolve_right (by nlinarith [sq_nonneg β])
+    exact hne (by rw [mul_pow, mul_pow, ha1, hb1, h0, hb1, hd1])
+  have he0 : β ^ 2 - γ ^ 2 ≠ 0 := by
+    intro h0
+    have h0' : γ ^ 2 = β ^ 2 := by linear_combination -h0
+    have hu : IsUnit (β ^ 2) := by
+      rw [← isCoprime_self]
+      have := hbg.pow (m := 2) (n := 2)
+      rwa [h0'] at this
+    rw [Int.isUnit_iff] at hu
+    have hb1 : β ^ 2 = 1 := hu.resolve_right (by nlinarith [sq_nonneg β])
+    have hg1 : γ ^ 2 = 1 := by linarith
+    have hσd : σ * δ ^ 2 = σ * α ^ 2 := by
+      linear_combination -E1 + E2 + (q + p) * hg1 - (q + p) * hb1
+    have hda : δ ^ 2 = α ^ 2 := mul_left_cancel₀ hσ.ne' hσd
+    exact hne (by rw [mul_pow, mul_pow, hb1, hg1, hda]; ring)
+  have hM : (q - p) * β * γ + σ * α * δ ≠ 0 := by
+    intro h0
+    have : p * q * (β ^ 2 - γ ^ 2) ^ 2 = 0 := by
+      linear_combination G3 + ((q - p) * β * γ - σ * α * δ) * h0
+    have hpq0 : p * q ≠ 0 := by positivity
+    exact he0 (pow_eq_zero_iff two_ne_zero |>.mp ((mul_eq_zero.mp this).resolve_left hpq0))
+  refine ⟨_, _, _, _, ⟨hM, he0, G1, G2⟩, ?_⟩
+  have hpq0 : 0 < p * q := by positivity
+  have hsd : 0 < σ ^ 2 * (α ^ 2 * δ ^ 2) := by positivity
+  have hbg2 : 0 ≤ β ^ 2 * γ ^ 2 := by positivity
+  have k1 : (q - p) ^ 2 * (β ^ 2 * γ ^ 2) ≤ 2 * (p * q) * (β ^ 2 * γ ^ 2) :=
+    mul_le_mul_of_nonneg_right hsmall hbg2
+  have k2 : 2 * (p * q) * (β ^ 2 * γ ^ 2) ≤ (p * q) * (α ^ 2 * δ ^ 2) * (β ^ 2 * γ ^ 2) :=
+    mul_le_mul_of_nonneg_right (by nlinarith [mul_le_mul_of_nonneg_left had hpq0.le]) hbg2
+  have k3 : p * q * (β ^ 2 - γ ^ 2) ^ 2 < p * q * (α * β * (γ * δ)) ^ 2 := by
+    have e4 : (α * β * (γ * δ)) ^ 2 = α ^ 2 * δ ^ 2 * (β ^ 2 * γ ^ 2) := by ring
+    rw [e4]
+    linarith
+  exact lt_of_mul_lt_mul_left k3 hpq0.le
+
 /-! ### The descent -/
 
 theorem natCast_div_gcd {p L : ℕ} : ((p / Nat.gcd p L : ℕ) : ℤ) * (Nat.gcd p L : ℕ) = p := by
@@ -524,10 +606,23 @@ theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
     have : ((q ^ 2 : ℕ) : ℤ) = ((p ^ 2 + a ^ 2 : ℕ) : ℤ) := by rw [ha]
     push_cast at this
     linear_combination this
-  obtain ⟨k1, k2, j1, j2, hk1, hk2, hj1, hj2, hk, hj, hne, hC, hbound, hjbound⟩ :=
+  obtain ⟨k1, k2, j1, j2, hk1, hk2, hj1, hj2, hk, hj, hne, hC, hbound, hjbound, hkdvd, hjdvd⟩ :=
     exists_point hpZ (by omega) hqZ0 h
   obtain ⟨L, k1', k2', hL, hLd, hk1', hk2', hk', hne', hsq, h4, h5⟩ :=
     exists_lam (by positivity) hk1 hk2 hj1 hj2 hk hj hne hC
+  -- for `λ = p`, `e` is a multiple of `j₁j₂ = ±k₁k₂`
+  have hjk : L = p → j1 * j2 ∣ e := by
+    intro hLp
+    have hjk' : j1 * j2 = k1' * k2' := by
+      refine mul_left_cancel₀ hpZ0.ne' ?_
+      rw [h4, hLp]
+    have hd1 : j1 * j2 ∣ k1 * k2 := by
+      rw [hjk', ← Int.natAbs_dvd_natAbs, Int.natAbs_eq_iff_sq_eq.mpr hsq]
+    have hpe : j1 * j2 ∣ (p : ℤ) * e := hd1.trans hkdvd
+    obtain ⟨u, v, huv⟩ : IsCoprime (p : ℤ) q := Nat.isCoprime_iff_coprime.mpr hcop
+    have he : e = u * (p * e) + v * (q * e) := by linear_combination (-e) * huv
+    rw [he]
+    exact dvd_add (dvd_mul_of_dvd_right hpe _) (dvd_mul_of_dvd_right hjdvd _)
   have hg : 0 < Nat.gcd p L := Nat.gcd_pos_of_pos_left _ hp
   have hgZ : ((Nat.gcd p L : ℕ) : ℤ) ≠ 0 := by exact_mod_cast hg.ne'
   have hP' : 0 < p / Nat.gcd p L := Nat.div_pos (Nat.gcd_le_left _ hp) hg
@@ -600,7 +695,7 @@ theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
       linarith
     exact lt_of_mul_lt_mul_left this (by positivity)
   rcases fiberCheck_spec hchk hp (hp.trans hpq) ha0 hL (by exact_mod_cast hLd) hc12 hc12' hc34
-    hc34' hσNd with hI | hII | hIII | hIV | hT
+    hc34' hσNd with hI | hII | hIII | hIV | hV | hT
   · -- λ = p
     simp only [classI, Bool.and_eq_true, beq_iff_eq] at hI
     obtain ⟨⟨⟨⟨⟨⟨hLp, rfl⟩, rfl⟩, rfl⟩, rfl⟩, hmod⟩, hsq'⟩ := hI
@@ -727,6 +822,30 @@ theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
       (by rw [← hqw]; exact haZ) hs hw hc1 hα hβ hγ hδ E1' E2'
     rw [← hqw] at hs'
     exact finish M' e' r' s' hs' hlt
+  · -- λ = p, `σ (q − p)` a square
+    simp only [classV, Bool.and_eq_true, beq_iff_eq, decide_eq_true_eq] at hV
+    obtain ⟨⟨⟨⟨⟨⟨hLp, rfl⟩, rfl⟩, rfl⟩, rfl⟩, hsq'⟩, hsmall⟩ := hV
+    have hdiv := hjk hLp
+    subst L
+    have hh : (σN : ℤ) * (q - p) = (Nat.sqrt (σN * (q - p)) : ℤ) ^ 2 := by
+      have : ((σN * (q - p) : ℕ) : ℤ) = ((Nat.sqrt (σN * (q - p)) ^ 2 : ℕ) : ℤ) :=
+        congrArg _ (eq_sq_of_isSq hsq')
+      push_cast [Nat.cast_sub hpq.le] at this
+      exact this
+    have hsmallZ : ((q : ℤ) - p) ^ 2 ≤ 2 * (p * q) := by
+      have := (Nat.cast_le (α := ℤ)).mpr hsmall
+      push_cast [Nat.cast_sub hpq.le] at this
+      exact this
+    obtain ⟨M', e', r', s', hs', hlt⟩ := classV_step hpZ0 hpqZ (by exact_mod_cast hσN) hh
+      hsmallZ hα hβ hγ hδ hbg (by simpa using hne') (by push_cast at E1; linear_combination E1)
+      (by push_cast at E2; linear_combination E2)
+    refine ⟨M', e', r', s', hs', lt_of_lt_of_le hlt ?_⟩
+    have hdiv' : α * β * (γ * δ) ∣ e := by
+      have : ((1 : ℕ) : ℤ) * (α * γ) * (((1 : ℕ) : ℤ) * (β * δ)) = α * β * (γ * δ) := by
+        push_cast; ring
+      rw [← this]
+      exact hdiv
+    exact Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdiv' h.2.1)
   · exact (tupleOK_sound (fiberCheck_mods hchk) hT hσN hab hag had hbg hbd hgd h1g h1d h2a h2b
       h3b h3d h4a h4g E1 E2).elim
 
