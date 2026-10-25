@@ -19,6 +19,12 @@ class modulo `N`, and the theorem `check_sound` that turns a successful run into
 
 The function is run by the kernel (`decide +kernel`). To keep it fast, the possible values of
 `s d² mod N` are stored as the bits of a natural number (`sqMask`), so the work is `O(N²)`.
+
+The cases that are not impossible are the images of torsion points. They are recognized by
+`torsionOK`, which tests the hypotheses of the three torsion families of
+`LeanPlayground.PerfectCuboid.Descent` (`linOK`, `quadDOK`, `quadKOK`) together with a size bound
+(`boundOK`). The whole case list of one pair `(p, q)` is `fiberCheck`; `fiberCheckOn` checks only
+the `λ` in a range, so that a large fiber can be split into several kernel runs.
 -/
 
 @[expose] public section
@@ -243,50 +249,120 @@ theorem eq_sq_of_isSq {n : ℕ} (h : isSq n = true) : n = Nat.sqrt n ^ 2 := by
   rw [isSq, beq_iff_eq] at h
   rw [sq, h]
 
-/-- The first surviving shape: `λ = p`, all `cᵢ = 1`, `σ = (q − p) s²`. -/
-def classI (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
-  lam == p && c1 == 1 && c2 == 1 && c3 == 1 && c4 == 1 && σ % (q - p) == 0 && isSq (σ / (q - p))
+/-! ### The cases that give a smaller solution
 
-/-- The second surviving shape: `λ = q`, `{c₃, c₄} = {1, q}`, `σ = q s²`. -/
-def classII (q lam c3 c4 σ : ℕ) : Bool :=
-  lam == q && ((c3 == q && c4 == 1) || (c3 == 1 && c4 == q)) && σ % q == 0 && isSq (σ / q)
+A tuple `(λ, c₁, c₂, c₃, c₄, σ)` that comes from a rational point is the image of a torsion point
+under the `2`-descent map. Since `λ, σ > 0`, only two classes occur (see
+`LeanPlayground.PerfectCuboid.Descent`):
 
-/-- The third surviving shape, for `q = w²` and `q − p = d²`: `λ = pq`, `c₁ = c₂ = 1`,
-`{c₃, c₄} = {1, q}`, `σ = q s²`. -/
-def classIII (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
-  lam == p * q && c1 == 1 && c2 == 1 && ((c3 == 1 && c4 == q) || (c3 == q && c4 == 1)) &&
-    σ % q == 0 && isSq (σ / q) && isSq q && isSq (q - p)
+* the trivial class, `qλ` and `λσ` squares: family L (`linOK`), a linear formula;
+* the class of a `4`-torsion point, `c₁c₂`, `c₃c₄` and `σ (q − p)` squares: family Q, with the two
+  representations QD (`quadDOK`) and QK (`quadKOK`) of the same new solution.
 
-/-- The fourth surviving shape, for `q = w²`: `λ = 1`, `c₃ = c₄ = 1`, `σ = s²`. -/
-def classIV (q lam c3 c4 σ : ℕ) : Bool :=
-  lam == 1 && c3 == 1 && c4 == 1 && isSq σ && isSq q
+Each family gives a new solution `e'` with `X e'² ≤ Y (αβγδ)²` (or `<`), and `boundOK` checks that
+one of the three bounds of the descent then makes `|e'| < |e|`. -/
 
-/-- The fifth surviving shape, a variant of the first: `λ = p`, all `cᵢ = 1`, `σ (q − p)` a
-square, and `(q − p)² ≤ 2pq`. -/
-def classV (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
-  lam == p && c1 == 1 && c2 == 1 && c3 == 1 && c4 == 1 && isSq (σ * (q - p)) &&
-    decide ((q - p) ^ 2 ≤ 2 * (p * q))
+/-- `x ≤ y` if `weak`, else `x < y`. -/
+def leB (weak : Bool) (x y : ℕ) : Bool := if weak then decide (x ≤ y) else decide (x < y)
 
-/-- The whole case list of the pair `(p, q)` with `q² − p² = a²`: every tuple
-`(λ, c₁, c₂, c₃, c₄, σ)` that the descent can produce is of one of the five surviving shapes or is
-ruled out by a congruence. -/
+/-- With `A = (αβγδ)²`, the descent knows `A ≤ e²`, `4 P² A ≤ p² e²` and `N² A ≤ q² e²`
+(`P = c₁c₂`, `N = c₃c₄`). If the new solution has `X e'² < Y A` (`weak`) or `X e'² ≤ Y A`
+(`!weak`), one of these tests makes `e'² < e²`. -/
+def boundOK (weak : Bool) (p q P N X Y : ℕ) : Bool :=
+  leB weak Y X || leB weak (Y * p ^ 2) (X * (4 * P ^ 2)) || leB weak (Y * q ^ 2) (X * N ^ 2)
+
+/-- Family L, for `qλ = W²`, `λσ = h²` and `qσ = H²`: the new solution is `M' = u δ`, `e' = v α`
+with `v = c₃ / gcd(c₃, c₂W)`, and `|βγδ| ≥ 2` unless `q c₃² = λ c₁² + σ`. -/
+def linOK (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
+  isSq (q * lam) && isSq (lam * σ) && isSq (q * σ) &&
+    boundOK false p q (c1 * c2) (c3 * c4) (if q * c3 ^ 2 == lam * c1 ^ 2 + σ then 1 else 4)
+      ((c3 / Nat.gcd c3 (c2 * Nat.sqrt (q * lam))) ^ 2)
+
+/-- `F` with all prime factors of `x` removed (given enough fuel). -/
+def coprimePart : ℕ → ℕ → ℕ → ℕ
+  | 0, F, _ => F
+  | n + 1, F, x => if Nat.gcd F x == 1 then F else coprimePart n (F / Nat.gcd F x) x
+
+/-- The divisor `F` of family QD: the part prime to `λ c₁` of the gcd of the coefficients. -/
+def quadDF (p q lam c1 c2 c3 c4 σ : ℕ) : ℕ :=
+  coprimePart 64 (Nat.gcd (Nat.gcd (Nat.sqrt (c1 * c2) * (q - p) * (c3 * c4))
+    (Nat.sqrt (c1 * c2) * σ)) (Nat.gcd (Nat.sqrt (c3 * c4) * c4 * c3 ^ 2 * (q - p))
+    (Nat.sqrt (c3 * c4) * c4 * σ))) (lam * c1)
+
+/-- Family QD, for `c₁c₂ = w_d²`, `c₃c₄ = w_n²` and `σ (q − p) = h²`: the new solution is
+`M' = w_d ((q − p) c₃c₄ βγ + σαδ) / F`, `e' = w_n (c₁c₄β² − c₂c₃γ²) / F`. -/
+def quadDOK (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
+  isSq (c1 * c2) && isSq (c3 * c4) && isSq (σ * (q - p)) &&
+    decide (0 < quadDF p q lam c1 c2 c3 c4 σ) &&
+    (Nat.sqrt (c1 * c2) * (q - p) * (c3 * c4)) % quadDF p q lam c1 c2 c3 c4 σ == 0 &&
+    (Nat.sqrt (c1 * c2) * σ) % quadDF p q lam c1 c2 c3 c4 σ == 0 &&
+    (Nat.sqrt (c3 * c4) * c4 * c3 ^ 2 * (q - p)) % quadDF p q lam c1 c2 c3 c4 σ == 0 &&
+    (Nat.sqrt (c3 * c4) * c4 * σ) % quadDF p q lam c1 c2 c3 c4 σ == 0 &&
+    Nat.gcd (quadDF p q lam c1 c2 c3 c4 σ) (lam * c1) == 1 &&
+    boundOK true p q (c1 * c2) (c3 * c4) (p * q * quadDF p q lam c1 c2 c3 c4 σ ^ 2)
+      (c1 * c2 * (q - p) ^ 2 * (c3 * c4) ^ 2)
+
+/-- Family QK, for `c₁c₂ = w_d²`, `c₃c₄ = w_n²` and `σ (q − p) = h²`: with `F = gcd(q, w_n)`,
+the new solution is `M' = (q/F) w_d (j₁ + j₂)`, `e' = (w_n/F)(k₁ − k₂)`. -/
+def quadKOK (p q c1 c2 c3 c4 σ : ℕ) : Bool :=
+  isSq (c1 * c2) && isSq (c3 * c4) && isSq (σ * (q - p)) &&
+    boundOK true p q (c1 * c2) (c3 * c4) (Nat.gcd q (Nat.sqrt (c3 * c4)) ^ 2)
+      (Nat.sqrt (c3 * c4) ^ 2 * (c1 * c2) ^ 2)
+
+/-- One of the three families applies. -/
+def torsionOK1 (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
+  linOK p q lam c1 c2 c3 c4 σ || quadDOK p q lam c1 c2 c3 c4 σ || quadKOK p q c1 c2 c3 c4 σ
+
+/-- One of the three families applies, possibly after the symmetry
+`(α, β, γ, δ, c₁, c₂, c₃, c₄) ↦ (δ, γ, β, α, c₂, c₁, c₄, c₃)`, which swaps the two equations. -/
+def torsionOK (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
+  torsionOK1 p q lam c1 c2 c3 c4 σ || torsionOK1 p q lam c2 c1 c4 c3 σ
+
+/-- The moduli are usable: `0 < N`, `2 ≤ l` and `l ∣ N`. -/
+def modsOK (mods : List (ℕ × ℕ)) : Bool :=
+  mods.all fun x ↦ 0 < x.1 && 2 ≤ x.2 && x.1 % x.2 == 0
+
+/-- The cases with a given `λ`: every tuple `(λ, c₁, c₂, c₃, c₄, σ)` is handled by one of the
+torsion families or is ruled out by a congruence. -/
+def lamCheck (p q a : ℕ) (mods : List (ℕ × ℕ)) (lam : ℕ) : Bool :=
+  (divs (p / Nat.gcd p lam)).all fun c1 ↦
+    Nat.gcd c1 (p / Nat.gcd p lam / c1) != 1 || (divs (lam / Nat.gcd p lam)).all fun c3 ↦
+      Nat.gcd c3 (lam / Nat.gcd p lam / c3) != 1 ||
+      (divs ((lam / Nat.gcd p lam) ^ 2 * a ^ 2)).all fun σ ↦
+        torsionOK p q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ ||
+        tupleOK mods q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ
+
+/-- `lamCheck` for the divisors `λ` of `pq` with `lo ≤ λ < hi`. Large fibers are checked in a
+few such ranges, so that each kernel run stays small. -/
+def fiberCheckOn (p q a : ℕ) (mods : List (ℕ × ℕ)) (lo hi : ℕ) : Bool :=
+  (divs (p * q)).all fun lam ↦ !(decide (lo ≤ lam) && decide (lam < hi)) || lamCheck p q a mods lam
+
+/-- The whole case list of the pair `(p, q)` with `q² − p² = a²`. -/
 def fiberCheck (p q a : ℕ) (mods : List (ℕ × ℕ)) : Bool :=
-  (mods.all fun x ↦ 0 < x.1 && 2 ≤ x.2 && x.1 % x.2 == 0) &&
-  (divs (p * q)).all fun lam ↦
-    (divs (p / Nat.gcd p lam)).all fun c1 ↦
-      Nat.gcd c1 (p / Nat.gcd p lam / c1) != 1 || (divs (lam / Nat.gcd p lam)).all fun c3 ↦
-        Nat.gcd c3 (lam / Nat.gcd p lam / c3) != 1 ||
-        (divs ((lam / Nat.gcd p lam) ^ 2 * a ^ 2)).all fun σ ↦
-          classI p q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ ||
-          classII q lam c3 (lam / Nat.gcd p lam / c3) σ ||
-          classIII p q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ ||
-          classIV q lam c3 (lam / Nat.gcd p lam / c3) σ ||
-          classV p q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ ||
-          tupleOK mods q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ
+  modsOK mods && fiberCheckOn p q a mods 0 (p * q + 1)
+
+theorem fiberCheckOn_trans {p q a lo mid hi : ℕ} {mods : List (ℕ × ℕ)}
+    (h1 : fiberCheckOn p q a mods lo mid = true) (h2 : fiberCheckOn p q a mods mid hi = true) :
+    fiberCheckOn p q a mods lo hi = true := by
+  simp only [fiberCheckOn, List.all_eq_true, Bool.or_eq_true, Bool.not_eq_true',
+    Bool.and_eq_false_iff, decide_eq_false_iff_not, not_le, not_lt] at h1 h2 ⊢
+  intro lam hlam
+  rcases h1 lam hlam with (h | h) | h
+  · exact Or.inl (Or.inl h)
+  · rcases h2 lam hlam with (h' | h') | h'
+    · exact Or.inr (by omega)
+    · exact Or.inl (Or.inr h')
+    · exact Or.inr h'
+  · exact Or.inr h
+
+theorem fiberCheck_of_on {p q a : ℕ} {mods : List (ℕ × ℕ)} (hm : modsOK mods = true)
+    (h : fiberCheckOn p q a mods 0 (p * q + 1) = true) : fiberCheck p q a mods = true := by
+  rw [fiberCheck, hm, h, Bool.and_self]
 
 theorem fiberCheck_mods {p q a : ℕ} {mods : List (ℕ × ℕ)} (h : fiberCheck p q a mods = true) :
     ∀ x ∈ mods, 0 < x.1 ∧ 2 ≤ x.2 ∧ x.2 ∣ x.1 := by
-  simp only [fiberCheck, Bool.and_eq_true, List.all_eq_true, decide_eq_true_eq, beq_iff_eq] at h
+  simp only [fiberCheck, modsOK, Bool.and_eq_true, List.all_eq_true, decide_eq_true_eq,
+    beq_iff_eq] at h
   intro x hx
   obtain ⟨⟨h1, h2⟩, h3⟩ := h.1 x hx
   exact ⟨h1, h2, Nat.dvd_of_mod_eq_zero h3⟩
@@ -296,9 +372,7 @@ theorem fiberCheck_spec {p q a : ℕ} {mods : List (ℕ × ℕ)} (h : fiberCheck
     (hlpq : lam ∣ p * q) (hc12 : c1 * c2 = p / Nat.gcd p lam) (hc12' : Nat.Coprime c1 c2)
     (hc34 : c3 * c4 = lam / Nat.gcd p lam) (hc34' : Nat.Coprime c3 c4)
     (hσd : σ ∣ (lam / Nat.gcd p lam) ^ 2 * a ^ 2) :
-    classI p q lam c1 c2 c3 c4 σ = true ∨ classII q lam c3 c4 σ = true ∨
-      classIII p q lam c1 c2 c3 c4 σ = true ∨ classIV q lam c3 c4 σ = true ∨
-      classV p q lam c1 c2 c3 c4 σ = true ∨ tupleOK mods q lam c1 c2 c3 c4 σ = true := by
+    torsionOK p q lam c1 c2 c3 c4 σ = true ∨ tupleOK mods q lam c1 c2 c3 c4 σ = true := by
   have hg : 0 < Nat.gcd p lam := Nat.gcd_pos_of_pos_left _ hp
   have hp' : 0 < p / Nat.gcd p lam := Nat.div_pos (Nat.gcd_le_left _ hp) hg
   have hl' : 0 < lam / Nat.gcd p lam := Nat.div_pos (Nat.gcd_le_right _ hlam) hg
@@ -306,8 +380,12 @@ theorem fiberCheck_spec {p q a : ℕ} {mods : List (ℕ × ℕ)} (h : fiberCheck
   have hc3 : 0 < c3 := Nat.pos_of_mul_pos_right (hc34 ▸ hl')
   have e2 : p / Nat.gcd p lam / c1 = c2 := by rw [← hc12, Nat.mul_div_cancel_left _ hc1]
   have e4 : lam / Nat.gcd p lam / c3 = c4 := by rw [← hc34, Nat.mul_div_cancel_left _ hc3]
-  simp only [fiberCheck, Bool.and_eq_true, List.all_eq_true] at h
-  have := h.2 lam (mem_divs (Nat.mul_pos hp hq) hlpq) c1 (mem_divs hp' ⟨c2, hc12.symm⟩)
+  have hle : lam < p * q + 1 := Nat.lt_succ_of_le (Nat.le_of_dvd (Nat.mul_pos hp hq) hlpq)
+  simp only [fiberCheck, fiberCheckOn, Bool.and_eq_true, List.all_eq_true] at h
+  have := h.2 lam (mem_divs (Nat.mul_pos hp hq) hlpq)
+  simp only [Nat.zero_le, hle, decide_true, Bool.and_self, Bool.not_true, Bool.false_or,
+    lamCheck, List.all_eq_true] at this
+  have := this c1 (mem_divs hp' ⟨c2, hc12.symm⟩)
   rw [e2, hc12'.gcd_eq_one] at this
   simp only [bne_self_eq_false, Bool.false_or, List.all_eq_true] at this
   have := this c3 (mem_divs hl' ⟨c4, hc34.symm⟩)
