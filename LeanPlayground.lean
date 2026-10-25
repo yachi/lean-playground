@@ -23,3 +23,6 @@ import LeanPlayground.PerfectCuboid.SpaceDiagonal
 import LeanPlayground.PerfectCuboid.MasterTupleGcd
 import LeanPlayground.PerfectCuboid.Fiber
 import LeanPlayground.PerfectCuboid.FiberTwoOne
+import LeanPlayground.PerfectCuboid.DescentCheck
+import LeanPlayground.PerfectCuboid.Descent
+import LeanPlayground.PerfectCuboid.FiberDescent
