@@ -251,8 +251,18 @@ def classI (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
 def classII (q lam c3 c4 σ : ℕ) : Bool :=
   lam == q && ((c3 == q && c4 == 1) || (c3 == 1 && c4 == q)) && σ % q == 0 && isSq (σ / q)
 
+/-- The third surviving shape, for `q = w²` and `q − p = d²`: `λ = pq`, `c₁ = c₂ = 1`,
+`{c₃, c₄} = {1, q}`, `σ = q s²`. -/
+def classIII (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
+  lam == p * q && c1 == 1 && c2 == 1 && ((c3 == 1 && c4 == q) || (c3 == q && c4 == 1)) &&
+    σ % q == 0 && isSq (σ / q) && isSq q && isSq (q - p)
+
+/-- The fourth surviving shape, for `q = w²`: `λ = 1`, `c₃ = c₄ = 1`, `σ = s²`. -/
+def classIV (q lam c3 c4 σ : ℕ) : Bool :=
+  lam == 1 && c3 == 1 && c4 == 1 && isSq σ && isSq q
+
 /-- The whole case list of the pair `(p, q)` with `q² − p² = a²`: every tuple
-`(λ, c₁, c₂, c₃, c₄, σ)` that the descent can produce is of one of the two surviving shapes or is
+`(λ, c₁, c₂, c₃, c₄, σ)` that the descent can produce is of one of the four surviving shapes or is
 ruled out by a congruence. -/
 def fiberCheck (p q a : ℕ) (mods : List (ℕ × ℕ)) : Bool :=
   (mods.all fun x ↦ 0 < x.1 && 2 ≤ x.2 && x.1 % x.2 == 0) &&
@@ -263,6 +273,8 @@ def fiberCheck (p q a : ℕ) (mods : List (ℕ × ℕ)) : Bool :=
         (divs ((lam / Nat.gcd p lam) ^ 2 * a ^ 2)).all fun σ ↦
           classI p q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ ||
           classII q lam c3 (lam / Nat.gcd p lam / c3) σ ||
+          classIII p q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ ||
+          classIV q lam c3 (lam / Nat.gcd p lam / c3) σ ||
           tupleOK mods q lam c1 (p / Nat.gcd p lam / c1) c3 (lam / Nat.gcd p lam / c3) σ
 
 theorem fiberCheck_mods {p q a : ℕ} {mods : List (ℕ × ℕ)} (h : fiberCheck p q a mods = true) :
@@ -278,6 +290,7 @@ theorem fiberCheck_spec {p q a : ℕ} {mods : List (ℕ × ℕ)} (h : fiberCheck
     (hc34 : c3 * c4 = lam / Nat.gcd p lam) (hc34' : Nat.Coprime c3 c4)
     (hσd : σ ∣ (lam / Nat.gcd p lam) ^ 2 * a ^ 2) :
     classI p q lam c1 c2 c3 c4 σ = true ∨ classII q lam c3 c4 σ = true ∨
+      classIII p q lam c1 c2 c3 c4 σ = true ∨ classIV q lam c3 c4 σ = true ∨
       tupleOK mods q lam c1 c2 c3 c4 σ = true := by
   have hg : 0 < Nat.gcd p lam := Nat.gcd_pos_of_pos_left _ hp
   have hp' : 0 < p / Nat.gcd p lam := Nat.div_pos (Nat.gcd_le_left _ hp) hg

@@ -3,7 +3,7 @@ module
 public import LeanPlayground.PerfectCuboid.Descent
 
 /-!
-# No perfect cuboid has two edges in ratio `5 : 12` or `8 : 15`
+# No perfect cuboid has two edges in ratio `5 : 12`, `8 : 15` or `7 : 24`
 
 These are the fibers `(m, n) = (3, 2)` and `(4, 1)` of Peschmann's master-tuple parametrization
 (arXiv:2604.28072), handled by the generic descent of `LeanPlayground.PerfectCuboid.Descent`.
@@ -14,12 +14,17 @@ These are the fibers `(m, n) = (3, 2)` and `(4, 1)` of Peschmann's master-tuple 
 * `8 : 15`. With `X = 8k`, `Z = 15k` the face diagonal `√(Y² + 64k²)` and the space diagonal
   `√(Y² + 289k²)` would be integers. We use `(p, q) = (8, 17)`, `a = 15`; the curve
   `y² = x (x + 64)(x + 289)` has conductor `510` and rank `0`.
+* `7 : 24`, the fiber `(m, n) = (4, 3)`. With `X = 7k`, `Z = 24k` the face diagonal
+  `√(Y² + 576k²)` and the space diagonal `√(Y² + 625k²)` would be integers. We use
+  `(p, q) = (24, 25)`, `a = 7`; the curve `y² = x (x + 576)(x + 625)` has conductor `210` and
+  rank `0`. Here `q = 5²` and `q − p = 1²`, and the extra shapes III and IV of the descent are
+  needed.
 
 The same machinery also reproves the `3 : 4` fiber of `LeanPlayground.PerfectCuboid.FiberTwoOne`
 with `(p, q) = (4, 5)` (`not_isSol_four_five`).
 
 In each case the kernel runs `fiberCheck` (`decide +kernel`) over all a few hundred descent
-cases; every case is either one of the two shapes that give a smaller solution or is impossible
+cases; every case is either one of the shapes that give a smaller solution or is impossible
 modulo one of the numbers in `mods`.
 
 The rank computations (PARI/GP `ellrank`) are only the reason to expect the descent to work; the
@@ -31,8 +36,9 @@ rank `1`, so no descent on one of them can succeed.
 
 * `not_isPerfectCuboid_five_twelve` — no perfect cuboid has `12 X = 5 Z`.
 * `not_isPerfectCuboid_eight_fifteen` — no perfect cuboid has `15 X = 8 Z`.
-* `not_isSquare_sq_add_144_and_sq_add_169`, `not_isSquare_sq_add_64_and_sq_add_289` — the
-  underlying statements over `ℚ`.
+* `not_isPerfectCuboid_seven_twentyfour` — no perfect cuboid has `24 X = 7 Z`.
+* `not_isSquare_sq_add_144_and_sq_add_169`, `not_isSquare_sq_add_64_and_sq_add_289`,
+  `not_isSquare_sq_add_576_and_sq_add_625` — the underlying statements over `ℚ`.
 -/
 
 @[expose] public section
@@ -51,6 +57,8 @@ theorem fiberCheck_twelve_thirteen : fiberCheck 12 13 5 mods = true := by decide
 
 theorem fiberCheck_eight_seventeen : fiberCheck 8 17 15 mods = true := by decide +kernel
 
+theorem fiberCheck_twentyfour_twentyfive : fiberCheck 24 25 7 mods = true := by decide +kernel
+
 /-- The `3 : 4` fiber again, now through the generic descent. -/
 theorem not_isSol_four_five (M e r s : ℤ) : ¬ IsSol 4 5 M e r s := by
   simpa using not_isSol (p := 4) (q := 5) (a := 3) (by norm_num) (by norm_num) (by norm_num)
@@ -63,6 +71,10 @@ theorem not_isSol_twelve_thirteen (M e r s : ℤ) : ¬ IsSol 12 13 M e r s := by
 theorem not_isSol_eight_seventeen (M e r s : ℤ) : ¬ IsSol 8 17 M e r s := by
   simpa using not_isSol (p := 8) (q := 17) (a := 15) (by norm_num) (by norm_num) (by norm_num)
     (by norm_num) (by norm_num) (by decide) (by decide) fiberCheck_eight_seventeen M e r s
+
+theorem not_isSol_twentyfour_twentyfive (M e r s : ℤ) : ¬ IsSol 24 25 M e r s := by
+  simpa using not_isSol (p := 24) (q := 25) (a := 7) (by norm_num) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num) (by decide) (by decide) fiberCheck_twentyfour_twentyfive M e r s
 
 end Descent
 
@@ -81,6 +93,15 @@ theorem not_isSquare_sq_add_64_and_sq_add_289 {t : ℚ} (ht : t ≠ 0) :
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 8) (q := 17) (a := 15) (by norm_num)
     (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide) (by decide)
     Descent.fiberCheck_eight_seventeen ht
+  norm_num at this
+  exact fun h ↦ this h.1 h.2
+
+/-- For rational `t ≠ 0`, `t² + 576` and `t² + 625` are not both squares. -/
+theorem not_isSquare_sq_add_576_and_sq_add_625 {t : ℚ} (ht : t ≠ 0) :
+    ¬ (IsSquare (t ^ 2 + 576) ∧ IsSquare (t ^ 2 + 625)) := by
+  have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 24) (q := 25) (a := 7) (by norm_num)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide) (by decide)
+    Descent.fiberCheck_twentyfour_twentyfive ht
   norm_num at this
   exact fun h ↦ this h.1 h.2
 
@@ -123,6 +144,27 @@ theorem not_isPerfectCuboid_eight_fifteen {X Y Z : ℕ} (h : IsPerfectCuboid X Y
     push_cast at this
     linear_combination this
   · have : (((8 * k) ^ 2 + Y ^ 2 + (15 * k) ^ 2 : ℕ) : ℤ) = ((s * s : ℕ) : ℤ) := by rw [hs]
+    push_cast at this
+    linear_combination this
+
+/-- **No perfect cuboid has two edges in ratio `7 : 24`.** This is the fiber `(m, n) = (4, 3)`:
+with `X = 7k`, `Z = 24k`, the face diagonal `√(Y² + 576k²)` and the space diagonal
+`√(Y² + 625k²)` cannot both be integers. -/
+theorem not_isPerfectCuboid_seven_twentyfour {X Y Z : ℕ} (h : IsPerfectCuboid X Y Z) :
+    24 * X ≠ 7 * Z := by
+  intro hXZ
+  obtain ⟨k, rfl⟩ : 7 ∣ X := by omega
+  obtain rfl : Z = 24 * k := by omega
+  obtain ⟨r, hr⟩ := h.sq_bc
+  obtain ⟨s, hs⟩ := h.sq_abc
+  have hY := h.pos_b
+  have hk : 0 < k := by have := h.pos_a; omega
+  apply Descent.not_isSol_twentyfour_twentyfive (Y : ℤ) k r s
+  refine ⟨by exact_mod_cast hY.ne', by exact_mod_cast hk.ne', ?_, ?_⟩
+  · have : ((Y ^ 2 + (24 * k) ^ 2 : ℕ) : ℤ) = ((r * r : ℕ) : ℤ) := by rw [hr]
+    push_cast at this
+    linear_combination this
+  · have : (((7 * k) ^ 2 + Y ^ 2 + (24 * k) ^ 2 : ℕ) : ℤ) = ((s * s : ℕ) : ℤ) := by rw [hs]
     push_cast at this
     linear_combination this
 
