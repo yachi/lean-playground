@@ -25,4 +25,5 @@ import LeanPlayground.PerfectCuboid.Fiber
 import LeanPlayground.PerfectCuboid.FiberTwoOne
 import LeanPlayground.PerfectCuboid.DescentCheck
 import LeanPlayground.PerfectCuboid.Descent
+import LeanPlayground.PerfectCuboid.FiberDescentCert
 import LeanPlayground.PerfectCuboid.FiberDescent

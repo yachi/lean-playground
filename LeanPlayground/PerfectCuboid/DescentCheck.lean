@@ -18,13 +18,23 @@ modulo a small number `N`. This file contains a `Bool` function `check` that tes
 class modulo `N`, and the theorem `check_sound` that turns a successful run into a proof.
 
 The function is run by the kernel (`decide +kernel`). To keep it fast, the possible values of
-`s d² mod N` are stored as the bits of a natural number (`sqMask`), so the work is `O(N²)`.
+`s d² mod N` are stored as the bits of a natural number (`sqMask`), every value that is used
+repeatedly is evaluated once (`withNat`), the loops are `Nat.rec` (`allBelow`), and `β, γ` only
+run up to `N / 2`, so the work is about `N² / 4` steps.
 
 The cases that are not impossible are the images of torsion points. They are recognized by
 `torsionOK`, which tests the hypotheses of the three torsion families of
 `LeanPlayground.PerfectCuboid.Descent` (`linOK`, `quadDOK`, `quadKOK`) together with a size bound
 (`boundOK`). The whole case list of one pair `(p, q)` is `fiberCheck`; `fiberCheckOn` checks only
 the `λ` in a range, so that a large fiber can be split into several kernel runs.
+
+`fiberCheck` tries every modulus on every case. It is much cheaper to replay a certificate
+(`fiberCheckCert`) that names the one test that handles each case of `fiberCases`: `.torsion` or
+a single modulus `.modulus N l`. `fiberCases` also lists the divisors `σ` of `λ'² a²` without
+trial division up to `λ' a` (`divsMul`, `divsSq`), and a certificate can be split into pieces by
+`caseKey`, the position of `(λ, c₁, c₃)`, so that each kernel run stays small. Either way the
+result is `Covered p q a`, the hypothesis of the descent (`covered_of_fiberCheck`,
+`coveredOn_of_fiberCheckCert`).
 -/
 
 @[expose] public section
@@ -48,14 +58,56 @@ def okB (az bz gz dz c1z c2z c3z c4z : Bool) : Bool :=
     (!c1z || (!gz && !dz)) && (!c2z || (!az && !bz)) && (!c3z || (!bz && !dz)) &&
     (!c4z || (!az && !gz))
 
+/-- `f n`. The kernel reduces the `match` by evaluating `n` to a numeral first, so `f` receives
+a numeral instead of the expression `n`, which it would otherwise evaluate at every use. -/
+def withNat (n : ℕ) (f : ℕ → Bool) : Bool :=
+  match n with
+  | 0 => f 0
+  | k + 1 => f (k + 1)
+
+theorem withNat_eq (n : ℕ) (f : ℕ → Bool) : withNat n f = f n := by
+  cases n <;> rfl
+
+/-- `f k` for all `k < n`. The kernel evaluates this `Nat.rec` much faster than `List.all` over
+`List.range n`. -/
+def allBelow (n : ℕ) (f : ℕ → Bool) : Bool :=
+  Nat.rec true (fun k acc ↦ f k && acc) n
+
+theorem allBelow_iff {n : ℕ} {f : ℕ → Bool} : allBelow n f = true ↔ ∀ k < n, f k = true := by
+  induction n with
+  | zero => simp [allBelow]
+  | succ n ih =>
+    change (f n && allBelow n f) = true ↔ _
+    rw [Bool.and_eq_true, ih]
+    constructor
+    · rintro ⟨h1, h2⟩ k hk
+      rcases Nat.lt_succ_iff_lt_or_eq.mp hk with hk | rfl
+      exacts [h2 k hk, h1]
+    · exact fun h ↦ ⟨h n n.lt_succ_self, fun k hk ↦ h k (hk.trans n.lt_succ_self)⟩
+
+/-- `f true && f false`. -/
+def allBool (f : Bool → Bool) : Bool := f true && f false
+
+theorem allBool_iff {f : Bool → Bool} : allBool f = true ↔ ∀ z, f z = true := by
+  rw [allBool, Bool.and_eq_true]
+  exact ⟨fun h z ↦ by cases z; exacts [h.2, h.1], fun h ↦ ⟨h true, h false⟩⟩
+
 /-- `true` if no residues `α, β, γ, δ` modulo `N` satisfy both equations modulo `N` and the
 coprimality conditions modulo `l`. The coefficients are expected to be reduced modulo `N`, and
-`B₁, B₂` to be negated already. -/
+`B₁, B₂` to be negated already. Since `β, γ` only enter through `β², γ²` and `l ∣ β, l ∣ γ`, it
+suffices to take `β, γ ≤ N / 2` (`exists_half`). The arguments, the four masks and the two
+residues for each `(β, γ)` are evaluated once (`withNat`), so the work is `O(N²)`. -/
 def check (N l A1 B1 s1 A2 B2 s2 c1 c2 c3 c4 : ℕ) : Bool :=
-  (List.range N).all fun b ↦ (List.range N).all fun g ↦
-    [true, false].all fun az ↦ [true, false].all fun dz ↦
-      !((sqMask N l s1 dz).testBit ((A1 * g * g + B1 * b * b) % N) &&
-        (sqMask N l s2 az).testBit ((A2 * b * b + B2 * g * g) % N) &&
+  withNat N fun N ↦ withNat l fun l ↦ withNat A1 fun A1 ↦ withNat B1 fun B1 ↦
+  withNat s1 fun s1 ↦ withNat A2 fun A2 ↦ withNat B2 fun B2 ↦ withNat s2 fun s2 ↦
+  withNat c1 fun c1 ↦ withNat c2 fun c2 ↦ withNat c3 fun c3 ↦ withNat c4 fun c4 ↦
+  withNat (sqMask N l s1 true) fun m1t ↦ withNat (sqMask N l s1 false) fun m1f ↦
+  withNat (sqMask N l s2 true) fun m2t ↦ withNat (sqMask N l s2 false) fun m2f ↦
+  allBelow (N / 2 + 1) fun b ↦ withNat (b * b % N) fun bb ↦
+  allBelow (N / 2 + 1) fun g ↦ withNat (g * g % N) fun gg ↦
+    withNat ((A1 * gg + B1 * bb) % N) fun r1 ↦ withNat ((A2 * bb + B2 * gg) % N) fun r2 ↦
+    allBool fun az ↦ allBool fun dz ↦
+      !((bif dz then m1t else m1f).testBit r1 && (bif az then m2t else m2f).testBit r2 &&
         okB az (b % l == 0) (g % l == 0) dz (c1 % l == 0) (c2 % l == 0) (c3 % l == 0)
           (c4 % l == 0))
 
@@ -81,6 +133,10 @@ theorem testBit_sqMask {N l s : ℕ} {z : Bool} {d : ℕ} (hd : d < N) (hz : (d 
   rw [sqMask, testBit_foldl]
   simp only [Bool.or_eq_true, List.any_eq_true, List.mem_range, Bool.and_eq_true, beq_iff_eq]
   exact Or.inr ⟨d, hd, by rw [hz], rfl⟩
+
+theorem cond_sqMask (N l s : ℕ) (z : Bool) :
+    (bif z then sqMask N l s true else sqMask N l s false) = sqMask N l s z := by
+  cases z <;> rfl
 
 theorem okB_spec : ∀ az bz gz dz c1z c2z c3z c4z : Bool,
     (az && bz) = false → (az && gz) = false → (az && dz) = false → (bz && gz) = false →
@@ -149,6 +205,27 @@ theorem flag_false {x y : ℤ} (h : IsCoprime x y) {l : ℕ} (hl : 2 ≤ l) :
     (decide ((l : ℤ) ∣ x) && decide ((l : ℤ) ∣ y)) = false :=
   and_false_of_coprime h hl
 
+/-- A residue `x` and `N − x` have the same square and the same divisibility by `l ∣ N`, and one
+of them is at most `N / 2`. -/
+theorem exists_half {N l x : ℕ} (hlN : l ∣ N) (hx : x < N) :
+    ∃ y < N / 2 + 1, y * y % N = x * x % N ∧ (y % l == 0) = (x % l == 0) := by
+  by_cases h : 2 * x ≤ N
+  · exact ⟨x, by omega, rfl, rfl⟩
+  refine ⟨N - x, by omega, ?_, ?_⟩
+  · rw [← ZMod.natCast_eq_natCast_iff']
+    push_cast [Nat.cast_sub hx.le, ZMod.natCast_self]
+    ring
+  · have key : l ∣ N - x ↔ l ∣ x :=
+      ⟨fun h ↦ Nat.sub_sub_self hx.le ▸ Nat.dvd_sub hlN h, fun h ↦ Nat.dvd_sub hlN h⟩
+    rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq, ← Nat.dvd_iff_mod_eq_zero,
+      ← Nat.dvd_iff_mod_eq_zero, key]
+
+theorem mod_sq_comb (N a b x y : ℕ) :
+    (a * (x * x % N) + b * (y * y % N)) % N = (a * x * x + b * y * y) % N := by
+  rw [← ZMod.natCast_eq_natCast_iff']
+  push_cast [ZMod.natCast_mod]
+  ring
+
 /-- **Soundness of the residue check.** -/
 theorem check_sound {N l : ℕ} (hN : 0 < N) (hl : 2 ≤ l) (hlN : l ∣ N)
     {A1 B1 s1 A2 B2 s2 c1 c2 c3 c4 : ℕ}
@@ -161,10 +238,11 @@ theorem check_sound {N l : ℕ} (hN : 0 < N) (hl : 2 ≤ l) (hlN : l ∣ N)
     (h4a : IsCoprime (c4 : ℤ) α) (h4g : IsCoprime (c4 : ℤ) γ)
     (E1 : (A1 : ℤ) * γ ^ 2 - B1 * β ^ 2 = s1 * δ ^ 2)
     (E2 : (A2 : ℤ) * β ^ 2 - B2 * γ ^ 2 = s2 * α ^ 2) : False := by
-  simp only [check, List.all_eq_true, List.mem_range] at h
-  have H := h (res N β) (res_lt hN β) (res N γ) (res_lt hN γ) (decide ((l : ℤ) ∣ α))
-    (by cases decide ((l : ℤ) ∣ α) <;> simp) (decide ((l : ℤ) ∣ δ))
-    (by cases decide ((l : ℤ) ∣ δ) <;> simp)
+  simp only [check, withNat_eq, cond_sqMask, allBelow_iff, allBool_iff] at h
+  obtain ⟨b, hb, hbb, hbl⟩ := exists_half hlN (res_lt hN β)
+  obtain ⟨g, hg, hgg, hgl⟩ := exists_half hlN (res_lt hN γ)
+  have H := h b hb g hg (decide ((l : ℤ) ∣ α)) (decide ((l : ℤ) ∣ δ))
+  rw [hbb, hgg, hbl, hgl, mod_sq_comb, mod_sq_comb] at H
   have hok := okB_spec _ _ _ _ _ _ _ _ (flag_false hab hl) (flag_false hag hl) (flag_false had hl)
     (flag_false hbg hl) (flag_false hbd hl) (flag_false hgd hl) (flag_false h1g hl)
     (flag_false h1d hl) (flag_false h2a hl) (flag_false h2b hl) (flag_false h3b hl)
@@ -176,9 +254,10 @@ theorem check_sound {N l : ℕ} (hN : 0 < N) (hl : 2 ≤ l) (hlN : l ∣ N)
 
 /-! ### The case list of one fiber -/
 
-/-- The divisors of `n` (with repetitions), found by trial division up to `√n`. -/
+/-- The divisors of `n`, found by trial division up to `√n`. -/
 def divs (n : ℕ) : List ℕ :=
-  (List.range (Nat.sqrt n + 1)).flatMap fun d ↦ if d != 0 && n % d == 0 then [d, n / d] else []
+  (List.range (Nat.sqrt n + 1)).flatMap fun d ↦
+    if d != 0 && n % d == 0 then (if d * d == n then [d] else [d, n / d]) else []
 
 theorem mem_divs {n d : ℕ} (hn : 0 < n) (hd : d ∣ n) : d ∈ divs n := by
   obtain ⟨e, rfl⟩ := hd
@@ -187,14 +266,58 @@ theorem mem_divs {n d : ℕ} (hn : 0 < n) (hd : d ∣ n) : d ∈ divs n := by
   simp only [divs, List.mem_flatMap, List.mem_range]
   rcases le_or_gt d (Nat.sqrt (d * e)) with h | h
   · refine ⟨d, by omega, ?_⟩
-    simp [hd0.ne', Nat.mul_mod_right]
+    have hc : (d != 0 && d * e % d == 0) = true := by simp [hd0.ne', Nat.mul_mod_right]
+    simp only [hc, ↓reduceIte]
+    split_ifs <;> simp
   · refine ⟨e, ?_, ?_⟩
     · by_contra h'
       have h1 : d * e < (Nat.sqrt (d * e) + 1) * (Nat.sqrt (d * e) + 1) := Nat.lt_succ_sqrt _
       have : (Nat.sqrt (d * e) + 1) * (Nat.sqrt (d * e) + 1) ≤ d * e :=
         Nat.mul_le_mul (by omega) (by omega)
       omega
-    · simp [he0.ne', Nat.mul_mod_left, Nat.mul_div_cancel _ he0]
+    · have hc : (e != 0 && d * e % e == 0) = true := by simp [he0.ne', Nat.mul_mod_left]
+      simp only [hc, ↓reduceIte]
+      split_ifs with h2
+      · rw [beq_iff_eq] at h2
+        simp [Nat.eq_of_mul_eq_mul_right he0 h2.symm]
+      · simp [Nat.mul_div_cancel _ he0]
+
+/-- The divisors of `x y`: products of divisors of `x` and of `y` if they are coprime. -/
+def divsMul (x y : ℕ) : List ℕ :=
+  if Nat.gcd x y == 1 then (divs x).flatMap fun u ↦ (divs y).map (u * ·) else divs (x * y)
+
+theorem mem_divsMul {x y d : ℕ} (hx : 0 < x) (hy : 0 < y) (hd : d ∣ x * y) : d ∈ divsMul x y := by
+  rw [divsMul]
+  split_ifs with h
+  · have hc : Nat.Coprime x y := by simpa using h
+    simp only [List.mem_flatMap, List.mem_map]
+    refine ⟨Nat.gcd d x, mem_divs hx (Nat.gcd_dvd_right _ _), Nat.gcd d y,
+      mem_divs hy (Nat.gcd_dvd_right _ _), ?_⟩
+    rw [← Nat.Coprime.gcd_mul d hc, Nat.gcd_eq_left hd]
+  · exact mem_divs (Nat.mul_pos hx hy) hd
+
+/-- The divisors of `m²`, given the list `D` of the divisors of `m`: each one is `u v` with
+`u = gcd(u v, m)` and `u, v ∣ m`, in exactly one way. -/
+def divsSq (D : List ℕ) (m : ℕ) : List ℕ :=
+  D.flatMap fun u ↦ (D.filter fun v ↦ Nat.gcd (u * v) m == u).map (u * ·)
+
+theorem mem_divsSq {D : List ℕ} {m σ : ℕ} (hm : 0 < m) (hD : ∀ d, d ∣ m → d ∈ D)
+    (hσ : σ ∣ m * m) : σ ∈ divsSq D m := by
+  have hσ0 : 0 < σ := Nat.pos_of_dvd_of_pos hσ (Nat.mul_pos hm hm)
+  set u := Nat.gcd σ m with hu
+  have hu0 : 0 < u := Nat.gcd_pos_of_pos_left _ hσ0
+  obtain ⟨v, hv⟩ : u ∣ σ := Nat.gcd_dvd_left _ _
+  obtain ⟨w, hw⟩ : u ∣ m := Nat.gcd_dvd_right _ _
+  have hvw : Nat.Coprime v w := by
+    have := Nat.coprime_div_gcd_div_gcd (m := σ) (n := m) hu0
+    rwa [← hu, hv, hw, Nat.mul_div_cancel_left _ hu0, Nat.mul_div_cancel_left _ hu0] at this
+  have hvm : v ∣ m := by
+    have h1 : u * v ∣ u * (w * m) := by
+      rw [← hv, ← mul_assoc, ← hw]
+      exact hσ
+    exact hvw.dvd_of_dvd_mul_left (Nat.dvd_of_mul_dvd_mul_left hu0 h1)
+  simp only [divsSq, List.mem_flatMap, List.mem_map, List.mem_filter, beq_iff_eq]
+  exact ⟨u, hD _ (Nat.gcd_dvd_right _ _), v, ⟨hD _ hvm, by rw [← hv]⟩, hv.symm⟩
 
 /-- The first equation `q c₃² γ² − λ c₁² β² = σ δ²` divided by the gcd of its coefficients, and
 likewise the second, are checked modulo each `(N, l)` in `mods` until one succeeds. -/
@@ -393,6 +516,196 @@ theorem fiberCheck_spec {p q a : ℕ} {mods : List (ℕ × ℕ)} (h : fiberCheck
   simp only [bne_self_eq_false, Bool.false_or, List.all_eq_true] at this
   have := this σ (mem_divs (Nat.mul_pos (pow_pos hl' 2) (pow_pos ha 2)) hσd)
   simpa only [Bool.or_eq_true, or_assoc] using this
+
+/-! ### Coverage
+
+`Covered p q a` is the hypothesis of the descent: every case is a torsion translate or is ruled
+out modulo a single `(N, l)`. It follows from `fiberCheck` (`covered_of_fiberCheck`) or from a
+certificate (`coveredOn_of_fiberCheckCert`). `CoveredOn` restricts it to the cases whose
+`caseKey`, which orders the cases by `(λ, c₁, c₃)`, lies in a range, so that the kernel can check
+a large fiber in pieces. -/
+
+/-- The cases `(λ, c₁, c₂, c₃, c₄, σ)` ordered by `(λ, c₁, c₃)`, using `c₁ ≤ p` and `c₃ ≤ pq`. -/
+def caseKey (p q lam c1 c3 : ℕ) : ℕ := (lam * (p + 1) + c1) * (p * q + 1) + c3
+
+theorem le_caseKey (p q lam c1 c3 : ℕ) :
+    lam * ((p + 1) * (p * q + 1)) ≤ caseKey p q lam c1 c3 :=
+  calc lam * ((p + 1) * (p * q + 1))
+      ≤ lam * ((p + 1) * (p * q + 1)) + (c1 * (p * q + 1) + c3) := Nat.le_add_right _ _
+    _ = caseKey p q lam c1 c3 := by rw [caseKey]; ring
+
+theorem caseKey_lt {p q lam c1 c3 : ℕ} (hc1 : c1 ≤ p) (hc3 : c3 ≤ p * q) :
+    caseKey p q lam c1 c3 < (lam + 1) * ((p + 1) * (p * q + 1)) :=
+  calc caseKey p q lam c1 c3
+      < (lam * (p + 1) + c1) * (p * q + 1) + (p * q + 1) :=
+        Nat.add_lt_add_left (Nat.lt_succ_of_le hc3) _
+    _ = (lam * (p + 1) + (c1 + 1)) * (p * q + 1) := by ring
+    _ ≤ (lam * (p + 1) + (p + 1)) * (p * q + 1) :=
+        Nat.mul_le_mul_right _ (Nat.add_le_add_left (Nat.succ_le_succ hc1) _)
+    _ = (lam + 1) * ((p + 1) * (p * q + 1)) := by ring
+
+/-- Every case `(λ, c₁, c₂, c₃, c₄, σ)` of the pair `(p, q)` with `lo ≤ caseKey p q λ c₁ c₃ < hi`
+is a torsion translate (`torsionOK`) or is ruled out modulo some `(N, l)` with `0 < N`, `2 ≤ l`
+and `l ∣ N`. -/
+def CoveredOn (p q a lo hi : ℕ) : Prop :=
+  ∀ ⦃lam c1 c2 c3 c4 σ : ℕ⦄, 0 < lam → lam ∣ p * q → lo ≤ caseKey p q lam c1 c3 →
+    caseKey p q lam c1 c3 < hi → c1 * c2 = p / Nat.gcd p lam → Nat.Coprime c1 c2 →
+    c3 * c4 = lam / Nat.gcd p lam → Nat.Coprime c3 c4 → σ ∣ (lam / Nat.gcd p lam) ^ 2 * a ^ 2 →
+    torsionOK p q lam c1 c2 c3 c4 σ = true ∨
+      ∃ N l : ℕ, 0 < N ∧ 2 ≤ l ∧ l ∣ N ∧ tupleOK [(N, l)] q lam c1 c2 c3 c4 σ = true
+
+/-- Every case of the pair `(p, q)` is covered: the hypothesis of the descent. -/
+def Covered (p q a : ℕ) : Prop := CoveredOn p q a 0 ((p * q + 1) * ((p + 1) * (p * q + 1)))
+
+theorem CoveredOn.trans {p q a lo mid hi : ℕ} (h1 : CoveredOn p q a lo mid)
+    (h2 : CoveredOn p q a mid hi) : CoveredOn p q a lo hi := by
+  intro lam c1 c2 c3 c4 σ h0 hd hlo hhi
+  rcases lt_or_ge (caseKey p q lam c1 c3) mid with h | h
+  · exact h1 h0 hd hlo h
+  · exact h2 h0 hd h hhi
+
+/-- The cases of a covered pair, without the range. -/
+theorem Covered.cases {p q a : ℕ} (h : Covered p q a) (hp : 0 < p) (hq : 0 < q)
+    {lam c1 c2 c3 c4 σ : ℕ}
+    (hlam : 0 < lam) (hlpq : lam ∣ p * q) (hc12 : c1 * c2 = p / Nat.gcd p lam)
+    (hc12' : Nat.Coprime c1 c2) (hc34 : c3 * c4 = lam / Nat.gcd p lam) (hc34' : Nat.Coprime c3 c4)
+    (hσd : σ ∣ (lam / Nat.gcd p lam) ^ 2 * a ^ 2) :
+    torsionOK p q lam c1 c2 c3 c4 σ = true ∨
+      ∃ N l : ℕ, 0 < N ∧ 2 ≤ l ∧ l ∣ N ∧ tupleOK [(N, l)] q lam c1 c2 c3 c4 σ = true := by
+  have hpq : 0 < p * q := Nat.mul_pos hp hq
+  have hc1 : c1 ≤ p := (Nat.le_of_dvd (Nat.div_pos (Nat.gcd_le_left _ hp)
+    (Nat.gcd_pos_of_pos_left _ hp)) ⟨c2, hc12.symm⟩).trans (Nat.div_le_self _ _)
+  have hc3 : c3 ≤ p * q := ((Nat.le_of_dvd (Nat.div_pos (Nat.gcd_le_right _ hlam)
+    (Nat.gcd_pos_of_pos_left _ hp)) ⟨c4, hc34.symm⟩).trans (Nat.div_le_self _ _)).trans
+    (Nat.le_of_dvd hpq hlpq)
+  refine h hlam hlpq (Nat.zero_le _) ((caseKey_lt hc1 hc3).trans_le ?_) hc12 hc12' hc34 hc34' hσd
+  exact Nat.mul_le_mul_right _ (Nat.succ_le_succ (Nat.le_of_dvd hpq hlpq))
+
+theorem covered_of_fiberCheck {p q a : ℕ} {mods : List (ℕ × ℕ)} (h : fiberCheck p q a mods = true)
+    (hp : 0 < p) (hq : 0 < q) (ha : 0 < a) : Covered p q a := by
+  intro lam c1 c2 c3 c4 σ h0 hd _ _ hc12 hc12' hc34 hc34' hσ
+  rcases fiberCheck_spec h hp hq ha h0 hd hc12 hc12' hc34 hc34' hσ with h' | h'
+  · exact Or.inl h'
+  · obtain ⟨⟨N, l⟩, hm, hc⟩ := List.any_eq_true.mp h'
+    obtain ⟨hN, hl, hlN⟩ := fiberCheck_mods h _ hm
+    exact Or.inr ⟨N, l, hN, hl, hlN, by simpa [tupleOK] using hc⟩
+
+/-! ### Certificates
+
+`fiberCheck` tries `torsionOK` and then every modulus of `mods` on each case. A certificate
+instead names, for each case of `fiberCases` in order, the one test that succeeds: `.torsion`, or
+`.modulus N l` for a single residue check. The kernel then does one `O(N²)` check per case that
+is not a torsion translate. Certificates are produced by `scripts/cuboid_cert.py`, which mirrors
+the definitions of this file. -/
+
+/-- The test that handles one case: a torsion family, or the residue check modulo `N` with the
+coprimality conditions modulo `l`. -/
+inductive Cert where
+  | torsion
+  | modulus (N l : ℕ)
+
+/-- The test `c` succeeds on the case `(λ, c₁, c₂, c₃, c₄, σ)`. -/
+def certStep (p q lam c1 c2 c3 c4 σ : ℕ) : Cert → Bool
+  | .torsion => torsionOK p q lam c1 c2 c3 c4 σ
+  | .modulus N l =>
+    decide (0 < N) && decide (2 ≤ l) && N % l == 0 && tupleOK [(N, l)] q lam c1 c2 c3 c4 σ
+
+/-- The cases `(c₁, c₂, c₃, c₄, σ)` of one `λ` with `lo ≤ caseKey p q λ c₁ c₃ < hi`: as in
+`lamCheck`, but the divisors `σ` of `λ'² a²` are listed by `divsSq`, which is much cheaper than
+trial division up to `λ' a`. -/
+def lamCases (p q a lo hi lam : ℕ) : List (ℕ × ℕ × ℕ × ℕ × ℕ) :=
+  (divs (p / Nat.gcd p lam)).flatMap fun c1 ↦
+    if Nat.gcd c1 (p / Nat.gcd p lam / c1) != 1 then [] else
+    (divs (lam / Nat.gcd p lam)).flatMap fun c3 ↦
+      if Nat.gcd c3 (lam / Nat.gcd p lam / c3) != 1 ||
+        !(decide (lo ≤ caseKey p q lam c1 c3) && decide (caseKey p q lam c1 c3 < hi)) then [] else
+      (divsSq (divsMul (lam / Nat.gcd p lam) a) (lam / Nat.gcd p lam * a)).map fun σ ↦
+        (c1, p / Nat.gcd p lam / c1, c3, lam / Nat.gcd p lam / c3, σ)
+
+/-- The cases `(λ, c₁, c₂, c₃, c₄, σ)` of the pair `(p, q)` with `lo ≤ caseKey p q λ c₁ c₃ < hi`,
+in the order of `fiberCheckOn`. The `λ` whose keys all miss the range are skipped at once. -/
+def fiberCases (p q a lo hi : ℕ) : List (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ) :=
+  (divs (p * q)).flatMap fun lam ↦
+    if decide (lam * ((p + 1) * (p * q + 1)) < hi) &&
+        decide (lo < (lam + 1) * ((p + 1) * (p * q + 1))) then
+      (lamCases p q a lo hi lam).map ((lam, ·))
+    else []
+
+/-- Each case of the list passes the corresponding test of the certificate, and the two lists
+have the same length. -/
+def certOK (p q : ℕ) : List (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ) → List Cert → Bool
+  | [], [] => true
+  | (lam, c1, c2, c3, c4, σ) :: ts, c :: cs => certStep p q lam c1 c2 c3 c4 σ c && certOK p q ts cs
+  | _, _ => false
+
+/-- The certificate `cert` handles every case of `(p, q)` with `lo ≤ caseKey p q λ c₁ c₃ < hi`. -/
+def fiberCheckCert (p q a lo hi : ℕ) (cert : List Cert) : Bool :=
+  decide (0 < p) && decide (0 < q) && decide (0 < a) && certOK p q (fiberCases p q a lo hi) cert
+
+theorem certStep_sound {p q lam c1 c2 c3 c4 σ : ℕ} {c : Cert}
+    (h : certStep p q lam c1 c2 c3 c4 σ c = true) :
+    torsionOK p q lam c1 c2 c3 c4 σ = true ∨
+      ∃ N l : ℕ, 0 < N ∧ 2 ≤ l ∧ l ∣ N ∧ tupleOK [(N, l)] q lam c1 c2 c3 c4 σ = true := by
+  cases c with
+  | torsion => exact Or.inl h
+  | modulus N l =>
+    simp only [certStep, Bool.and_eq_true, decide_eq_true_eq, beq_iff_eq] at h
+    exact Or.inr ⟨N, l, h.1.1.1, h.1.1.2, Nat.dvd_of_mod_eq_zero h.1.2, h.2⟩
+
+theorem certOK_sound {p q : ℕ} :
+    ∀ (L : List (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ)) (C : List Cert), certOK p q L C = true →
+      ∀ t ∈ L, ∃ c, certStep p q t.1 t.2.1 t.2.2.1 t.2.2.2.1 t.2.2.2.2.1 t.2.2.2.2.2 c = true
+  | [], _, _, t, ht => absurd ht List.not_mem_nil
+  | (_, _, _, _, _, _) :: _, [], h, _, _ => by simp [certOK] at h
+  | (lam, c1, c2, c3, c4, σ) :: L, c :: C, h, t, ht => by
+    simp only [certOK, Bool.and_eq_true] at h
+    rcases List.mem_cons.mp ht with rfl | ht
+    · exact ⟨c, h.1⟩
+    · exact certOK_sound L C h.2 t ht
+
+theorem mem_fiberCases {p q a lo hi : ℕ} (hp : 0 < p) (hq : 0 < q) (ha : 0 < a)
+    {lam c1 c2 c3 c4 σ : ℕ} (hlam : 0 < lam) (hlpq : lam ∣ p * q)
+    (hlo : lo ≤ caseKey p q lam c1 c3) (hhi : caseKey p q lam c1 c3 < hi)
+    (hc12 : c1 * c2 = p / Nat.gcd p lam) (hc12' : Nat.Coprime c1 c2)
+    (hc34 : c3 * c4 = lam / Nat.gcd p lam) (hc34' : Nat.Coprime c3 c4)
+    (hσd : σ ∣ (lam / Nat.gcd p lam) ^ 2 * a ^ 2) :
+    (lam, c1, c2, c3, c4, σ) ∈ fiberCases p q a lo hi := by
+  have hg : 0 < Nat.gcd p lam := Nat.gcd_pos_of_pos_left _ hp
+  have hp' : 0 < p / Nat.gcd p lam := Nat.div_pos (Nat.gcd_le_left _ hp) hg
+  have hl' : 0 < lam / Nat.gcd p lam := Nat.div_pos (Nat.gcd_le_right _ hlam) hg
+  have hc1 : 0 < c1 := Nat.pos_of_mul_pos_right (hc12 ▸ hp')
+  have hc3 : 0 < c3 := Nat.pos_of_mul_pos_right (hc34 ▸ hl')
+  have e2 : p / Nat.gcd p lam / c1 = c2 := by rw [← hc12, Nat.mul_div_cancel_left _ hc1]
+  have e4 : lam / Nat.gcd p lam / c3 = c4 := by rw [← hc34, Nat.mul_div_cancel_left _ hc3]
+  have hc1p : c1 ≤ p := (Nat.le_of_dvd hp' ⟨c2, hc12.symm⟩).trans (Nat.div_le_self _ _)
+  have hc3l : c3 ≤ p * q := ((Nat.le_of_dvd hl' ⟨c4, hc34.symm⟩).trans
+    (Nat.div_le_self _ _)).trans (Nat.le_of_dvd (Nat.mul_pos hp hq) hlpq)
+  have h1 : lam * ((p + 1) * (p * q + 1)) < hi := (le_caseKey p q lam c1 c3).trans_lt hhi
+  have h2 : lo < (lam + 1) * ((p + 1) * (p * q + 1)) := hlo.trans_lt (caseKey_lt hc1p hc3l)
+  simp only [fiberCases, List.mem_flatMap]
+  refine ⟨lam, mem_divs (Nat.mul_pos hp hq) hlpq, ?_⟩
+  simp only [h1, h2, decide_true, Bool.and_self, ↓reduceIte, List.mem_map, Prod.mk.injEq,
+    true_and, exists_eq_right, lamCases, List.mem_flatMap]
+  refine ⟨c1, mem_divs hp' ⟨c2, hc12.symm⟩, ?_⟩
+  rw [e2, hc12'.gcd_eq_one]
+  simp only [bne_self_eq_false, Bool.false_eq_true, ↓reduceIte, List.mem_flatMap]
+  refine ⟨c3, mem_divs hl' ⟨c4, hc34.symm⟩, ?_⟩
+  rw [e4, hc34'.gcd_eq_one]
+  simp only [bne_self_eq_false, hlo, hhi, decide_true, Bool.and_self, Bool.not_true,
+    Bool.or_false, Bool.false_eq_true, ↓reduceIte, List.mem_map]
+  refine ⟨σ, mem_divsSq (Nat.mul_pos hl' ha) (fun d hd ↦ mem_divsMul hl' ha hd) ?_, rfl⟩
+  rwa [show lam / Nat.gcd p lam * a * (lam / Nat.gcd p lam * a) =
+    (lam / Nat.gcd p lam) ^ 2 * a ^ 2 by ring]
+
+/-- **Soundness of a certificate.** -/
+theorem coveredOn_of_fiberCheckCert {p q a lo hi : ℕ} {cert : List Cert}
+    (h : fiberCheckCert p q a lo hi cert = true) : CoveredOn p q a lo hi := by
+  simp only [fiberCheckCert, Bool.and_eq_true, decide_eq_true_eq] at h
+  obtain ⟨⟨⟨hp, hq⟩, ha⟩, h⟩ := h
+  intro lam c1 c2 c3 c4 σ h0 hd hlo hhi hc12 hc12' hc34 hc34' hσ
+  obtain ⟨c, hc⟩ := certOK_sound _ _ h _
+    (mem_fiberCases hp hq ha h0 hd hlo hhi hc12 hc12' hc34 hc34' hσ)
+  exact certStep_sound hc
 
 end Descent
 
