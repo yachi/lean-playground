@@ -34,7 +34,8 @@ This is the descent of `FiberTwoOne` with `4, 5` replaced by `p, q`.
    `q c₃² γ² − λ c₁² β² = σ δ²` and `q c₄² β² − λ c₂² γ² = σ α²`. Multiplying the two
    inequalities that `σ ≤ 0` would give yields `p² ≥ q²`, so `σ > 0`; also `σ ∣ λ'² a²`.
 5. Each tuple `(λ, c₁, c₂, c₃, c₄, σ)` either gives a smaller solution or is impossible by a
-   congruence; `fiberCheck` (`LeanPlayground.PerfectCuboid.DescentCheck`) decides which. The
+   congruence (`Covered`, checked by `fiberCheck` or replayed from a certificate by
+   `fiberCheckCert`, see `LeanPlayground.PerfectCuboid.DescentCheck`). The
    half-point `Q` of the solution has `2`-descent image `(qλ, λσ, qσ)` modulo squares, and a
    tuple can only come from a rational point if this is the image of a torsion point `T`. Then
    `Q − T` is twice a point and gives the new solution. Since `λ, σ > 0` only two torsion
@@ -61,7 +62,7 @@ This is the descent of `FiberTwoOne` with `4, 5` replaced by `p, q`.
 
 ## Main results
 
-* `not_isSol` — the descent, given `fiberCheck p q a mods = true`.
+* `not_isSol` — the descent, given `Covered p q a`.
 * `torsionOK_sound` — the three torsion families give a smaller solution.
 * `not_isSquare_sq_add_sq_and_sq_add_sq` — the same over `ℚ`.
 -/
@@ -770,9 +771,8 @@ theorem natCast_div_gcd' {p L : ℕ} : ((L / Nat.gcd p L : ℕ) : ℤ) * (Nat.gc
 /-- **One descent step.** Given the finite check for `(p, q)`, every solution gives a solution
 with a smaller `|e|`. -/
 theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
-    (ha : q ^ 2 = p ^ 2 + a ^ 2) (ha0 : 0 < a) (hcop : Nat.Coprime p q)
-    {mods : List (ℕ × ℕ)} (hchk : fiberCheck p q a mods = true) {M e r s : ℤ}
-    (h : IsSol p q M e r s) :
+    (ha : q ^ 2 = p ^ 2 + a ^ 2) (hcop : Nat.Coprime p q)
+    (hchk : Covered p q a) {M e r s : ℤ} (h : IsSol p q M e r s) :
     ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ e' ^ 2 < e ^ 2 := by
   obtain ⟨p₀, hp₀⟩ := hp2
   have hpZ : (p : ℤ) = 2 * (p₀ : ℤ) := by exact_mod_cast hp₀
@@ -864,33 +864,35 @@ theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
       rw [show e = u * (p * e) + v * (q * e) by linear_combination (-e) * huv]
       exact dvd_add (dvd_mul_of_dvd_right hpe _) (dvd_mul_of_dvd_right hqe _)
     exact Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdiv h.2.1)
-  rcases fiberCheck_spec hchk hp (hp.trans hpq) ha0 hL (by exact_mod_cast hLd) hc12 hc12' hc34
-    hc34' hσNd with hT | hT
+  have hLd' : L ∣ p * q := by exact_mod_cast hLd
+  rcases hchk.cases hp (hp.trans hpq) hL hLd' hc12 hc12' hc34 hc34' hσNd with
+    hT | ⟨N, l, hN, hl, hlN, hT⟩
   · exact torsionOK_sound hT hp hpq hL hσN (Nat.pos_of_ne_zero (by exact_mod_cast hc1))
       (Nat.pos_of_ne_zero (by exact_mod_cast hc2)) (Nat.pos_of_ne_zero (by exact_mod_cast hc3))
       (Nat.pos_of_ne_zero (by exact_mod_cast hc4)) hrel2 haZ E1 E2 hne' hα hβ hγ hδ h.2.1 B1
       hjbound B3
-  · exact (tupleOK_sound (fiberCheck_mods hchk) hT hσN hab hag had hbg hbd hgd h1g h1d h2a h2b
-      h3b h3d h4a h4g E1 E2).elim
+  · exact (tupleOK_sound (by simpa using ⟨hN, hl, hlN⟩) hT hσN hab hag had hbg hbd hgd h1g h1d
+      h2a h2b h3b h3d h4a h4g E1 E2).elim
 
-/-- **The descent.** If `fiberCheck p q a mods` succeeds, there are no integers `M, e ≠ 0` with
+/-- **The descent.** If every case is covered (`Covered p q a`, from `fiberCheck` or from a
+certificate), there are no integers `M, e ≠ 0` with
 `M² + p² e²` and `M² + q² e²` both squares. -/
 theorem not_isSol {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
-    (ha : q ^ 2 = p ^ 2 + a ^ 2) (ha0 : 0 < a) (hcop : Nat.Coprime p q)
-    {mods : List (ℕ × ℕ)} (hchk : fiberCheck p q a mods = true) (M e r s : ℤ) :
+    (ha : q ^ 2 = p ^ 2 + a ^ 2) (hcop : Nat.Coprime p q)
+    (hchk : Covered p q a) (M e r s : ℤ) :
     ¬ IsSol p q M e r s := by
   suffices ∀ n : ℕ, ∀ M e r s : ℤ, e.natAbs = n → ¬ IsSol p q M e r s from this _ M e r s rfl
   intro n
   induction n using Nat.strong_induction_on with
   | _ n ih =>
     intro M e r s hn h
-    obtain ⟨M', e', r', s', h', hlt⟩ := exists_smaller hp hp2 hpq ha ha0 hcop hchk h
+    obtain ⟨M', e', r', s', h', hlt⟩ := exists_smaller hp hp2 hpq ha hcop hchk h
     exact ih _ (hn ▸ Int.natAbs_lt_iff_sq_lt.mpr hlt) M' e' r' s' rfl h'
 
 /-- The descent over `ℚ`: for rational `t ≠ 0`, `t² + p²` and `t² + q²` are not both squares. -/
 theorem not_isSquare_sq_add_sq_and_sq_add_sq {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p)
-    (hpq : p < q) (ha : q ^ 2 = p ^ 2 + a ^ 2) (ha0 : 0 < a) (hcop : Nat.Coprime p q)
-    {mods : List (ℕ × ℕ)} (hchk : fiberCheck p q a mods = true) {t : ℚ} (ht : t ≠ 0) :
+    (hpq : p < q) (ha : q ^ 2 = p ^ 2 + a ^ 2) (hcop : Nat.Coprime p q)
+    (hchk : Covered p q a) {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + (p : ℚ) ^ 2) ∧ IsSquare (t ^ 2 + (q : ℚ) ^ 2)) := by
   rintro ⟨hp', hq'⟩
   have key : ∀ c : ℤ, IsSquare (t ^ 2 + (c : ℚ) ^ 2) →
@@ -903,7 +905,7 @@ theorem not_isSquare_sq_add_sq_and_sq_add_sq {p q a : ℕ} (hp : 0 < p) (hp2 : 2
     linear_combination (t.den : ℚ) ^ 2 * hw
   obtain ⟨r, hr⟩ := key p (by exact_mod_cast hp')
   obtain ⟨s, hs⟩ := key q (by exact_mod_cast hq')
-  exact not_isSol hp hp2 hpq ha ha0 hcop hchk t.num t.den r s
+  exact not_isSol hp hp2 hpq ha hcop hchk t.num t.den r s
     ⟨Rat.num_ne_zero.mpr ht, by exact_mod_cast t.den_nz, by rw [hr]; ring, by rw [hs]; ring⟩
 
 end Descent
