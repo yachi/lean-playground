@@ -3,7 +3,7 @@ module
 public import LeanPlayground.PerfectCuboid.Descent
 
 /-!
-# No perfect cuboid has two edges in ratio `5 : 12`, `8 : 15`, …, `16 : 63` or `13 : 84`
+# No perfect cuboid has two edges in ratio `5 : 12`, `8 : 15`, …, `13 : 84` or `28 : 45`
 
 These are fibers `(m, n)` of Peschmann's master-tuple parametrization (arXiv:2604.28072),
 handled by the generic descent of `LeanPlayground.PerfectCuboid.Descent`.
@@ -32,13 +32,17 @@ handled by the generic descent of `LeanPlayground.PerfectCuboid.Descent`.
   `√(Y² + 7056k²)` and the space diagonal `√(Y² + 7225k²)` would be integers. We use
   `(p, q) = (84, 85)`, `a = 13`; the curve `y² = x (x + 7056)(x + 7225)` has rank `0` and
   `Ш[2] = 0`. The `64` surviving cases with `λ = 85` are all handled by family L.
+* `28 : 45`, the fiber `(m, n) = (7, 2)`. With `X = 28k`, `Z = 45k` the face diagonal
+  `√(Y² + 784k²)` and the space diagonal `√(Y² + 2809k²)` would be integers. We use
+  `(p, q) = (28, 53)`, `a = 45`; the curve `y² = x (x + 784)(x + 2809)` has conductor `5565`
+  and rank `0`. The modulus `53` is needed.
 
 The same machinery also reproves the `3 : 4` fiber of `LeanPlayground.PerfectCuboid.FiberTwoOne`
 with `(p, q) = (4, 5)` (`not_isSol_four_five`).
 
 In each case the kernel runs `fiberCheck` (`decide +kernel`) over all a few hundred descent
-cases (a few thousand for `16 : 63` and `13 : 84`); every case is either a torsion translate that
-gives a smaller solution or is impossible modulo one of the numbers in `mods`.
+cases (a few thousand for `16 : 63`, `13 : 84` and `28 : 45`); every case is either a torsion
+translate that gives a smaller solution or is impossible modulo one of the numbers in `mods`.
 
 The rank computations (PARI/GP `ellrank`) are only the reason to expect the descent to work; the
 proofs do not depend on them. Not every fiber can be done this way: for `48 : 55` (`(m, n) =
@@ -53,10 +57,11 @@ rank `1`, so no descent on one of them can succeed.
 * `not_isPerfectCuboid_twelve_thirtyfive` — no perfect cuboid has `35 X = 12 Z`.
 * `not_isPerfectCuboid_sixteen_sixtythree` — no perfect cuboid has `63 X = 16 Z`.
 * `not_isPerfectCuboid_thirteen_eightyfour` — no perfect cuboid has `84 X = 13 Z`.
+* `not_isPerfectCuboid_twentyeight_fortyfive` — no perfect cuboid has `45 X = 28 Z`.
 * `not_isSquare_sq_add_144_and_sq_add_169`, `not_isSquare_sq_add_64_and_sq_add_289`,
   `not_isSquare_sq_add_576_and_sq_add_625`, `not_isSquare_sq_add_144_and_sq_add_1369`,
-  `not_isSquare_sq_add_256_and_sq_add_4225`, `not_isSquare_sq_add_7056_and_sq_add_7225` — the
-  underlying statements over `ℚ`.
+  `not_isSquare_sq_add_256_and_sq_add_4225`, `not_isSquare_sq_add_7056_and_sq_add_7225`,
+  `not_isSquare_sq_add_784_and_sq_add_2809` — the underlying statements over `ℚ`.
 -/
 
 @[expose] public section
@@ -68,7 +73,7 @@ namespace Descent
 /-- The moduli tried by the residue check, in order. -/
 def mods : List (ℕ × ℕ) :=
   [(8, 2), (16, 2), (3, 3), (5, 5), (9, 3), (13, 13), (17, 17), (7, 7), (25, 5), (32, 2),
-    (37, 37)]
+    (37, 37), (53, 53)]
 
 theorem fiberCheck_four_five : fiberCheck 4 5 3 mods = true := by decide +kernel
 
@@ -170,6 +175,71 @@ theorem fiberCheck_eightyfour_eightyfive : fiberCheck 84 85 13 mods = true :=
     fiberCheckOn_trans fiberCheckOn_eightyfour_eightyfive_11 <|
     fiberCheckOn_eightyfour_eightyfive_12
 
+/-! The `28 : 45` check, split by `λ` (one divisor of `28 · 53` per declaration). -/
+
+theorem fiberCheckOn_twentyeight_fiftythree_1 :
+    fiberCheckOn 28 53 45 mods 0 2 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_2 :
+    fiberCheckOn 28 53 45 mods 2 4 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_3 :
+    fiberCheckOn 28 53 45 mods 4 7 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_4 :
+    fiberCheckOn 28 53 45 mods 7 14 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_5 :
+    fiberCheckOn 28 53 45 mods 14 28 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_6 :
+    fiberCheckOn 28 53 45 mods 28 53 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_7 :
+    fiberCheckOn 28 53 45 mods 53 106 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_8 :
+    fiberCheckOn 28 53 45 mods 106 212 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_9 :
+    fiberCheckOn 28 53 45 mods 212 371 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_10 :
+    fiberCheckOn 28 53 45 mods 371 742 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_11 :
+    fiberCheckOn 28 53 45 mods 742 1484 = true := by
+  decide +kernel
+
+theorem fiberCheckOn_twentyeight_fiftythree_12 :
+    fiberCheckOn 28 53 45 mods 1484 1485 = true := by
+  decide +kernel
+
+theorem fiberCheck_twentyeight_fiftythree : fiberCheck 28 53 45 mods = true :=
+  fiberCheck_of_on (by decide) <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_1 <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_2 <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_3 <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_4 <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_5 <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_6 <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_7 <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_8 <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_9 <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_10 <|
+    fiberCheckOn_trans fiberCheckOn_twentyeight_fiftythree_11 <|
+    fiberCheckOn_twentyeight_fiftythree_12
+
 /-- The `3 : 4` fiber again, now through the generic descent. -/
 theorem not_isSol_four_five (M e r s : ℤ) : ¬ IsSol 4 5 M e r s := by
   simpa using not_isSol (p := 4) (q := 5) (a := 3) (by norm_num) (by norm_num) (by norm_num)
@@ -198,6 +268,10 @@ theorem not_isSol_sixteen_sixtyfive (M e r s : ℤ) : ¬ IsSol 16 65 M e r s := 
 theorem not_isSol_eightyfour_eightyfive (M e r s : ℤ) : ¬ IsSol 84 85 M e r s := by
   simpa using not_isSol (p := 84) (q := 85) (a := 13) (by norm_num) (by norm_num) (by norm_num)
     (by norm_num) (by norm_num) (by decide) fiberCheck_eightyfour_eightyfive M e r s
+
+theorem not_isSol_twentyeight_fiftythree (M e r s : ℤ) : ¬ IsSol 28 53 M e r s := by
+  simpa using not_isSol (p := 28) (q := 53) (a := 45) (by norm_num) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num) (by decide) fiberCheck_twentyeight_fiftythree M e r s
 
 end Descent
 
@@ -252,6 +326,15 @@ theorem not_isSquare_sq_add_7056_and_sq_add_7225 {t : ℚ} (ht : t ≠ 0) :
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 84) (q := 85) (a := 13) (by norm_num)
     (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.fiberCheck_eightyfour_eightyfive ht
+  norm_num at this
+  exact fun h ↦ this h.1 h.2
+
+/-- For rational `t ≠ 0`, `t² + 784` and `t² + 2809` are not both squares. -/
+theorem not_isSquare_sq_add_784_and_sq_add_2809 {t : ℚ} (ht : t ≠ 0) :
+    ¬ (IsSquare (t ^ 2 + 784) ∧ IsSquare (t ^ 2 + 2809)) := by
+  have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 28) (q := 53) (a := 45) (by norm_num)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    Descent.fiberCheck_twentyeight_fiftythree ht
   norm_num at this
   exact fun h ↦ this h.1 h.2
 
@@ -378,6 +461,27 @@ theorem not_isPerfectCuboid_thirteen_eightyfour {X Y Z : ℕ} (h : IsPerfectCubo
     push_cast at this
     linear_combination this
   · have : (((13 * k) ^ 2 + Y ^ 2 + (84 * k) ^ 2 : ℕ) : ℤ) = ((s * s : ℕ) : ℤ) := by rw [hs]
+    push_cast at this
+    linear_combination this
+
+/-- **No perfect cuboid has two edges in ratio `28 : 45`.** This is the fiber `(m, n) = (7, 2)`:
+with `X = 28k`, `Z = 45k`, the face diagonal `√(Y² + 784k²)` and the space diagonal
+`√(Y² + 2809k²)` cannot both be integers. -/
+theorem not_isPerfectCuboid_twentyeight_fortyfive {X Y Z : ℕ} (h : IsPerfectCuboid X Y Z) :
+    45 * X ≠ 28 * Z := by
+  intro hXZ
+  obtain ⟨k, rfl⟩ : 28 ∣ X := by omega
+  obtain rfl : Z = 45 * k := by omega
+  obtain ⟨r, hr⟩ := h.sq_ab
+  obtain ⟨s, hs⟩ := h.sq_abc
+  have hY := h.pos_b
+  have hk : 0 < k := by have := h.pos_a; omega
+  apply Descent.not_isSol_twentyeight_fiftythree (Y : ℤ) k r s
+  refine ⟨by exact_mod_cast hY.ne', by exact_mod_cast hk.ne', ?_, ?_⟩
+  · have : (((28 * k) ^ 2 + Y ^ 2 : ℕ) : ℤ) = ((r * r : ℕ) : ℤ) := by rw [hr]
+    push_cast at this
+    linear_combination this
+  · have : (((28 * k) ^ 2 + Y ^ 2 + (45 * k) ^ 2 : ℕ) : ℤ) = ((s * s : ℕ) : ℤ) := by rw [hs]
     push_cast at this
     linear_combination this
 
