@@ -523,6 +523,11 @@ would give a solution of `IsSol p q`. For each fiber the certificate lists, for 
 `fiberCases p q a` in order, `.torsion` (a torsion translate, `torsionOK`) or the modulus
 `.modulus N l` that rules the case out; the kernel replays it with `fiberCheckCert`.
 
+{fibers}
+
+The rank computations (PARI/GP) are only the reason to expect the descent to work; the proofs do
+not depend on them.
+
 ## Main results
 
 {results}
@@ -597,7 +602,13 @@ def main():
                                     f"cuboid has `{a} X = {p} Z`.", first="* ", last="")
                            .replace("\n", "\n  "))
         ratios = ", ".join(f"`{min(a, p)} : {max(a, p)}`" for (_, _, p, _, a) in fibers)
+        descs = [wrap_doc(f"`{min(a, p)} : {max(a, p)}`, the fiber `(m, n) = ({m}, {n})`. We use "
+                          f"the pair `(p, q) = ({p}, {q})`, `a = {a}`; the curve "
+                          f"`y² = x (x + {p * p})(x + {q * q})` has rank `0` and `Ш[2] = 0`.",
+                          first="* ", last="").replace("\n", "\n  ")
+                 for (m, n, p, q, a) in fibers]
         text = HEADER_FULL.format(ratios=ratios or "(none)", args=argstr,
+                                  fibers="\n".join(descs),
                                   results="\n".join(results) or "(none)")
         text += "\n".join(blocks)
         text += "\n".join(sols)
