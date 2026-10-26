@@ -333,8 +333,8 @@ Paulsen and West split the multiples of a base point `G` into two sequences,
 `k`, and claim that replacing `G` by `G + T` makes the two sequences trade places. That holds for
 odd `k` only (`A_add_T_of_odd`). For even `k` both sequences stay where they are
 (`A_add_T_of_even`), so the claimed interchange fails for **every** base point `G`
-(`A_add_T_ne_B_of_even`); this is the gap that Asiryan's paper closes. It fails on abscissas too: `A_k(G)` and `B_k(G)` never have the
-same `X`-coordinate (`HasX.ne_of_add_T`), because that would need `√2 ∈ ℚ`. -/
+(`A_add_T_ne_B_of_even`); this is the gap that Asiryan's paper closes. It fails on abscissas
+too: `A_k(G)` and `B_k(G)` never have the same `X`-coordinate (`HasX.ne_of_add_T`), because that would need `√2 ∈ ℚ`. -/
 
 /-- The sequence `A_k(G) = kG + ε(k)S`. -/
 def A (hN : N ≠ 0) (k : ℕ) (G : (curve N).Point) : (curve N).Point :=
