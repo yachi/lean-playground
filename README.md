@@ -28,6 +28,22 @@ lake build
 
 ## Formalizations
 
+### What a complex derivative means — `LeanPlayground/ComplexDerivative/`
+
+Claims from Zundamon's Theorem, [*What Does a Complex Derivative Actually
+Mean?*](https://youtu.be/2-95hN4fgmE) (YouTube, 2026-10-26): near `a`, the derivative acts as the
+multiplier in `Δw ≈ f'(a) Δz`, and multiplying by `r e^{iθ}` scales the plane by `r` and rotates
+it by `θ`. So a complex derivative is a local rotation and scaling.
+
+| Lean | Claim |
+|---|---|
+| `hasDerivAt_iff_tendsto_slope'`, `deriv_rules` | `df/dz = lim Δf/Δz`; `(z²)' = 2z`, `(sin z)' = cos z`, `(e^z)' = e^z` |
+| `hasDerivAt_iff_sub_mul_isLittleO` | `Δw ≈ f'(a) Δz`, i.e. `f(a+h) − f(a) = f'(a) h + o(h)` (and the real version) |
+| `exp_mul_I_eq`, `polar_form`, `polar_mul`, `sqrt_three_add_I` | Euler's formula, polar form, "length → multiply, angle → add", `√3 + i = 2e^{iπ/6}` |
+| `mul_eq_smul_rotation`, `isConformalMap_mul`, `dist_mul_mul` | Multiplying by `α` is a rotation by `arg α` then a scaling by `‖α‖`, keeps angles, and scales distances by `‖α‖` |
+| `sub_rotation_isLittleO_of_hasDerivAt`, `conformalAt_of_hasDerivAt` | Near `a`, `f` is that rotation and scaling up to `o(h)`; conformal when `f'(a) ≠ 0` |
+| `hasDerivAt_exp_I_mul`, `exp_I_mul_z₀`, `deriv_z₀`, `exp_I_mul_local_scale_rotate` | The worked example: `f(z) = e^{iz}` at `z₀ = −π/4 − i ln 2` has `f(z₀) = 2e^{−iπ/4}`, `f'(z₀) = 2e^{iπ/4}`, so near `z₀` it scales by 2 and rotates by 45° |
+
 ### The productegral — `LeanPlayground/Productegral/`
 
 Claims from Sohil Rathi, [*The Missing Calculus Operation*](https://youtu.be/QN680Is4euw)
