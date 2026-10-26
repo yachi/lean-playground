@@ -37,14 +37,12 @@ it by `θ`. So a complex derivative is a local rotation and scaling.
 
 | Lean | Claim |
 |---|---|
-| `hasDerivAt_iff_sub_mul_isLittleO` | `f(a+h) − f(a) = f'(a) h + o(h)` (and the real version) |
-| `polar_form`, `exp_mul_I_eq`, `polar_mul` | Euler's formula, `α = ‖α‖ e^{i arg α}`, lengths multiply and angles add |
+| `hasDerivAt_iff_tendsto_slope'`, `deriv_rules` | `df/dz = lim Δf/Δz`; `(z²)' = 2z`, `(sin z)' = cos z`, `(e^z)' = e^z` |
+| `hasDerivAt_iff_sub_mul_isLittleO` | `Δw ≈ f'(a) Δz`, i.e. `f(a+h) − f(a) = f'(a) h + o(h)` (and the real version) |
+| `exp_mul_I_eq`, `polar_form`, `polar_mul`, `sqrt_three_add_I` | Euler's formula, polar form, "length → multiply, angle → add", `√3 + i = 2e^{iπ/6}` |
 | `mul_eq_smul_rotation`, `isConformalMap_mul`, `dist_mul_mul` | Multiplying by `α` is a rotation by `arg α` then a scaling by `‖α‖`, keeps angles, and scales distances by `‖α‖` |
 | `sub_rotation_isLittleO_of_hasDerivAt`, `conformalAt_of_hasDerivAt` | Near `a`, `f` is that rotation and scaling up to `o(h)`; conformal when `f'(a) ≠ 0` |
-| `exp_deriv_at_log_add`, `exp_local_scale_rotate`, `exp_deriv_ln_two` | The worked example: `e^z` at `ln r + iθ` scales by `r` and rotates by `θ`; at `ln 2 + iπ/2` the derivative is `2i` |
-
-The transcript does not show the example's formulas on screen, so the file reads it as `e^z` at a
-point built from `ln 2` and proves the general case for every `r > 0` and `θ`.
+| `hasDerivAt_exp_I_mul`, `exp_I_mul_z₀`, `deriv_z₀`, `exp_I_mul_local_scale_rotate` | The worked example: `f(z) = e^{iz}` at `z₀ = −π/4 − i ln 2` has `f(z₀) = 2e^{−iπ/4}`, `f'(z₀) = 2e^{iπ/4}`, so near `z₀` it scales by 2 and rotates by 45° |
 
 ### The productegral — `LeanPlayground/Productegral/`
 
