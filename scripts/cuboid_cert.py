@@ -6,7 +6,8 @@ a = m^2 - n^2, the descent of LeanPlayground/PerfectCuboid/Descent.lean splits i
 (lam, c1, c2, c3, c4, sigma) enumerated by `fiberCases` in DescentCheck.lean. This script
 enumerates them in exactly the same order, and for each case finds
 
-* `torsionOK` (the case is a torsion translate and gives a smaller solution), or
+* `torsionOK` (the case is a torsion translate and gives a smaller solution; for family QK this
+  may need the finite search `smallCheck` over the box `quadKBoxB × quadKBoxG`), or
 * the cheapest modulus (N, l), N a prime power and l its prime, for which the residue check
   `check` (via `tupleOK [(N, l)]`) rules the case out.
 
@@ -24,7 +25,7 @@ family applies and no such modulus kills it), the case is reported on stderr and
 skipped: nothing is emitted for it.
 
 Usage:
-  python3 scripts/cuboid_cert.py [--max-modulus B] [--budget S] [--certs-only]
+  python3 scripts/cuboid_cert.py [--max-modulus B] [--budget S] [--sigma-budget S'] [--certs-only]
       [-o OUT.lean] m,n [m,n ...]
 """
 
@@ -148,7 +149,7 @@ def tupleOK1(N, l, q, lam, c1, c2, c3, c4, s, slow=False):
 
 
 # ---------------------------------------------------------------------------------------------
-# The torsion families (`boundOK`, `linOK`, `quadDOK`, `quadKOK`, `torsionOK`)
+# The torsion families (`boundOK`, `linOK`, `quadDOK`, `quadKOK` with `smallCheck`, `torsionOK`)
 
 
 def isSq(n):
@@ -201,15 +202,47 @@ def quadDOK(p, q, lam, c1, c2, c3, c4, s):
                         c1 * c2 * nsub(q, p) ** 2 * (c3 * c4) ** 2))
 
 
-def quadKOK(p, q, c1, c2, c3, c4, s):
-    return (isSq(c1 * c2) and isSq(c3 * c4) and isSq(s * nsub(q, p))
-            and boundOK(True, p, q, c1 * c2, c3 * c4, math.gcd(q, nsqrt(c3 * c4)) ** 2,
-                        nsqrt(c3 * c4) ** 2 * (c1 * c2) ** 2))
+def quadKBoxB(q, lam, c1, c2, c3, c4):
+    wn = nsqrt(c3 * c4)
+    F = math.gcd(q, wn)
+    return max(nsqrt(ndiv(q * c3 ** 2 * ndiv(2 * wn * c1, F) ** 2, lam * c1 ** 2)),
+               ndiv(2 * wn * c2, F))
+
+
+def quadKBoxG(q, lam, c1, c2, c3, c4):
+    wn = nsqrt(c3 * c4)
+    F = math.gcd(q, wn)
+    return max(ndiv(2 * wn * c1, F),
+               nsqrt(ndiv(q * c4 ** 2 * ndiv(2 * wn * c2, F) ** 2, lam * c2 ** 2)))
+
+
+def smallBad(q, lam, c1, c2, c3, c4, s, b, g):
+    D = nsub(q * c3 ** 2 * g ** 2, lam * c1 ** 2 * b ** 2)
+    A = nsub(q * c4 ** 2 * b ** 2, lam * c2 ** 2 * g ** 2)
+    return (lam * c1 ** 2 * b ** 2 < q * c3 ** 2 * g ** 2
+            and lam * c2 ** 2 * g ** 2 < q * c4 ** 2 * b ** 2
+            and nmod(D, s) == 0 and nmod(A, s) == 0 and isSq(ndiv(D, s)) and isSq(ndiv(A, s))
+            and c1 * nsqrt(ndiv(A, s)) * b != c2 * g * nsqrt(ndiv(D, s)))
+
+
+def smallCheck(q, lam, c1, c2, c3, c4, s, Bb, Bg):
+    return all(not smallBad(q, lam, c1, c2, c3, c4, s, b, g)
+               for b in range(1, Bb + 1) for g in range(1, Bg + 1))
+
+
+def quadKOK(p, q, lam, c1, c2, c3, c4, s):
+    if not (isSq(c1 * c2) and isSq(c3 * c4) and isSq(s * nsub(q, p))):
+        return False
+    if boundOK(True, p, q, c1 * c2, c3 * c4, math.gcd(q, nsqrt(c3 * c4)) ** 2,
+               nsqrt(c3 * c4) ** 2 * (c1 * c2) ** 2):
+        return True
+    Bb, Bg = quadKBoxB(q, lam, c1, c2, c3, c4), quadKBoxG(q, lam, c1, c2, c3, c4)
+    return Bb * Bg <= 65536 and smallCheck(q, lam, c1, c2, c3, c4, s, Bb, Bg)
 
 
 def torsionOK1(p, q, lam, c1, c2, c3, c4, s):
     return (linOK(p, q, lam, c1, c2, c3, c4, s) or quadDOK(p, q, lam, c1, c2, c3, c4, s)
-            or quadKOK(p, q, c1, c2, c3, c4, s))
+            or quadKOK(p, q, lam, c1, c2, c3, c4, s))
 
 
 def torsionOK(p, q, lam, c1, c2, c3, c4, s):
@@ -247,11 +280,16 @@ def keyBound(p, q):
     return (p * q + 1) * ((p + 1) * (p * q + 1))
 
 
-def lamCases(p, q, a, lo, hi, lam):
+def sigBound(p, q, a):
+    """The upper end of the `σ` range of `Covered p q a`."""
+    return (p * q) ** 2 * a ** 2 + 1
+
+
+def lamCases(p, q, a, lo, hi, slo, shi, lam):
     g = math.gcd(p, lam)
     pp, ll = ndiv(p, g), ndiv(lam, g)
     out = []
-    sigmas = divsSq(divsMul(ll, a), ll * a)
+    sigmas = [s for s in divsSq(divsMul(ll, a), ll * a) if slo <= s < shi]
     for c1 in divs(pp):
         if math.gcd(c1, ndiv(pp, c1)) != 1:
             continue
@@ -263,10 +301,10 @@ def lamCases(p, q, a, lo, hi, lam):
     return out
 
 
-def fiberCases(p, q, a, lo, hi):
+def fiberCases(p, q, a, lo, hi, slo, shi):
     K = (p + 1) * (p * q + 1)
     return [(lam,) + c for lam in divs(p * q) if lam * K < hi and lo < (lam + 1) * K
-            for c in lamCases(p, q, a, lo, hi, lam)]
+            for c in lamCases(p, q, a, lo, hi, slo, shi, lam)]
 
 
 # ---------------------------------------------------------------------------------------------
@@ -288,7 +326,7 @@ def prime_powers(bound):
 def certify(p, q, a, max_modulus):
     """The certificate of the fiber `(p, q, a)`, a list of `None` (torsion) or `(N, l)`, and
     the list of cases that could not be certified."""
-    cases = fiberCases(p, q, a, 0, keyBound(p, q))
+    cases = fiberCases(p, q, a, 0, keyBound(p, q), 0, sigBound(p, q, a))
     big = [l for l in range(max_modulus + 1, q + 1)
            if q % l == 0 and all(l % d for d in range(2, nsqrt(l) + 1))]
     mods = prime_powers(max_modulus) + [(l, l) for l in big]
@@ -337,23 +375,46 @@ def cost(e):
     return 0.0045 if e is None else 0.0037 + 0.00012 * (e[0] // 2 + 1) ** 2
 
 
-def chunks(p, q, cases, cert, budget):
-    """Ranges `[lo, hi)` of `caseKey` whose cases cost at most about `budget` kernel seconds
-    each. The cases of one `(λ, c₁, c₃)` are never split."""
-    groups = {}
+def chunks(p, q, a, cases, cert, budget, sigma_budget=None):
+    """Rectangles `(lo, hi, σlo, σhi)` of `caseKey × σ` whose cases cost at most about `budget`
+    kernel seconds each (kernel memory grows with the time, ~65 MB/s). Adjacent `(λ, c₁, c₃)`
+    groups are joined while they fit. A group that is too big alone is reported, and, if
+    `sigma_budget` is given, cut into ranges of `σ` of about that cost. Cutting a group loses the
+    kernel's sharing between its cases (they have the same `A₁, B₁, A₂, B₂`), which makes a
+    residue check alone up to four times slower, so it is off by default.
+    Each rectangle comes with its `σ` pieces: `(lo, hi, [(σlo, σhi), ...])`."""
+    groups, sigs = {}, {}
     for c, e in zip(cases, cert):
         k = caseKey(p, q, c[0], c[1], c[3])
         groups[k] = groups.get(k, 0) + cost(e)
+        sigs.setdefault(k, []).append((c[5], cost(e)))
+    S = sigBound(p, q, a)
     out, lo, t = [], 0, 0.0
-    for k in sorted(groups):
-        if t > 0 and t + groups[k] > budget:
-            out.append((lo, k))
-            lo, t = k, 0.0
-        t += groups[k]
+    keys = sorted(groups)
+    for i, k in enumerate(keys):
+        nxt = keys[i + 1] if i + 1 < len(keys) else keyBound(p, q)
         if groups[k] > budget:
             print(f"  warning: the cases with (λ, c1, c3) of key {k} alone cost about "
                   f"{groups[k]:.0f}s", file=sys.stderr)
-    out.append((lo, keyBound(p, q)))
+            if sigma_budget is not None:
+                if t > 0:
+                    out.append((lo, k, [(0, S)]))
+                pieces, plo, pt = [], 0, 0.0
+                for sg, c in sorted(sigs[k]):
+                    if pt > 0 and pt + c > sigma_budget:
+                        pieces.append((plo, sg))
+                        plo, pt = sg, 0.0
+                    pt += c
+                pieces.append((plo, S))
+                out.append((k, nxt, pieces))
+                lo, t = nxt, 0.0
+                continue
+        if t > 0 and t + groups[k] > budget:
+            out.append((lo, k, [(0, S)]))
+            lo, t = k, 0.0
+        t += groups[k]
+    if t > 0 or not out:
+        out.append((lo, keyBound(p, q), [(0, S)]))
     return out
 
 
@@ -376,32 +437,48 @@ def lean_list(entries, indent="  "):
     return "\n".join(lines)
 
 
-def emit_certs(m, n, p, q, a, cases, cert, budget):
+def emit_certs(m, n, p, q, a, cases, cert, budget, sigma_budget=None):
     """The certificate definitions and the theorem `covered_<p>_<q> : Covered p q a`."""
     tag = f"{name(p)}_{name(q)}"
-    rngs = chunks(p, q, cases, cert, budget)
+    rngs = chunks(p, q, a, cases, cert, budget, sigma_budget)
+    S = sigBound(p, q, a)
     out = []
     ntors = sum(1 for e in cert if e is None)
     out.append(f"/-! ### The fiber `(m, n) = ({m}, {n})`: `(p, q, a) = ({p}, {q}, {a})`, "
                f"{len(cases)} cases, {ntors} torsion -/\n")
     names = []
-    for i, (lo, hi) in enumerate(rngs, 1):
-        sel = [(c, e) for c, e in zip(cases, cert) if lo <= caseKey(p, q, c[0], c[1], c[3]) < hi]
-        part = [e for _, e in sel]
+
+    def key(c):
+        return caseKey(p, q, c[0], c[1], c[3])
+
+    for i, (lo, hi, pieces) in enumerate(rngs, 1):
         suffix = f"_{i}" if len(rngs) > 1 else ""
-        first, last = min(sel, key=lambda x: caseKey(p, q, x[0][0], x[0][1], x[0][3]))[0], \
-            max(sel, key=lambda x: caseKey(p, q, x[0][0], x[0][1], x[0][3]))[0]
-        out.append(wrap_doc(f"The certificate of the {len(part)} cases with `(λ, c₁, c₃)` from "
-                            f"`({first[0]}, {first[1]}, {first[3]})` to "
-                            f"`({last[0]}, {last[1]}, {last[3]})`."))
-        out.append(fit(f"def cert_{tag}{suffix} : List Cert :=", ":"))
-        out.append(lean_list(part))
-        out.append("")
-        out.append(fit(f"theorem coveredOn_{tag}{suffix} : CoveredOn {p} {q} {a} {lo} {hi} :=",
-                       ":"))
-        out.append(fit(f"  coveredOn_of_fiberCheckCert (cert := cert_{tag}{suffix}) "
-                       "(by decide +kernel)", ")"))
-        out.append("")
+        sub = []
+        for j, (slo, shi) in enumerate(pieces, 1):
+            sel = [(c, e) for c, e in zip(cases, cert) if lo <= key(c) < hi and slo <= c[5] < shi]
+            part = [e for _, e in sel]
+            nm = f"coveredOn_{tag}{suffix}" + (f"_{j}" if len(pieces) > 1 else "")
+            first, last = min(sel, key=lambda x: key(x[0]))[0], max(sel, key=lambda x: key(x[0]))[0]
+            where = (f"`({first[0]}, {first[1]}, {first[3]})` to "
+                     f"`({last[0]}, {last[1]}, {last[3]})`"
+                     if first != last else f"`({first[0]}, {first[1]}, {first[3]})`")
+            sig = f" and `{slo} ≤ σ < {shi}`" if len(pieces) > 1 else ""
+            out.append(wrap_doc(f"The certificate of the {len(part)} cases with `(λ, c₁, c₃)` "
+                                f"{'from ' if first != last else ''}{where}{sig}."))
+            out.append(fit(f"def cert_{nm[10:]} : List Cert :=", ":"))
+            out.append(lean_list(part))
+            out.append("")
+            out.append(fit(f"theorem {nm} : CoveredOn {p} {q} {a} {lo} {hi} {slo} {shi} :=", ":"))
+            out.append(fit(f"  coveredOn_of_fiberCheckCert (cert := cert_{nm[10:]}) "
+                           "(by decide +kernel)", ")"))
+            out.append("")
+            sub.append(nm)
+        if len(pieces) > 1:
+            out.append(fit(f"theorem coveredOn_{tag}{suffix} : "
+                           f"CoveredOn {p} {q} {a} {lo} {hi} 0 {S} :=", ":"))
+            out.append("  " + " <|\n    ".join([f"CoveredOn.transσ {nm}" for nm in sub[:-1]]
+                                                + [sub[-1]]))
+            out.append("")
         names.append(f"coveredOn_{tag}{suffix}")
     out.append(fit(f"theorem covered_{tag} : Covered {p} {q} {a} :=", ":"))
     out.append("  " + " <|\n    ".join([f"CoveredOn.trans {nm}" for nm in names[:-1]]
@@ -549,6 +626,9 @@ def main():
                     help="largest prime power N tried (default 211)")
     ap.add_argument("--budget", type=float, default=15.0,
                     help="estimated kernel seconds per declaration (default 15)")
+    ap.add_argument("--sigma-budget", type=float, default=None,
+                    help="also cut a too-expensive (λ, c1, c3) group into ranges of σ of about "
+                         "this many kernel seconds (slower in total, but less memory per run)")
     ap.add_argument("--certs-only", action="store_true",
                     help="emit only the certificates and `covered_…`, not the fiber theorems")
     ap.add_argument("-o", "--output", help="output Lean file (default: stdout)")
@@ -576,7 +656,7 @@ def main():
         print(f"fiber ({m}, {n}) = (p, q, a) = ({p}, {q}, {a}): {len(cases)} cases, "
               f"{sum(e is None for e in cert)} torsion, moduli {[N for N, _ in ms]}, "
               f"{dt:.1f}s", file=sys.stderr)
-        blocks.append(emit_certs(m, n, p, q, a, cases, cert, args.budget))
+        blocks.append(emit_certs(m, n, p, q, a, cases, cert, args.budget, args.sigma_budget))
         fibers.append((m, n, p, q, a))
 
     if not fibers:

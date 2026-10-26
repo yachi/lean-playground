@@ -1,5 +1,6 @@
 module
 
+public import Mathlib.Data.Int.Lemmas
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.Tactic.LinearCombination
@@ -25,14 +26,17 @@ run up to `N / 2`, so the work is about `N² / 4` steps.
 The cases that are not impossible are the images of torsion points. They are recognized by
 `torsionOK`, which tests the hypotheses of the three torsion families of
 `LeanPlayground.PerfectCuboid.Descent` (`linOK`, `quadDOK`, `quadKOK`) together with a size bound
-(`boundOK`). The whole case list of one pair `(p, q)` is `fiberCheck`; `fiberCheckOn` checks only
-the `λ` in a range, so that a large fiber can be split into several kernel runs.
+(`boundOK`, or for `quadKOK` the finite search `smallCheck` over the box
+`quadKBoxβ × quadKBoxγ`). The whole case list of one pair `(p, q)` is `fiberCheck`;
+`fiberCheckOn` checks only the `λ` in a range, so that a large fiber can be split into several
+kernel runs.
 
 `fiberCheck` tries every modulus on every case. It is much cheaper to replay a certificate
 (`fiberCheckCert`) that names the one test that handles each case of `fiberCases`: `.torsion` or
 a single modulus `.modulus N l`. `fiberCases` also lists the divisors `σ` of `λ'² a²` without
 trial division up to `λ' a` (`divsMul`, `divsSq`), and a certificate can be split into pieces by
-`caseKey`, the position of `(λ, c₁, c₃)`, so that each kernel run stays small. Either way the
+`caseKey`, the position of `(λ, c₁, c₃)`, and further by a range of `σ`, so that each kernel
+run stays small. Either way the
 result is `Covered p q a`, the hypothesis of the descent (`covered_of_fiberCheck`,
 `coveredOn_of_fiberCheckCert`).
 -/
@@ -425,16 +429,101 @@ def quadDOK (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
     boundOK true p q (c1 * c2) (c3 * c4) (p * q * quadDF p q lam c1 c2 c3 c4 σ ^ 2)
       (c1 * c2 * (q - p) ^ 2 * (c3 * c4) ^ 2)
 
+/-- The box of family QK. With `w_n = √(c₃c₄)` and `F = gcd(q, w_n)`, the new solution of QK is
+smaller than the old one as soon as `F |γδ| > 2 w_n c₁` and `F |αβ| > 2 w_n c₂`. Otherwise
+`|γδ| ≤ 2 w_n c₁ / F` or `|αβ| ≤ 2 w_n c₂ / F`, and the equations `E₁`, `E₂` bound `|β|` by
+`quadKBoxβ` and `|γ|` by `quadKBoxγ`. -/
+def quadKBoxβ (q lam c1 c2 c3 c4 : ℕ) : ℕ :=
+  max (Nat.sqrt (q * c3 ^ 2 * (2 * Nat.sqrt (c3 * c4) * c1 / Nat.gcd q (Nat.sqrt (c3 * c4))) ^ 2 /
+    (lam * c1 ^ 2))) (2 * Nat.sqrt (c3 * c4) * c2 / Nat.gcd q (Nat.sqrt (c3 * c4)))
+
+/-- The bound on `|γ|` of the box of family QK, see `quadKBoxβ`. -/
+def quadKBoxγ (q lam c1 c2 c3 c4 : ℕ) : ℕ :=
+  max (2 * Nat.sqrt (c3 * c4) * c1 / Nat.gcd q (Nat.sqrt (c3 * c4)))
+    (Nat.sqrt (q * c4 ^ 2 * (2 * Nat.sqrt (c3 * c4) * c2 / Nat.gcd q (Nat.sqrt (c3 * c4))) ^ 2 /
+      (lam * c2 ^ 2)))
+
+/-- `(|β|, |γ|) = (b, g)` extends to a solution `(α, β, γ, δ)` of `E₁`, `E₂` with `k₁² ≠ k₂²`:
+`q c₃² g² − λ c₁² b² = σ δ²` and `q c₄² b² − λ c₂² g² = σ α²` with `α, δ ≠ 0` and
+`c₁ |αβ| ≠ c₂ |γδ|`. -/
+def smallBad (q lam c1 c2 c3 c4 σ b g : ℕ) : Bool :=
+  decide (lam * c1 ^ 2 * b ^ 2 < q * c3 ^ 2 * g ^ 2) &&
+  decide (lam * c2 ^ 2 * g ^ 2 < q * c4 ^ 2 * b ^ 2) &&
+  (q * c3 ^ 2 * g ^ 2 - lam * c1 ^ 2 * b ^ 2) % σ == 0 &&
+  (q * c4 ^ 2 * b ^ 2 - lam * c2 ^ 2 * g ^ 2) % σ == 0 &&
+  isSq ((q * c3 ^ 2 * g ^ 2 - lam * c1 ^ 2 * b ^ 2) / σ) &&
+  isSq ((q * c4 ^ 2 * b ^ 2 - lam * c2 ^ 2 * g ^ 2) / σ) &&
+  c1 * Nat.sqrt ((q * c4 ^ 2 * b ^ 2 - lam * c2 ^ 2 * g ^ 2) / σ) * b !=
+    c2 * g * Nat.sqrt ((q * c3 ^ 2 * g ^ 2 - lam * c1 ^ 2 * b ^ 2) / σ)
+
+/-- No `(β, γ)` with `1 ≤ |β| ≤ B_β` and `1 ≤ |γ| ≤ B_γ` extends to a solution of `E₁`, `E₂`
+with `k₁² ≠ k₂²`. -/
+def smallCheck (q lam c1 c2 c3 c4 σ Bβ Bγ : ℕ) : Bool :=
+  (List.range' 1 Bβ).all fun b ↦ (List.range' 1 Bγ).all fun g ↦ !smallBad q lam c1 c2 c3 c4 σ b g
+
 /-- Family QK, for `c₁c₂ = w_d²`, `c₃c₄ = w_n²` and `σ (q − p) = h²`: with `F = gcd(q, w_n)`,
-the new solution is `M' = (q/F) w_d (j₁ + j₂)`, `e' = (w_n/F)(k₁ − k₂)`. -/
-def quadKOK (p q c1 c2 c3 c4 σ : ℕ) : Bool :=
+the new solution is `M' = (q/F) w_d (j₁ + j₂)`, `e' = (w_n/F)(k₁ − k₂)`. Either one of the three
+bounds of `boundOK` makes it smaller, or `F² e'² ≤ 2 w_n² (k₁² + k₂²) < F² (αβγδ)²` as soon as
+`F |γδ| > 2 w_n c₁` and `F |αβ| > 2 w_n c₂`; the remaining `(β, γ)` lie in a box that `smallCheck`
+searches (at most `65536` pairs). -/
+def quadKOK (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
   isSq (c1 * c2) && isSq (c3 * c4) && isSq (σ * (q - p)) &&
-    boundOK true p q (c1 * c2) (c3 * c4) (Nat.gcd q (Nat.sqrt (c3 * c4)) ^ 2)
-      (Nat.sqrt (c3 * c4) ^ 2 * (c1 * c2) ^ 2)
+    (boundOK true p q (c1 * c2) (c3 * c4) (Nat.gcd q (Nat.sqrt (c3 * c4)) ^ 2)
+      (Nat.sqrt (c3 * c4) ^ 2 * (c1 * c2) ^ 2) ||
+    (decide (quadKBoxβ q lam c1 c2 c3 c4 * quadKBoxγ q lam c1 c2 c3 c4 ≤ 65536) &&
+      smallCheck q lam c1 c2 c3 c4 σ (quadKBoxβ q lam c1 c2 c3 c4) (quadKBoxγ q lam c1 c2 c3 c4)))
+
+theorem isSq_sq (n : ℕ) : isSq (n ^ 2) = true := by
+  simp [isSq, sq]
+
+/-- **Soundness of `smallCheck`.** -/
+theorem smallCheck_sound {q lam c1 c2 c3 c4 σ Bβ Bγ : ℕ}
+    (h : smallCheck q lam c1 c2 c3 c4 σ Bβ Bγ = true) (hσ : 0 < σ) {α β γ δ : ℤ}
+    (E1 : (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
+    (E2 : (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2)
+    (hne : ((c1 : ℤ) * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2)
+    (hα : α ≠ 0) (hβ : β ≠ 0) (hγ : γ ≠ 0) (hδ : δ ≠ 0)
+    (hB : β.natAbs ≤ Bβ) (hG : γ.natAbs ≤ Bγ) : False := by
+  simp only [smallCheck, List.all_eq_true, List.mem_range'_1, Bool.not_eq_eq_eq_not,
+    Bool.not_true] at h
+  have hb := h β.natAbs ⟨Int.natAbs_pos.mpr hβ, by omega⟩ γ.natAbs
+    ⟨Int.natAbs_pos.mpr hγ, by omega⟩
+  have e1 : q * c3 ^ 2 * γ.natAbs ^ 2 = lam * c1 ^ 2 * β.natAbs ^ 2 + σ * δ.natAbs ^ 2 := by
+    have : ((q * c3 ^ 2 * γ.natAbs ^ 2 : ℕ) : ℤ) =
+        ((lam * c1 ^ 2 * β.natAbs ^ 2 + σ * δ.natAbs ^ 2 : ℕ) : ℤ) := by
+      push_cast
+      simp only [sq_abs]
+      linear_combination E1
+    exact_mod_cast this
+  have e2 : q * c4 ^ 2 * β.natAbs ^ 2 = lam * c2 ^ 2 * γ.natAbs ^ 2 + σ * α.natAbs ^ 2 := by
+    have : ((q * c4 ^ 2 * β.natAbs ^ 2 : ℕ) : ℤ) =
+        ((lam * c2 ^ 2 * γ.natAbs ^ 2 + σ * α.natAbs ^ 2 : ℕ) : ℤ) := by
+      push_cast
+      simp only [sq_abs]
+      linear_combination E2
+    exact_mod_cast this
+  have hd : 0 < σ * δ.natAbs ^ 2 := Nat.mul_pos hσ (pow_pos (Int.natAbs_pos.mpr hδ) 2)
+  have ha : 0 < σ * α.natAbs ^ 2 := Nat.mul_pos hσ (pow_pos (Int.natAbs_pos.mpr hα) 2)
+  have hD : q * c3 ^ 2 * γ.natAbs ^ 2 - lam * c1 ^ 2 * β.natAbs ^ 2 = σ * δ.natAbs ^ 2 := by
+    omega
+  have hA : q * c4 ^ 2 * β.natAbs ^ 2 - lam * c2 ^ 2 * γ.natAbs ^ 2 = σ * α.natAbs ^ 2 := by
+    omega
+  have hlt1 : lam * c1 ^ 2 * β.natAbs ^ 2 < q * c3 ^ 2 * γ.natAbs ^ 2 := by omega
+  have hlt2 : lam * c2 ^ 2 * γ.natAbs ^ 2 < q * c4 ^ 2 * β.natAbs ^ 2 := by omega
+  have hne' : c1 * α.natAbs * β.natAbs ≠ c2 * γ.natAbs * δ.natAbs := by
+    intro h0
+    apply hne
+    rw [← Int.natAbs_eq_iff_sq_eq]
+    simp only [Int.natAbs_mul, Int.natAbs_natCast]
+    rw [← mul_assoc, ← mul_assoc]
+    exact h0
+  rw [smallBad, hD, hA] at hb
+  simp [hlt1, hlt2, Nat.mul_div_cancel_left _ hσ, Nat.mul_mod_right, isSq_sq, Nat.sqrt_eq',
+    hne'] at hb
 
 /-- One of the three families applies. -/
 def torsionOK1 (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
-  linOK p q lam c1 c2 c3 c4 σ || quadDOK p q lam c1 c2 c3 c4 σ || quadKOK p q c1 c2 c3 c4 σ
+  linOK p q lam c1 c2 c3 c4 σ || quadDOK p q lam c1 c2 c3 c4 σ || quadKOK p q lam c1 c2 c3 c4 σ
 
 /-- One of the three families applies, possibly after the symmetry
 `(α, β, γ, δ, c₁, c₂, c₃, c₄) ↦ (δ, γ, β, α, c₂, c₁, c₄, c₃)`, which swaps the two equations. -/
@@ -545,27 +634,39 @@ theorem caseKey_lt {p q lam c1 c3 : ℕ} (hc1 : c1 ≤ p) (hc3 : c3 ≤ p * q) :
     _ = (lam + 1) * ((p + 1) * (p * q + 1)) := by ring
 
 /-- Every case `(λ, c₁, c₂, c₃, c₄, σ)` of the pair `(p, q)` with `lo ≤ caseKey p q λ c₁ c₃ < hi`
-is a torsion translate (`torsionOK`) or is ruled out modulo some `(N, l)` with `0 < N`, `2 ≤ l`
-and `l ∣ N`. -/
-def CoveredOn (p q a lo hi : ℕ) : Prop :=
+and `σlo ≤ σ < σhi` is a torsion translate (`torsionOK`) or is ruled out modulo some `(N, l)`
+with `0 < N`, `2 ≤ l` and `l ∣ N`. -/
+def CoveredOn (p q a lo hi σlo σhi : ℕ) : Prop :=
   ∀ ⦃lam c1 c2 c3 c4 σ : ℕ⦄, 0 < lam → lam ∣ p * q → lo ≤ caseKey p q lam c1 c3 →
-    caseKey p q lam c1 c3 < hi → c1 * c2 = p / Nat.gcd p lam → Nat.Coprime c1 c2 →
-    c3 * c4 = lam / Nat.gcd p lam → Nat.Coprime c3 c4 → σ ∣ (lam / Nat.gcd p lam) ^ 2 * a ^ 2 →
+    caseKey p q lam c1 c3 < hi → σlo ≤ σ → σ < σhi → c1 * c2 = p / Nat.gcd p lam →
+    Nat.Coprime c1 c2 → c3 * c4 = lam / Nat.gcd p lam → Nat.Coprime c3 c4 →
+    σ ∣ (lam / Nat.gcd p lam) ^ 2 * a ^ 2 →
     torsionOK p q lam c1 c2 c3 c4 σ = true ∨
       ∃ N l : ℕ, 0 < N ∧ 2 ≤ l ∧ l ∣ N ∧ tupleOK [(N, l)] q lam c1 c2 c3 c4 σ = true
 
-/-- Every case of the pair `(p, q)` is covered: the hypothesis of the descent. -/
-def Covered (p q a : ℕ) : Prop := CoveredOn p q a 0 ((p * q + 1) * ((p + 1) * (p * q + 1)))
+/-- Every case of the pair `(p, q)` is covered: the hypothesis of the descent. Since
+`σ ∣ λ'² a²` and `λ' ≤ pq`, the range `σ < (pq)² a² + 1` holds for every case. -/
+def Covered (p q a : ℕ) : Prop :=
+  CoveredOn p q a 0 ((p * q + 1) * ((p + 1) * (p * q + 1))) 0 ((p * q) ^ 2 * a ^ 2 + 1)
 
-theorem CoveredOn.trans {p q a lo mid hi : ℕ} (h1 : CoveredOn p q a lo mid)
-    (h2 : CoveredOn p q a mid hi) : CoveredOn p q a lo hi := by
-  intro lam c1 c2 c3 c4 σ h0 hd hlo hhi
+/-- Two certificates on adjacent key ranges cover their union. -/
+theorem CoveredOn.trans {p q a lo mid hi σlo σhi : ℕ} (h1 : CoveredOn p q a lo mid σlo σhi)
+    (h2 : CoveredOn p q a mid hi σlo σhi) : CoveredOn p q a lo hi σlo σhi := by
+  intro lam c1 c2 c3 c4 σ h0 hd hlo hhi hσlo hσhi
   rcases lt_or_ge (caseKey p q lam c1 c3) mid with h | h
-  · exact h1 h0 hd hlo h
-  · exact h2 h0 hd h hhi
+  · exact h1 h0 hd hlo h hσlo hσhi
+  · exact h2 h0 hd h hhi hσlo hσhi
+
+/-- Two certificates on the same key range and adjacent `σ` ranges cover their union. -/
+theorem CoveredOn.transσ {p q a lo hi σlo σmid σhi : ℕ} (h1 : CoveredOn p q a lo hi σlo σmid)
+    (h2 : CoveredOn p q a lo hi σmid σhi) : CoveredOn p q a lo hi σlo σhi := by
+  intro lam c1 c2 c3 c4 σ h0 hd hlo hhi hσlo hσhi
+  rcases lt_or_ge σ σmid with h | h
+  · exact h1 h0 hd hlo hhi hσlo h
+  · exact h2 h0 hd hlo hhi h hσhi
 
 /-- The cases of a covered pair, without the range. -/
-theorem Covered.cases {p q a : ℕ} (h : Covered p q a) (hp : 0 < p) (hq : 0 < q)
+theorem Covered.cases {p q a : ℕ} (h : Covered p q a) (hp : 0 < p) (hq : 0 < q) (ha : 0 < a)
     {lam c1 c2 c3 c4 σ : ℕ}
     (hlam : 0 < lam) (hlpq : lam ∣ p * q) (hc12 : c1 * c2 = p / Nat.gcd p lam)
     (hc12' : Nat.Coprime c1 c2) (hc34 : c3 * c4 = lam / Nat.gcd p lam) (hc34' : Nat.Coprime c3 c4)
@@ -578,12 +679,20 @@ theorem Covered.cases {p q a : ℕ} (h : Covered p q a) (hp : 0 < p) (hq : 0 < q
   have hc3 : c3 ≤ p * q := ((Nat.le_of_dvd (Nat.div_pos (Nat.gcd_le_right _ hlam)
     (Nat.gcd_pos_of_pos_left _ hp)) ⟨c4, hc34.symm⟩).trans (Nat.div_le_self _ _)).trans
     (Nat.le_of_dvd hpq hlpq)
-  refine h hlam hlpq (Nat.zero_le _) ((caseKey_lt hc1 hc3).trans_le ?_) hc12 hc12' hc34 hc34' hσd
+  have hσ : σ < (p * q) ^ 2 * a ^ 2 + 1 := by
+    have hl' : 0 < lam / Nat.gcd p lam :=
+      Nat.div_pos (Nat.gcd_le_right _ hlam) (Nat.gcd_pos_of_pos_left _ hp)
+    have hl : lam / Nat.gcd p lam ≤ p * q := (Nat.div_le_self _ _).trans (Nat.le_of_dvd hpq hlpq)
+    refine Nat.lt_succ_of_le ((Nat.le_of_dvd (Nat.mul_pos (pow_pos hl' 2) (pow_pos ha 2)) hσd).trans
+      ?_)
+    exact Nat.mul_le_mul_right _ (Nat.pow_le_pow_left hl 2)
+  refine h hlam hlpq (Nat.zero_le _) ((caseKey_lt hc1 hc3).trans_le ?_) (Nat.zero_le _) hσ hc12
+    hc12' hc34 hc34' hσd
   exact Nat.mul_le_mul_right _ (Nat.succ_le_succ (Nat.le_of_dvd hpq hlpq))
 
 theorem covered_of_fiberCheck {p q a : ℕ} {mods : List (ℕ × ℕ)} (h : fiberCheck p q a mods = true)
     (hp : 0 < p) (hq : 0 < q) (ha : 0 < a) : Covered p q a := by
-  intro lam c1 c2 c3 c4 σ h0 hd _ _ hc12 hc12' hc34 hc34' hσ
+  intro lam c1 c2 c3 c4 σ h0 hd _ _ _ _ hc12 hc12' hc34 hc34' hσ
   rcases fiberCheck_spec h hp hq ha h0 hd hc12 hc12' hc34 hc34' hσ with h' | h'
   · exact Or.inl h'
   · obtain ⟨⟨N, l⟩, hm, hc⟩ := List.any_eq_true.mp h'
@@ -610,25 +719,28 @@ def certStep (p q lam c1 c2 c3 c4 σ : ℕ) : Cert → Bool
   | .modulus N l =>
     decide (0 < N) && decide (2 ≤ l) && N % l == 0 && tupleOK [(N, l)] q lam c1 c2 c3 c4 σ
 
-/-- The cases `(c₁, c₂, c₃, c₄, σ)` of one `λ` with `lo ≤ caseKey p q λ c₁ c₃ < hi`: as in
-`lamCheck`, but the divisors `σ` of `λ'² a²` are listed by `divsSq`, which is much cheaper than
-trial division up to `λ' a`. -/
-def lamCases (p q a lo hi lam : ℕ) : List (ℕ × ℕ × ℕ × ℕ × ℕ) :=
+/-- The cases `(c₁, c₂, c₃, c₄, σ)` of one `λ` with `lo ≤ caseKey p q λ c₁ c₃ < hi` and
+`σlo ≤ σ < σhi`: as in `lamCheck`, but the divisors `σ` of `λ'² a²` are listed by `divsSq`,
+which is much cheaper than trial division up to `λ' a`. The range of `σ` lets a certificate split
+the cases of one `(λ, c₁, c₃)` into several kernel runs. -/
+def lamCases (p q a lo hi σlo σhi lam : ℕ) : List (ℕ × ℕ × ℕ × ℕ × ℕ) :=
   (divs (p / Nat.gcd p lam)).flatMap fun c1 ↦
     if Nat.gcd c1 (p / Nat.gcd p lam / c1) != 1 then [] else
     (divs (lam / Nat.gcd p lam)).flatMap fun c3 ↦
       if Nat.gcd c3 (lam / Nat.gcd p lam / c3) != 1 ||
         !(decide (lo ≤ caseKey p q lam c1 c3) && decide (caseKey p q lam c1 c3 < hi)) then [] else
-      (divsSq (divsMul (lam / Nat.gcd p lam) a) (lam / Nat.gcd p lam * a)).map fun σ ↦
+      ((divsSq (divsMul (lam / Nat.gcd p lam) a) (lam / Nat.gcd p lam * a)).filter fun σ ↦
+        decide (σlo ≤ σ) && decide (σ < σhi)).map fun σ ↦
         (c1, p / Nat.gcd p lam / c1, c3, lam / Nat.gcd p lam / c3, σ)
 
-/-- The cases `(λ, c₁, c₂, c₃, c₄, σ)` of the pair `(p, q)` with `lo ≤ caseKey p q λ c₁ c₃ < hi`,
-in the order of `fiberCheckOn`. The `λ` whose keys all miss the range are skipped at once. -/
-def fiberCases (p q a lo hi : ℕ) : List (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ) :=
+/-- The cases `(λ, c₁, c₂, c₃, c₄, σ)` of the pair `(p, q)` with `lo ≤ caseKey p q λ c₁ c₃ < hi`
+and `σlo ≤ σ < σhi`, in the order of `fiberCheckOn`. The `λ` whose keys all miss the range are
+skipped at once. -/
+def fiberCases (p q a lo hi σlo σhi : ℕ) : List (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ) :=
   (divs (p * q)).flatMap fun lam ↦
     if decide (lam * ((p + 1) * (p * q + 1)) < hi) &&
         decide (lo < (lam + 1) * ((p + 1) * (p * q + 1))) then
-      (lamCases p q a lo hi lam).map ((lam, ·))
+      (lamCases p q a lo hi σlo σhi lam).map ((lam, ·))
     else []
 
 /-- Each case of the list passes the corresponding test of the certificate, and the two lists
@@ -638,9 +750,11 @@ def certOK (p q : ℕ) : List (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ) → List 
   | (lam, c1, c2, c3, c4, σ) :: ts, c :: cs => certStep p q lam c1 c2 c3 c4 σ c && certOK p q ts cs
   | _, _ => false
 
-/-- The certificate `cert` handles every case of `(p, q)` with `lo ≤ caseKey p q λ c₁ c₃ < hi`. -/
-def fiberCheckCert (p q a lo hi : ℕ) (cert : List Cert) : Bool :=
-  decide (0 < p) && decide (0 < q) && decide (0 < a) && certOK p q (fiberCases p q a lo hi) cert
+/-- The certificate `cert` handles every case of `(p, q)` with `lo ≤ caseKey p q λ c₁ c₃ < hi` and
+`σlo ≤ σ < σhi`. -/
+def fiberCheckCert (p q a lo hi σlo σhi : ℕ) (cert : List Cert) : Bool :=
+  decide (0 < p) && decide (0 < q) && decide (0 < a) &&
+    certOK p q (fiberCases p q a lo hi σlo σhi) cert
 
 theorem certStep_sound {p q lam c1 c2 c3 c4 σ : ℕ} {c : Cert}
     (h : certStep p q lam c1 c2 c3 c4 σ c = true) :
@@ -663,13 +777,14 @@ theorem certOK_sound {p q : ℕ} :
     · exact ⟨c, h.1⟩
     · exact certOK_sound L C h.2 t ht
 
-theorem mem_fiberCases {p q a lo hi : ℕ} (hp : 0 < p) (hq : 0 < q) (ha : 0 < a)
+theorem mem_fiberCases {p q a lo hi σlo σhi : ℕ} (hp : 0 < p) (hq : 0 < q) (ha : 0 < a)
     {lam c1 c2 c3 c4 σ : ℕ} (hlam : 0 < lam) (hlpq : lam ∣ p * q)
     (hlo : lo ≤ caseKey p q lam c1 c3) (hhi : caseKey p q lam c1 c3 < hi)
+    (hσlo : σlo ≤ σ) (hσhi : σ < σhi)
     (hc12 : c1 * c2 = p / Nat.gcd p lam) (hc12' : Nat.Coprime c1 c2)
     (hc34 : c3 * c4 = lam / Nat.gcd p lam) (hc34' : Nat.Coprime c3 c4)
     (hσd : σ ∣ (lam / Nat.gcd p lam) ^ 2 * a ^ 2) :
-    (lam, c1, c2, c3, c4, σ) ∈ fiberCases p q a lo hi := by
+    (lam, c1, c2, c3, c4, σ) ∈ fiberCases p q a lo hi σlo σhi := by
   have hg : 0 < Nat.gcd p lam := Nat.gcd_pos_of_pos_left _ hp
   have hp' : 0 < p / Nat.gcd p lam := Nat.div_pos (Nat.gcd_le_left _ hp) hg
   have hl' : 0 < lam / Nat.gcd p lam := Nat.div_pos (Nat.gcd_le_right _ hlam) hg
@@ -692,19 +807,20 @@ theorem mem_fiberCases {p q a lo hi : ℕ} (hp : 0 < p) (hq : 0 < q) (ha : 0 < a
   refine ⟨c3, mem_divs hl' ⟨c4, hc34.symm⟩, ?_⟩
   rw [e4, hc34'.gcd_eq_one]
   simp only [bne_self_eq_false, hlo, hhi, decide_true, Bool.and_self, Bool.not_true,
-    Bool.or_false, Bool.false_eq_true, ↓reduceIte, List.mem_map]
-  refine ⟨σ, mem_divsSq (Nat.mul_pos hl' ha) (fun d hd ↦ mem_divsMul hl' ha hd) ?_, rfl⟩
+    Bool.or_false, Bool.false_eq_true, ↓reduceIte, List.mem_map, List.mem_filter]
+  refine ⟨σ, ⟨mem_divsSq (Nat.mul_pos hl' ha) (fun d hd ↦ mem_divsMul hl' ha hd) ?_,
+    by simp [hσlo, hσhi]⟩, rfl⟩
   rwa [show lam / Nat.gcd p lam * a * (lam / Nat.gcd p lam * a) =
     (lam / Nat.gcd p lam) ^ 2 * a ^ 2 by ring]
 
 /-- **Soundness of a certificate.** -/
-theorem coveredOn_of_fiberCheckCert {p q a lo hi : ℕ} {cert : List Cert}
-    (h : fiberCheckCert p q a lo hi cert = true) : CoveredOn p q a lo hi := by
+theorem coveredOn_of_fiberCheckCert {p q a lo hi σlo σhi : ℕ} {cert : List Cert}
+    (h : fiberCheckCert p q a lo hi σlo σhi cert = true) : CoveredOn p q a lo hi σlo σhi := by
   simp only [fiberCheckCert, Bool.and_eq_true, decide_eq_true_eq] at h
   obtain ⟨⟨⟨hp, hq⟩, ha⟩, h⟩ := h
-  intro lam c1 c2 c3 c4 σ h0 hd hlo hhi hc12 hc12' hc34 hc34' hσ
+  intro lam c1 c2 c3 c4 σ h0 hd hlo hhi hσlo hσhi hc12 hc12' hc34 hc34' hσ
   obtain ⟨c, hc⟩ := certOK_sound _ _ h _
-    (mem_fiberCases hp hq ha h0 hd hlo hhi hc12 hc12' hc34 hc34' hσ)
+    (mem_fiberCases hp hq ha h0 hd hlo hhi hσlo hσhi hc12 hc12' hc34 hc34' hσ)
   exact certStep_sound hc
 
 end Descent

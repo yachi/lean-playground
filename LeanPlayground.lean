@@ -54,3 +54,10 @@ import LeanPlayground.PerfectCuboid.Fibers.F_644_725
 import LeanPlayground.PerfectCuboid.Fibers.F_56_785
 import LeanPlayground.PerfectCuboid.Fibers.F_736_785
 import LeanPlayground.PerfectCuboid.Fibers.F_432_793
+import LeanPlayground.PerfectCuboid.Fibers.F_96_265
+import LeanPlayground.PerfectCuboid.Fibers.F_336_505
+import LeanPlayground.PerfectCuboid.Fibers.F_396_565
+import LeanPlayground.PerfectCuboid.Fibers.F_336_625
+import LeanPlayground.PerfectCuboid.Fibers.F_400_689
+import LeanPlayground.PerfectCuboid.Fibers.F_684_1525
+import LeanPlayground.PerfectCuboid.FiberList

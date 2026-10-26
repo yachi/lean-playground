@@ -53,8 +53,11 @@ This is the descent of `FiberTwoOne` with `4, 5` replaced by `p, q`.
    The new `|e'|` is compared with `|e|` through three bounds: `4 (k₁k₂)² ≤ p² e²` and
    `(j₁j₂)² ≤ q² e²` from step 1, and `(αβγδ)² ≤ e²`, because `αβγδ` divides both `k₁k₂ ∣ pe` and
    `j₁j₂ ∣ qe`, and `gcd(p, q) = 1`. Each family gives `X e'² ≤ Y (αβγδ)²` for explicit `X, Y`,
-   and the checker (`boundOK`) tests that one of the three bounds then gives `e'² < e²`. So `|e|`
-   always decreases.
+   and the checker (`boundOK`) tests that one of the three bounds then gives `e'² < e²`. For
+   family QK there is a second route (`sq_lt_of_large`): `F² e'² ≤ 2 w_n² (k₁² + k₂²)`, which is
+   below `F² (αβγδ)²` as soon as `F |γδ| > 2 w_n c₁` and `F |αβ| > 2 w_n c₂`; the remaining
+   `(β, γ)` lie in a finite box that the kernel searches (`smallCheck`), using `E₁`, `E₂` and
+   `k₁² ≠ k₂²`. So `|e|` always decreases.
 
    The method can only work when the `2`-Selmer group of the curve is the image of the torsion
    (rank `0` and `Ш[2] = 0`): a tuple from a point of infinite order or from `Ш` is neither a
@@ -463,6 +466,9 @@ theorem quadD_step {p q L c1 c2 c3 c4 σ α β γ δ wn wd h F : ℤ}
   rw [e1, e2, G3']
   linarith
 
+theorem sub_sq_le_two_mul {x y : ℤ} : (x - y) ^ 2 ≤ 2 * (x ^ 2 + y ^ 2) := by
+  nlinarith [sq_nonneg (x + y)]
+
 /-- **Family QK**, the same point as QD written differently. With `q = F q_F` and `w_n = F w_F`,
 the new solution is `M' = q_F w_d (j₁ + j₂)`, `e' = w_F (k₁ − k₂)`; both
 `(σ w_d F)² (M'² + p² e'²)` and `(σ w_d F)² (M'² + q² e'²)` are squares. If `k₁k₂ ≥ 0`, then
@@ -478,7 +484,8 @@ theorem quadK_core {p q L c1 c2 c3 c4 σ α β γ δ wn wd h F qF wF : ℤ}
     (hqF : q = F * qF) (hwF : wn = F * wF) (hk1 : c1 * (α * β) ≠ 0) (hk2 : c2 * (γ * δ) ≠ 0)
     (hsign : 0 ≤ c1 * (α * β) * (c2 * (γ * δ))) :
     ∃ M e r s, IsSol p q M e r s ∧
-      F ^ 2 * e ^ 2 < wn ^ 2 * (c1 * c2) ^ 2 * (α * β * (γ * δ)) ^ 2 := by
+      F ^ 2 * e ^ 2 < wn ^ 2 * (c1 * c2) ^ 2 * (α * β * (γ * δ)) ^ 2 ∧
+      F ^ 2 * e ^ 2 ≤ 2 * wn ^ 2 * ((c1 * (α * β)) ^ 2 + (c2 * (γ * δ)) ^ 2) := by
   have hO : wn ^ 2 * p = wd ^ 2 * L := by linear_combination p * hwn - L * hwd - hrel
   have hw : wn ^ 2 * (c1 * c2) = wd ^ 2 * (c3 * c4) := by
     linear_combination (c1 * c2) * hwn - (c3 * c4) * hwd
@@ -538,7 +545,13 @@ theorem quadK_core {p q L c1 c2 c3 c4 σ α β γ δ wn wd h F qF wF : ℤ}
     (s0 := q * h * wn * wd * (c1 * c4 * β ^ 2 + c2 * c3 * γ ^ 2))
     (by positivity) (by positivity) (mul_ne_zero (mul_ne_zero hqF0 hwd0) hj)
     (mul_ne_zero hwF0 hk) (by rw [← G1, hqF, hwF]; ring) (by rw [← G2, hqF, hwF]; ring)
-  refine ⟨_, _, r, s, hsol, ?_⟩
+  refine ⟨_, _, r, s, hsol, ?_, ?_⟩
+  swap
+  · calc F ^ 2 * (wF * (c1 * (α * β) - c2 * (γ * δ))) ^ 2 =
+        wn ^ 2 * (c1 * (α * β) - c2 * (γ * δ)) ^ 2 := by rw [hwF]; ring
+      _ ≤ wn ^ 2 * (2 * ((c1 * (α * β)) ^ 2 + (c2 * (γ * δ)) ^ 2)) :=
+        mul_le_mul_of_nonneg_left sub_sq_le_two_mul (sq_nonneg _)
+      _ = 2 * wn ^ 2 * ((c1 * (α * β)) ^ 2 + (c2 * (γ * δ)) ^ 2) := by ring
   have hX := one_le_sq hk1
   have hY := one_le_sq hk2
   have hXY1 : 1 ≤ c1 * (α * β) * (c2 * (γ * δ)) := by
@@ -562,15 +575,28 @@ theorem quadK_step {p q L c1 c2 c3 c4 σ α β γ δ wn wd h F qF wF : ℤ}
     (hL : 0 < L) (hq : 0 < q) (hσ : 0 < σ) (hwn0 : wn ≠ 0) (hwd0 : wd ≠ 0)
     (hqF : q = F * qF) (hwF : wn = F * wF) (hk1 : c1 * (α * β) ≠ 0) (hk2 : c2 * (γ * δ) ≠ 0) :
     ∃ M e r s, IsSol p q M e r s ∧
-      F ^ 2 * e ^ 2 < wn ^ 2 * (c1 * c2) ^ 2 * (α * β * (γ * δ)) ^ 2 := by
+      F ^ 2 * e ^ 2 < wn ^ 2 * (c1 * c2) ^ 2 * (α * β * (γ * δ)) ^ 2 ∧
+      F ^ 2 * e ^ 2 ≤ 2 * wn ^ 2 * ((c1 * (α * β)) ^ 2 + (c2 * (γ * δ)) ^ 2) := by
   rcases le_total 0 (c1 * (α * β) * (c2 * (γ * δ))) with hs | hs
   · exact quadK_core hrel E1 E2 hne hwn hwd hh hL hq hσ hwn0 hwd0 hqF hwF hk1 hk2 hs
-  · obtain ⟨M, e, r, s, hsol, hlt⟩ := quadK_core (δ := -δ) hrel (by rwa [neg_sq]) E2
+  · obtain ⟨M, e, r, s, hsol, hlt, hle⟩ := quadK_core (δ := -δ) hrel (by rwa [neg_sq]) E2
       (by rwa [mul_neg, mul_neg, neg_sq]) hwn hwd hh hL hq hσ hwn0 hwd0 hqF hwF hk1
       (by rwa [mul_neg, mul_neg, neg_ne_zero])
       (by linarith [show c1 * (α * β) * (c2 * (γ * -δ)) =
         -(c1 * (α * β) * (c2 * (γ * δ))) by ring])
-    exact ⟨M, e, r, s, hsol, by rwa [mul_neg, mul_neg, neg_sq] at hlt⟩
+    exact ⟨M, e, r, s, hsol, by rwa [mul_neg, mul_neg, neg_sq] at hlt,
+      by rwa [mul_neg, mul_neg, neg_sq] at hle⟩
+
+/-- The new solution of family QK is smaller than `αβγδ` as soon as `F |γδ| > 2 w_n c₁` and
+`F |αβ| > 2 w_n c₂`: then `2 w_n² ((c₁αβ)² + (c₂γδ)²) < F² (αβγδ)²`. -/
+theorem sq_lt_of_large {u v wn F c1 c2 : ℤ} (hu : u ≠ 0) (hv : v ≠ 0)
+    (h1 : (2 * wn * c1) ^ 2 < v ^ 2 * F ^ 2) (h2 : (2 * wn * c2) ^ 2 < u ^ 2 * F ^ 2) :
+    2 * wn ^ 2 * ((c1 * u) ^ 2 + (c2 * v) ^ 2) < F ^ 2 * (u * v) ^ 2 := by
+  have hu2 : 0 < u ^ 2 := by positivity
+  have hv2 : 0 < v ^ 2 := by positivity
+  have a := mul_lt_mul_of_pos_right h1 hu2
+  have b := mul_lt_mul_of_pos_right h2 hv2
+  nlinarith [a, b]
 
 /-! ### Soundness of the torsion families -/
 
@@ -718,25 +744,101 @@ theorem torsionOK1_sound {p q a lam c1 c2 c3 c4 σ : ℕ}
     · push_cast [Nat.cast_sub hpq.le]
       exact hlt
   · -- family QK
-    simp only [quadKOK, Bool.and_eq_true] at h
+    simp only [quadKOK, Bool.and_eq_true, Bool.or_eq_true] at h
     obtain ⟨⟨⟨h1, h2⟩, h3⟩, hb⟩ := h
     have hwd := natCast_sqrt_sq h1
     have hwn := natCast_sqrt_sq h2
     have hh := natCast_sqrt_sq h3
     push_cast [Nat.cast_sub hpq.le] at hwd hwn hh
+    have hF : 0 < Nat.gcd q (Nat.sqrt (c3 * c4)) := Nat.gcd_pos_of_pos_left _ hq
     obtain ⟨qF, hqF⟩ := Nat.gcd_dvd_left q (Nat.sqrt (c3 * c4))
     obtain ⟨wF, hwF⟩ := Nat.gcd_dvd_right q (Nat.sqrt (c3 * c4))
-    obtain ⟨M', e', r', s', hsol, hlt⟩ := quadK_step (F := (Nat.gcd q (Nat.sqrt (c3 * c4)) : ℤ))
+    obtain ⟨M', e', r', s', hsol, hlt, hle⟩ :=
+      quadK_step (F := (Nat.gcd q (Nat.sqrt (c3 * c4)) : ℤ))
       (qF := qF) (wF := wF) hrel E1 E2 hne hwn hwd hh.symm hlamZ hqZ hσZ
       (ne_zero_of_sq_eq hwn (by positivity)) (ne_zero_of_sq_eq hwd (by positivity))
       (by exact_mod_cast hqF) (by exact_mod_cast hwF)
       (mul_ne_zero hc1Z.ne' (mul_ne_zero hα hβ)) (mul_ne_zero hc2Z.ne' (mul_ne_zero hγ hδ))
-    refine ⟨M', e', r', s', hsol, fin hb (pow_pos (Nat.gcd_pos_of_pos_left _ hq) 2) ?_
-      fun _ ↦ ?_⟩
-    · push_cast
-      exact hlt.le
-    · push_cast
-      exact hlt
+    refine ⟨M', e', r', s', hsol, ?_⟩
+    rcases hb with hb | hb
+    · exact fin hb (pow_pos hF 2) (by push_cast; exact hlt.le) fun _ ↦ by push_cast; exact hlt
+    -- the small box of QK
+    simp only [decide_eq_true_eq] at hb
+    obtain ⟨-, hb⟩ := hb
+    have hγδ : γ.natAbs ≤ (γ * δ).natAbs := by
+      rw [Int.natAbs_mul]
+      exact Nat.le_mul_of_pos_right _ (Int.natAbs_pos.mpr hδ)
+    have hαβ : β.natAbs ≤ (α * β).natAbs := by
+      rw [Int.natAbs_mul]
+      exact Nat.le_mul_of_pos_left _ (Int.natAbs_pos.mpr hα)
+    -- the natural-number forms of `E1`, `E2`
+    have e1 : lam * c1 ^ 2 * β.natAbs ^ 2 < q * c3 ^ 2 * γ.natAbs ^ 2 := by
+      have : ((lam * c1 ^ 2 * β.natAbs ^ 2 : ℕ) : ℤ) < ((q * c3 ^ 2 * γ.natAbs ^ 2 : ℕ) : ℤ) := by
+        push_cast
+        simp only [sq_abs]
+        have : 0 < (σ : ℤ) * δ ^ 2 := by positivity
+        linarith
+      exact_mod_cast this
+    have e2 : lam * c2 ^ 2 * γ.natAbs ^ 2 < q * c4 ^ 2 * β.natAbs ^ 2 := by
+      have : ((lam * c2 ^ 2 * γ.natAbs ^ 2 : ℕ) : ℤ) < ((q * c4 ^ 2 * β.natAbs ^ 2 : ℕ) : ℤ) := by
+        push_cast
+        simp only [sq_abs]
+        have : 0 < (σ : ℤ) * α ^ 2 := by positivity
+        linarith
+      exact_mod_cast this
+    by_cases hbig : 2 * Nat.sqrt (c3 * c4) * c1 / Nat.gcd q (Nat.sqrt (c3 * c4)) < (γ * δ).natAbs ∧
+        2 * Nat.sqrt (c3 * c4) * c2 / Nat.gcd q (Nat.sqrt (c3 * c4)) < (α * β).natAbs
+    · -- large variables: `F² e'² ≤ 2 w_n² (k₁² + k₂²) < F² (αβγδ)² ≤ F² e²`
+      obtain ⟨hg, ha⟩ := hbig
+      rw [Nat.div_lt_iff_lt_mul hF] at hg ha
+      have hg' : (2 * (Nat.sqrt (c3 * c4) : ℤ) * c1) ^ 2 <
+          (γ * δ) ^ 2 * (Nat.gcd q (Nat.sqrt (c3 * c4)) : ℤ) ^ 2 := by
+        have h' : (((2 * Nat.sqrt (c3 * c4) * c1) ^ 2 : ℕ) : ℤ) <
+            (((γ * δ).natAbs * Nat.gcd q (Nat.sqrt (c3 * c4))) ^ 2 : ℕ) := by
+          exact_mod_cast Nat.pow_lt_pow_left hg two_ne_zero
+        push_cast at h'
+        simp only [mul_pow, sq_abs] at h'
+        linarith
+      have ha' : (2 * (Nat.sqrt (c3 * c4) : ℤ) * c2) ^ 2 <
+          (α * β) ^ 2 * (Nat.gcd q (Nat.sqrt (c3 * c4)) : ℤ) ^ 2 := by
+        have h' : (((2 * Nat.sqrt (c3 * c4) * c2) ^ 2 : ℕ) : ℤ) <
+            (((α * β).natAbs * Nat.gcd q (Nat.sqrt (c3 * c4))) ^ 2 : ℕ) := by
+          exact_mod_cast Nat.pow_lt_pow_left ha two_ne_zero
+        push_cast at h'
+        simp only [mul_pow, sq_abs] at h'
+        linarith
+      have key := sq_lt_of_large (mul_ne_zero hα hβ) (mul_ne_zero hγ hδ) hg' ha'
+      have hFZ : (0 : ℤ) < (Nat.gcd q (Nat.sqrt (c3 * c4)) : ℤ) ^ 2 := by positivity
+      exact lt_of_lt_of_le (lt_of_mul_lt_mul_left (hle.trans_lt key) hFZ.le) B3
+    · -- small variables: `(β, γ)` lie in the box, which `smallCheck` has searched
+      exfalso
+      rw [not_and_or] at hbig
+      simp only [not_lt] at hbig
+      rcases hbig with hg | ha
+      · refine smallCheck_sound hb hσ E1 E2 hne hα hβ hγ hδ ?_ ?_
+        · unfold quadKBoxβ
+          refine le_trans ?_ (le_max_left _ _)
+          rw [Nat.le_sqrt, Nat.le_div_iff_mul_le (by positivity)]
+          have : q * c3 ^ 2 * γ.natAbs ^ 2 ≤
+              q * c3 ^ 2 * (2 * Nat.sqrt (c3 * c4) * c1 / Nat.gcd q (Nat.sqrt (c3 * c4))) ^ 2 := by
+            gcongr
+            exact hγδ.trans hg
+          calc β.natAbs * β.natAbs * (lam * c1 ^ 2) = lam * c1 ^ 2 * β.natAbs ^ 2 := by ring
+            _ ≤ _ := e1.le.trans this
+        · unfold quadKBoxγ
+          exact le_trans (hγδ.trans hg) (le_max_left _ _)
+      · refine smallCheck_sound hb hσ E1 E2 hne hα hβ hγ hδ ?_ ?_
+        · unfold quadKBoxβ
+          exact le_trans (hαβ.trans ha) (le_max_right _ _)
+        · unfold quadKBoxγ
+          refine le_trans ?_ (le_max_right _ _)
+          rw [Nat.le_sqrt, Nat.le_div_iff_mul_le (by positivity)]
+          have : q * c4 ^ 2 * β.natAbs ^ 2 ≤
+              q * c4 ^ 2 * (2 * Nat.sqrt (c3 * c4) * c2 / Nat.gcd q (Nat.sqrt (c3 * c4))) ^ 2 := by
+            gcongr
+            exact hαβ.trans ha
+          calc γ.natAbs * γ.natAbs * (lam * c2 ^ 2) = lam * c2 ^ 2 * γ.natAbs ^ 2 := by ring
+            _ ≤ _ := e2.le.trans this
 
 /-- **Soundness of `torsionOK`**: `torsionOK1_sound`, possibly after the symmetry
 `(α, β, γ, δ, c₁, c₂, c₃, c₄) ↦ (δ, γ, β, α, c₂, c₁, c₄, c₃)`. -/
@@ -865,7 +967,13 @@ theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
       exact dvd_add (dvd_mul_of_dvd_right hpe _) (dvd_mul_of_dvd_right hqe _)
     exact Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdiv h.2.1)
   have hLd' : L ∣ p * q := by exact_mod_cast hLd
-  rcases hchk.cases hp (hp.trans hpq) hL hLd' hc12 hc12' hc34 hc34' hσNd with
+  have ha0 : 0 < a := by
+    rcases Nat.eq_zero_or_pos a with rfl | ha0
+    · have := Nat.pow_lt_pow_left hpq two_ne_zero
+      simp at ha
+      omega
+    · exact ha0
+  rcases hchk.cases hp (hp.trans hpq) ha0 hL hLd' hc12 hc12' hc34 hc34' hσNd with
     hT | ⟨N, l, hN, hl, hlN, hT⟩
   · exact torsionOK_sound hT hp hpq hL hσN (Nat.pos_of_ne_zero (by exact_mod_cast hc1))
       (Nat.pos_of_ne_zero (by exact_mod_cast hc2)) (Nat.pos_of_ne_zero (by exact_mod_cast hc3))
