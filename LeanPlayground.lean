@@ -66,3 +66,7 @@ import LeanPlayground.PerfectCuboid.Fibers.F_400_689
 import LeanPlayground.PerfectCuboid.Fibers.F_684_1525
 import LeanPlayground.PerfectCuboid.FiberList
 import LeanPlayground.PerfectCuboid.CongruentRank
+import LeanPlayground.CoverFree.Basic
+import LeanPlayground.CoverFree.Weighted
+import LeanPlayground.CoverFree.Main
+import LeanPlayground.CoverFree.AffinePlane
