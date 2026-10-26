@@ -260,7 +260,7 @@ def cert_132_157_1 : List Cert :=
    .modulus 3 3, .modulus 11 11, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .torsion,
    .modulus 3 3, .modulus 8 2, .modulus 3 3, .torsion, .modulus 3 3, .modulus 8 2]
 
-theorem coveredOn_132_157_1 : CoveredOn 132 157 85 0 1731055782 :=
+theorem coveredOn_132_157_1 : CoveredOn 132 157 85 0 1731055782 0 3103023171601 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_157_1) (by decide +kernel)
 
 /-- The certificate of the 54 cases with `(λ, c₁, c₃)` from `(628, 1, 157)` to `(628, 3, 1)`. -/
@@ -275,7 +275,7 @@ def cert_132_157_2 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .torsion, .modulus 3 3, .modulus 157 157, .modulus 3 3,
    .torsion, .modulus 3 3, .modulus 157 157]
 
-theorem coveredOn_132_157_2 : CoveredOn 132 157 85 1731055782 1731097232 :=
+theorem coveredOn_132_157_2 : CoveredOn 132 157 85 1731055782 1731097232 0 3103023171601 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_157_2) (by decide +kernel)
 
 /-- The certificate of the 54 cases with `(λ, c₁, c₃)` from `(628, 3, 157)` to `(628, 11, 1)`. -/
@@ -290,7 +290,7 @@ def cert_132_157_3 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .torsion, .modulus 3 3, .modulus 157 157, .modulus 3 3,
    .torsion, .modulus 3 3, .modulus 157 157]
 
-theorem coveredOn_132_157_3 : CoveredOn 132 157 85 1731097232 1731263032 :=
+theorem coveredOn_132_157_3 : CoveredOn 132 157 85 1731097232 1731263032 0 3103023171601 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_157_3) (by decide +kernel)
 
 /-- The certificate of the 54 cases with `(λ, c₁, c₃)` from `(628, 11, 157)` to `(628, 33, 1)`. -/
@@ -305,7 +305,7 @@ def cert_132_157_4 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .torsion, .modulus 3 3, .modulus 157 157, .modulus 3 3,
    .torsion, .modulus 3 3, .modulus 157 157]
 
-theorem coveredOn_132_157_4 : CoveredOn 132 157 85 1731263032 1731718982 :=
+theorem coveredOn_132_157_4 : CoveredOn 132 157 85 1731263032 1731718982 0 3103023171601 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_157_4) (by decide +kernel)
 
 /-- The certificate of the 1161 cases with `(λ, c₁, c₃)` from `(628, 33, 157)` to `(20724, 1, 157)`.
@@ -487,7 +487,7 @@ def cert_132_157_5 : List Cert :=
    .modulus 3 3, .torsion, .modulus 3 3, .modulus 157 157, .modulus 3 3, .torsion, .modulus 3 3,
    .modulus 157 157]
 
-theorem coveredOn_132_157_5 : CoveredOn 132 157 85 1731718982 57126908125 :=
+theorem coveredOn_132_157_5 : CoveredOn 132 157 85 1731718982 57126908125 0 3103023171601 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_157_5) (by decide +kernel)
 
 theorem covered_132_157 : Covered 132 157 85 :=

@@ -508,7 +508,7 @@ def cert_352_377_1 : List Cert :=
    .modulus 5 5, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 5 5, .modulus 4 2, .modulus 4 2,
    .modulus 4 2, .modulus 4 2]
 
-theorem coveredOn_352_377_1 : CoveredOn 352 377 135 0 4871998678 :=
+theorem coveredOn_352_377_1 : CoveredOn 352 377 135 0 4871998678 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_1) (by decide +kernel)
 
 /-- The certificate of the 2961 cases with `(λ, c₁, c₃)` from `(104, 1, 13)` to `(377, 1, 1)`. -/
@@ -958,7 +958,7 @@ def cert_352_377_2 : List Cert :=
    .modulus 13 13, .modulus 4 2, .modulus 8 2, .modulus 13 13, .modulus 4 2, .modulus 4 2,
    .modulus 4 2, .modulus 4 2]
 
-theorem coveredOn_352_377_2 : CoveredOn 352 377 135 4871998678 17660646823 :=
+theorem coveredOn_352_377_2 : CoveredOn 352 377 135 4871998678 17660646823 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_2) (by decide +kernel)
 
 /-- The certificate of the 2457 cases with `(λ, c₁, c₃)` from `(377, 1, 13)` to `(377, 352, 13)`. -/
@@ -1354,7 +1354,7 @@ def cert_352_377_3 : List Cert :=
    .modulus 13 13, .modulus 4 2, .modulus 8 2, .modulus 13 13, .modulus 4 2, .modulus 4 2,
    .modulus 4 2, .modulus 4 2]
 
-theorem coveredOn_352_377_3 : CoveredOn 352 377 135 17660646823 17707226294 :=
+theorem coveredOn_352_377_3 : CoveredOn 352 377 135 17660646823 17707226294 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_3) (by decide +kernel)
 
 /-- The certificate of the 3150 cases with `(λ, c₁, c₃)` from `(377, 352, 29)` to `(754, 11, 377)`.
@@ -1817,7 +1817,7 @@ def cert_352_377_4 : List Cert :=
    .modulus 13 13, .modulus 4 2, .modulus 8 2, .modulus 13 13, .modulus 4 2, .modulus 4 2,
    .modulus 4 2, .modulus 4 2]
 
-theorem coveredOn_352_377_4 : CoveredOn 352 377 135 17707226294 35323151491 :=
+theorem coveredOn_352_377_4 : CoveredOn 352 377 135 17707226294 35323151491 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_4) (by decide +kernel)
 
 /-- The certificate of the 3213 cases with `(λ, c₁, c₃)` from `(754, 16, 1)` to `(1508, 8, 1)`. -/
@@ -2285,7 +2285,7 @@ def cert_352_377_5 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3,
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3]
 
-theorem coveredOn_352_377_5 : CoveredOn 352 377 135 35323151491 70643118073 :=
+theorem coveredOn_352_377_5 : CoveredOn 352 377 135 35323151491 70643118073 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_5) (by decide +kernel)
 
 /-- The certificate of the 2520 cases with `(λ, c₁, c₃)` from `(1508, 8, 13)` to `(2552, 4, 1)`. -/
@@ -2661,7 +2661,7 @@ def cert_352_377_6 : List Cert :=
    .modulus 8 2, .modulus 8 2, .modulus 4 2, .modulus 4 2, .modulus 8 2, .modulus 8 2, .modulus 4 2,
    .modulus 8 2, .modulus 8 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2]
 
-theorem coveredOn_352_377_6 : CoveredOn 352 377 135 70643118073 119548626329 :=
+theorem coveredOn_352_377_6 : CoveredOn 352 377 135 70643118073 119548626329 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_6) (by decide +kernel)
 
 /-- The certificate of the 3276 cases with `(λ, c₁, c₃)` from `(2552, 4, 29)` to `(4147, 1, 1)`. -/
@@ -3139,7 +3139,7 @@ def cert_352_377_7 : List Cert :=
    .modulus 4 2, .modulus 8 2, .modulus 27 3, .modulus 4 2, .modulus 4 2, .modulus 4 2,
    .modulus 4 2]
 
-theorem coveredOn_352_377_7 : CoveredOn 352 377 135 119548626329 194265787873 :=
+theorem coveredOn_352_377_7 : CoveredOn 352 377 135 119548626329 194265787873 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_7) (by decide +kernel)
 
 /-- The certificate of the 2835 cases with `(λ, c₁, c₃)` from `(4147, 1, 13)` to `(6032, 2, 13)`. -/
@@ -3578,7 +3578,7 @@ def cert_352_377_8 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3,
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3]
 
-theorem coveredOn_352_377_8 : CoveredOn 352 377 135 194265787873 282568491119 :=
+theorem coveredOn_352_377_8 : CoveredOn 352 377 135 194265787873 282568491119 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_8) (by decide +kernel)
 
 /-- The certificate of the 2646 cases with `(λ, c₁, c₃)` from `(6032, 2, 29)` to `(8294, 1, 377)`.
@@ -3993,7 +3993,7 @@ def cert_352_377_9 : List Cert :=
    .modulus 13 13, .modulus 4 2, .modulus 8 2, .modulus 13 13, .modulus 4 2, .modulus 4 2,
    .modulus 4 2, .modulus 4 2]
 
-theorem coveredOn_352_377_9 : CoveredOn 352 377 135 282568491119 388533433591 :=
+theorem coveredOn_352_377_9 : CoveredOn 352 377 135 282568491119 388533433591 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_9) (by decide +kernel)
 
 /-- The certificate of the 3150 cases with `(λ, c₁, c₃)` from `(8294, 16, 1)` to `(16588, 1, 377)`.
@@ -4453,7 +4453,7 @@ def cert_352_377_10 : List Cert :=
    .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2,
    .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2]
 
-theorem coveredOn_352_377_10 : CoveredOn 352 377 135 388533433591 777063682261 :=
+theorem coveredOn_352_377_10 : CoveredOn 352 377 135 388533433591 777063682261 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_10) (by decide +kernel)
 
 /-- The certificate of the 3213 cases with `(λ, c₁, c₃)` from `(16588, 8, 1)` to `(66352, 2, 1)`. -/
@@ -4926,7 +4926,7 @@ def cert_352_377_11 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3,
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3]
 
-theorem coveredOn_352_377_11 : CoveredOn 352 377 135 777063682261 3108250747903 :=
+theorem coveredOn_352_377_11 : CoveredOn 352 377 135 777063682261 3108250747903 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_11) (by decide +kernel)
 
 /-- The certificate of the 1323 cases with `(λ, c₁, c₃)` from `(66352, 2, 13)` to
@@ -5127,7 +5127,8 @@ def cert_352_377_12 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3,
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3]
 
-theorem coveredOn_352_377_12 : CoveredOn 352 377 135 3108250747903 6216547809825 :=
+theorem coveredOn_352_377_12 :
+    CoveredOn 352 377 135 3108250747903 6216547809825 0 320948658201601 :=
   coveredOn_of_fiberCheckCert (cert := cert_352_377_12) (by decide +kernel)
 
 theorem covered_352_377 : Covered 352 377 135 :=

@@ -35,7 +35,7 @@ namespace PerfectCuboid
 
 namespace Descent
 
-/-! ### The fiber `(m, n) = (9, 4)`: `(p, q, a) = (72, 97, 65)`, 2205 cases, 124 torsion -/
+/-! ### The fiber `(m, n) = (9, 4)`: `(p, q, a) = (72, 97, 65)`, 2205 cases, 132 torsion -/
 
 /-- The certificate of the 450 cases with `(λ, c₁, c₃)` from `(1, 1, 1)` to `(97, 9, 1)`. -/
 def cert_seventytwo_ninetyseven_1 : List Cert :=
@@ -44,56 +44,47 @@ def cert_seventytwo_ninetyseven_1 : List Cert :=
    .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 5 5,
    .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 5 5,
    .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5,
-   .modulus 5 5, .modulus 4 2, .modulus 3 3, .torsion, .modulus 4 2, .modulus 3 3, .modulus 3 3,
-   .torsion, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .torsion, .modulus 4 2,
-   .modulus 3 3, .modulus 3 3, .torsion, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3,
-   .torsion, .modulus 4 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 4 2, .modulus 4 2,
-   .modulus 4 2, .modulus 3 3, .torsion, .modulus 4 2, .modulus 3 3, .modulus 3 3, .torsion,
-   .modulus 4 2, .modulus 4 2, .modulus 13 13, .modulus 3 3, .modulus 13 13, .modulus 8 2,
-   .modulus 3 3, .modulus 3 3, .modulus 13 13, .modulus 8 2, .modulus 13 13, .modulus 13 13,
+   .modulus 5 5, .torsion, .modulus 3 3, .torsion, .modulus 4 2, .modulus 3 3, .modulus 3 3,
+   .torsion, .modulus 4 2, .torsion, .torsion, .modulus 3 3, .torsion, .modulus 4 2, .modulus 3 3,
+   .modulus 3 3, .torsion, .modulus 4 2, .torsion, .torsion, .modulus 3 3, .torsion, .modulus 4 2,
+   .modulus 3 3, .modulus 3 3, .torsion, .modulus 4 2, .torsion, .torsion, .modulus 3 3, .torsion,
+   .modulus 4 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 4 2, .torsion, .modulus 13 13,
    .modulus 3 3, .modulus 13 13, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 13 13,
    .modulus 8 2, .modulus 13 13, .modulus 13 13, .modulus 3 3, .modulus 13 13, .modulus 8 2,
    .modulus 3 3, .modulus 3 3, .modulus 13 13, .modulus 8 2, .modulus 13 13, .modulus 13 13,
    .modulus 3 3, .modulus 13 13, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 13 13,
-   .modulus 8 2, .modulus 13 13, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5,
+   .modulus 8 2, .modulus 13 13, .modulus 13 13, .modulus 3 3, .modulus 13 13, .modulus 8 2,
+   .modulus 3 3, .modulus 3 3, .modulus 13 13, .modulus 8 2, .modulus 13 13, .modulus 5 5,
+   .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5,
+   .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 3 3,
+   .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5,
    .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 3 3,
+   .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5,
+   .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2,
+   .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3,
+   .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2,
+   .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2,
+   .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2,
+   .modulus 4 2, .torsion, .modulus 3 3, .torsion, .modulus 8 2, .modulus 3 3, .modulus 3 3,
+   .torsion, .modulus 8 2, .torsion, .torsion, .modulus 3 3, .torsion, .modulus 8 2, .modulus 3 3,
+   .modulus 3 3, .torsion, .modulus 8 2, .torsion, .modulus 5 5, .modulus 3 3, .modulus 5 5,
+   .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 5 5,
+   .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5,
+   .modulus 5 5, .modulus 8 2, .modulus 3 3, .modulus 8 2, .modulus 8 2, .modulus 3 3, .modulus 3 3,
+   .modulus 8 2, .modulus 8 2, .modulus 8 2, .modulus 8 2, .modulus 3 3, .modulus 8 2, .modulus 8 2,
+   .modulus 3 3, .modulus 3 3, .modulus 8 2, .modulus 8 2, .modulus 8 2, .modulus 8 2, .modulus 3 3,
+   .modulus 8 2, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 8 2, .modulus 8 2, .modulus 8 2,
+   .modulus 8 2, .modulus 3 3, .modulus 8 2, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 8 2,
+   .modulus 8 2, .modulus 8 2, .torsion, .modulus 3 3, .torsion, .modulus 4 2, .modulus 3 3,
+   .modulus 3 3, .torsion, .modulus 4 2, .torsion, .torsion, .modulus 3 3, .torsion, .modulus 4 2,
+   .modulus 3 3, .modulus 3 3, .torsion, .modulus 4 2, .torsion, .modulus 5 5, .modulus 3 3,
    .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5,
    .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5,
    .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 3 3,
-   .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 4 2, .modulus 3 3, .modulus 4 2,
-   .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2,
-   .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2,
-   .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3,
-   .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 4 2,
-   .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2, .torsion, .modulus 3 3,
-   .torsion, .modulus 8 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 8 2, .torsion, .torsion,
-   .modulus 3 3, .torsion, .modulus 8 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 8 2,
-   .torsion, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 3 3,
-   .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5,
-   .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 8 2, .modulus 3 3,
-   .modulus 8 2, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 8 2, .modulus 8 2, .modulus 8 2,
-   .modulus 8 2, .modulus 3 3, .modulus 8 2, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 8 2,
-   .modulus 8 2, .modulus 8 2, .modulus 8 2, .modulus 3 3, .modulus 8 2, .modulus 8 2, .modulus 3 3,
-   .modulus 3 3, .modulus 8 2, .modulus 8 2, .modulus 8 2, .modulus 8 2, .modulus 3 3, .modulus 8 2,
-   .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 8 2, .modulus 8 2, .modulus 8 2, .torsion,
-   .modulus 3 3, .torsion, .modulus 4 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 4 2,
-   .torsion, .torsion, .modulus 3 3, .torsion, .modulus 4 2, .modulus 3 3, .modulus 3 3, .torsion,
-   .modulus 4 2, .torsion, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 3 3,
    .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 5 5,
-   .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5, .modulus 5 5,
-   .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5,
-   .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 3 3,
-   .modulus 5 5, .modulus 5 5, .modulus 5 5, .torsion, .modulus 3 3, .torsion, .modulus 8 2,
-   .modulus 3 3, .modulus 3 3, .torsion, .modulus 8 2, .torsion, .modulus 97 97, .modulus 3 3,
-   .modulus 97 97, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 97 97, .modulus 8 2,
-   .modulus 97 97, .torsion, .modulus 97 97, .modulus 3 3, .torsion, .modulus 8 2, .modulus 3 3,
-   .modulus 3 3, .modulus 97 97, .modulus 8 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 3 3,
-   .modulus 97 97, .modulus 8 2, .torsion, .modulus 8 2, .modulus 97 97, .modulus 97 97,
-   .modulus 3 3, .modulus 97 97, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 97 97,
-   .modulus 8 2, .modulus 97 97, .torsion, .modulus 97 97, .modulus 3 3, .torsion, .modulus 8 2,
-   .modulus 3 3, .modulus 3 3, .modulus 97 97, .modulus 8 2, .modulus 3 3, .modulus 3 3, .torsion,
-   .modulus 3 3, .modulus 97 97, .modulus 8 2, .torsion, .modulus 8 2, .modulus 97 97,
-   .modulus 97 97, .modulus 3 3, .modulus 97 97, .modulus 8 2, .modulus 3 3, .modulus 3 3,
+   .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 5 5, .torsion,
+   .modulus 3 3, .torsion, .modulus 8 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 8 2,
+   .torsion, .modulus 97 97, .modulus 3 3, .modulus 97 97, .modulus 8 2, .modulus 3 3, .modulus 3 3,
    .modulus 97 97, .modulus 8 2, .modulus 97 97, .torsion, .modulus 97 97, .modulus 3 3, .torsion,
    .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 97 97, .modulus 8 2, .modulus 3 3,
    .modulus 3 3, .torsion, .modulus 3 3, .modulus 97 97, .modulus 8 2, .torsion, .modulus 8 2,
@@ -105,9 +96,17 @@ def cert_seventytwo_ninetyseven_1 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 97 97, .modulus 8 2, .modulus 97 97, .torsion,
    .modulus 97 97, .modulus 3 3, .torsion, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 97 97,
    .modulus 8 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 3 3, .modulus 97 97, .modulus 8 2,
+   .torsion, .modulus 8 2, .modulus 97 97, .modulus 97 97, .modulus 3 3, .modulus 97 97,
+   .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 97 97, .modulus 8 2, .modulus 97 97, .torsion,
+   .modulus 97 97, .modulus 3 3, .torsion, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 97 97,
+   .modulus 8 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 3 3, .modulus 97 97, .modulus 8 2,
+   .torsion, .modulus 8 2, .modulus 97 97, .modulus 97 97, .modulus 3 3, .modulus 97 97,
+   .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 97 97, .modulus 8 2, .modulus 97 97, .torsion,
+   .modulus 97 97, .modulus 3 3, .torsion, .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 97 97,
+   .modulus 8 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 3 3, .modulus 97 97, .modulus 8 2,
    .torsion, .modulus 8 2, .modulus 97 97]
 
-theorem coveredOn_seventytwo_ninetyseven_1 : CoveredOn 72 97 65 0 49523747 :=
+theorem coveredOn_seventytwo_ninetyseven_1 : CoveredOn 72 97 65 0 49523747 0 206079681601 :=
   coveredOn_of_fiberCheckCert (cert := cert_seventytwo_ninetyseven_1) (by decide +kernel)
 
 /-- The certificate of the 1080 cases with `(λ, c₁, c₃)` from `(97, 9, 97)` to `(873, 1, 1)`. -/
@@ -269,7 +268,7 @@ def cert_seventytwo_ninetyseven_2 : List Cert :=
    .modulus 8 2, .modulus 3 3, .modulus 3 3, .torsion, .modulus 3 3, .modulus 97 97, .modulus 8 2,
    .torsion, .modulus 8 2, .modulus 97 97]
 
-theorem coveredOn_seventytwo_ninetyseven_2 : CoveredOn 72 97 65 49523747 445154147 :=
+theorem coveredOn_seventytwo_ninetyseven_2 : CoveredOn 72 97 65 49523747 445154147 0 206079681601 :=
   coveredOn_of_fiberCheckCert (cert := cert_seventytwo_ninetyseven_2) (by decide +kernel)
 
 /-- The certificate of the 675 cases with `(λ, c₁, c₃)` from `(873, 1, 97)` to `(6984, 1, 97)`. -/
@@ -376,7 +375,8 @@ def cert_seventytwo_ninetyseven_3 : List Cert :=
    .modulus 3 3, .torsion, .modulus 3 3, .modulus 97 97, .modulus 8 2, .torsion, .modulus 8 2,
    .modulus 97 97]
 
-theorem coveredOn_seventytwo_ninetyseven_3 : CoveredOn 72 97 65 445154147 3561686425 :=
+theorem coveredOn_seventytwo_ninetyseven_3 :
+    CoveredOn 72 97 65 445154147 3561686425 0 206079681601 :=
   coveredOn_of_fiberCheckCert (cert := cert_seventytwo_ninetyseven_3) (by decide +kernel)
 
 theorem covered_seventytwo_ninetyseven : Covered 72 97 65 :=

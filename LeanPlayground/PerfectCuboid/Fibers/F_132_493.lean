@@ -35,7 +35,7 @@ namespace PerfectCuboid
 
 namespace Descent
 
-/-! ### The fiber `(m, n) = (22, 3)`: `(p, q, a) = (132, 493, 475)`, 33075 cases, 300 torsion -/
+/-! ### The fiber `(m, n) = (22, 3)`: `(p, q, a) = (132, 493, 475)`, 33075 cases, 306 torsion -/
 
 /-- The certificate of the 3150 cases with `(λ, c₁, c₃)` from `(1, 1, 1)` to `(51, 44, 17)`. -/
 def cert_132_493_1 : List Cert :=
@@ -336,24 +336,11 @@ def cert_132_493_1 : List Cert :=
    .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3,
    .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2,
    .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5,
-   .modulus 8 2, .modulus 4 2, .torsion, .modulus 3 3, .modulus 3 3, .torsion, .modulus 4 2,
-   .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .torsion, .modulus 8 2, .modulus 3 3,
-   .modulus 8 2, .modulus 8 2, .modulus 4 2, .torsion, .modulus 3 3, .modulus 3 3, .torsion,
-   .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .torsion, .modulus 8 2,
-   .modulus 3 3, .modulus 8 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3,
-   .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2,
-   .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 3 3,
-   .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3,
-   .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 4 2,
-   .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3,
-   .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2,
-   .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3,
-   .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3,
-   .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3,
-   .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2,
-   .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3,
-   .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3,
-   .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2,
+   .torsion, .modulus 4 2, .torsion, .modulus 3 3, .modulus 3 3, .torsion, .modulus 4 2,
+   .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .torsion, .torsion, .modulus 3 3,
+   .torsion, .torsion, .modulus 4 2, .torsion, .modulus 3 3, .modulus 3 3, .torsion, .modulus 4 2,
+   .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .torsion, .torsion, .modulus 3 3,
+   .torsion, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2,
    .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2,
    .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2,
    .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3,
@@ -443,23 +430,23 @@ def cert_132_493_1 : List Cert :=
    .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2,
    .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3,
    .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3,
-   .modulus 4 2, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5,
+   .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2,
+   .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2,
+   .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2,
+   .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3,
+   .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3,
+   .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2,
+   .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 4 2,
+   .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3,
+   .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2,
+   .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2,
+   .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 4 2, .modulus 3 3,
+   .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2,
+   .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2,
+   .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 4 2,
+   .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 5 5, .modulus 3 3,
+   .modulus 5 5, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5,
    .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 5 5,
-   .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3,
-   .modulus 5 5, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5,
-   .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3,
-   .modulus 3 3, .modulus 5 5, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2,
-   .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3,
-   .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5,
-   .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 4 2,
-   .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5,
-   .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5,
-   .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 4 2, .modulus 3 3,
-   .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 5 5,
-   .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3,
-   .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 4 2,
-   .modulus 5 5, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 3 3,
-   .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5,
    .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3,
    .modulus 5 5, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5,
    .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 3 3,
@@ -498,9 +485,22 @@ def cert_132_493_1 : List Cert :=
    .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5,
    .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 4 2,
    .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5,
-   .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5]
+   .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 5 5,
+   .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 4 2, .modulus 3 3,
+   .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 5 5, .modulus 3 3, .modulus 5 5,
+   .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3,
+   .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 4 2,
+   .modulus 5 5, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 3 3,
+   .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5,
+   .modulus 3 3, .modulus 5 5, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3,
+   .modulus 5 5, .modulus 4 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5,
+   .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 3 3,
+   .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3,
+   .modulus 3 3, .modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 4 2, .modulus 5 5,
+   .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3,
+   .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5]
 
-theorem coveredOn_132_493_1 : CoveredOn 132 493 475 0 502069056 :=
+theorem coveredOn_132_493_1 : CoveredOn 132 493 475 0 502069056 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_1) (by decide +kernel)
 
 /-- The certificate of the 3015 cases with `(λ, c₁, c₃)` from `(58, 1, 1)` to `(204, 1, 17)`. -/
@@ -949,7 +949,7 @@ def cert_132_493_2 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3,
    .modulus 5 5, .modulus 3 3, .modulus 5 5]
 
-theorem coveredOn_132_493_2 : CoveredOn 132 493 475 502069056 1766385012 :=
+theorem coveredOn_132_493_2 : CoveredOn 132 493 475 502069056 1766385012 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_2) (by decide +kernel)
 
 /-- The certificate of the 2745 cases with `(λ, c₁, c₃)` from `(204, 11, 1)` to `(493, 11, 1)`. -/
@@ -1366,7 +1366,7 @@ def cert_132_493_3 : List Cert :=
    .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2,
    .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5]
 
-theorem coveredOn_132_493_3 : CoveredOn 132 493 475 1766385012 4267749677 :=
+theorem coveredOn_132_493_3 : CoveredOn 132 493 475 1766385012 4267749677 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_3) (by decide +kernel)
 
 /-- The certificate of the 2970 cases with `(λ, c₁, c₃)` from `(493, 11, 17)` to `(638, 3, 1)`. -/
@@ -1818,7 +1818,7 @@ def cert_132_493_4 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 8 2, .modulus 3 3, .modulus 8 2,
    .modulus 3 3, .modulus 8 2, .modulus 3 3, .modulus 8 2]
 
-theorem coveredOn_132_493_4 : CoveredOn 132 493 475 4267749677 5522239018 :=
+theorem coveredOn_132_493_4 : CoveredOn 132 493 475 4267749677 5522239018 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_4) (by decide +kernel)
 
 /-- The certificate of the 3195 cases with `(λ, c₁, c₃)` from `(638, 3, 29)` to `(986, 11, 493)`. -/
@@ -2285,7 +2285,7 @@ def cert_132_493_5 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3, .modulus 4 2,
    .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2]
 
-theorem coveredOn_132_493_5 : CoveredOn 132 493 475 5522239018 8535499321 :=
+theorem coveredOn_132_493_5 : CoveredOn 132 493 475 5522239018 8535499321 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_5) (by decide +kernel)
 
 /-- The certificate of the 3330 cases with `(λ, c₁, c₃)` from `(986, 22, 1)` to `(1479, 11, 17)`. -/
@@ -2767,7 +2767,7 @@ def cert_132_493_6 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 4 2, .modulus 3 3,
    .modulus 4 2, .modulus 3 3, .modulus 4 2, .modulus 3 3, .modulus 4 2]
 
-theorem coveredOn_132_493_6 : CoveredOn 132 493 475 8535499321 12801817315 :=
+theorem coveredOn_132_493_6 : CoveredOn 132 493 475 8535499321 12801817315 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_6) (by decide +kernel)
 
 /-- The certificate of the 2610 cases with `(λ, c₁, c₃)` from `(1479, 11, 29)` to `(1972, 11, 493)`.
@@ -3176,7 +3176,7 @@ def cert_132_493_7 : List Cert :=
    .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3,
    .modulus 5 5, .modulus 3 3, .modulus 5 5]
 
-theorem coveredOn_132_493_7 : CoveredOn 132 493 475 12801817315 17070282794 :=
+theorem coveredOn_132_493_7 : CoveredOn 132 493 475 12801817315 17070282794 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_7) (by decide +kernel)
 
 /-- The certificate of the 3015 cases with `(λ, c₁, c₃)` from `(1972, 33, 1)` to `(5423, 1, 1)`. -/
@@ -3627,7 +3627,7 @@ def cert_132_493_8 : List Cert :=
    .modulus 4 2, .modulus 17 17, .modulus 3 3, .modulus 11 11, .modulus 3 3, .modulus 17 17,
    .modulus 3 3, .modulus 17 17]
 
-theorem coveredOn_132_493_8 : CoveredOn 132 493 475 17070282794 46937437037 :=
+theorem coveredOn_132_493_8 : CoveredOn 132 493 475 17070282794 46937437037 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_8) (by decide +kernel)
 
 /-- The certificate of the 2835 cases with `(λ, c₁, c₃)` from `(5423, 1, 17)` to `(5916, 11, 17)`.
@@ -4065,7 +4065,7 @@ def cert_132_493_9 : List Cert :=
    .modulus 8 2, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 8 2,
    .modulus 3 3, .modulus 8 2, .modulus 3 3, .modulus 8 2, .modulus 3 3, .modulus 8 2]
 
-theorem coveredOn_132_493_9 : CoveredOn 132 493 475 46937437037 51205121632 :=
+theorem coveredOn_132_493_9 : CoveredOn 132 493 475 46937437037 51205121632 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_9) (by decide +kernel)
 
 /-- The certificate of the 3240 cases with `(λ, c₁, c₃)` from `(5916, 11, 29)` to `(16269, 4, 17)`.
@@ -4535,7 +4535,7 @@ def cert_132_493_10 : List Cert :=
    .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5,
    .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5]
 
-theorem coveredOn_132_493_10 : CoveredOn 132 493 475 51205121632 140812376166 :=
+theorem coveredOn_132_493_10 : CoveredOn 132 493 475 51205121632 140812376166 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_10) (by decide +kernel)
 
 /-- The certificate of the 2835 cases with `(λ, c₁, c₃)` from `(16269, 4, 29)` to `(65076, 1, 29)`.
@@ -4969,11 +4969,10 @@ def cert_132_493_11 : List Cert :=
    .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5,
    .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5]
 
-theorem coveredOn_132_493_11 : CoveredOn 132 493 475 140812376166 563248528886 :=
+theorem coveredOn_132_493_11 : CoveredOn 132 493 475 140812376166 563248528886 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_11) (by decide +kernel)
 
-/-- The certificate of the 135 cases with `(λ, c₁, c₃)` from `(65076, 1, 493)` to `(65076, 1, 493)`.
--/
+/-- The certificate of the 135 cases with `(λ, c₁, c₃)` `(65076, 1, 493)`. -/
 def cert_132_493_12 : List Cert :=
   [.modulus 5 5, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 3 3, .modulus 5 5, .modulus 4 2,
    .modulus 3 3, .modulus 3 3, .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 5 5, .modulus 3 3,
@@ -4996,7 +4995,7 @@ def cert_132_493_12 : List Cert :=
    .modulus 3 3, .modulus 4 2, .modulus 5 5, .modulus 3 3, .modulus 5 5, .modulus 3 3, .modulus 5 5,
    .modulus 3 3, .modulus 5 5]
 
-theorem coveredOn_132_493_12 : CoveredOn 132 493 475 563248528886 563257118557 :=
+theorem coveredOn_132_493_12 : CoveredOn 132 493 475 563248528886 563257118557 0 955496103210001 :=
   coveredOn_of_fiberCheckCert (cert := cert_132_493_12) (by decide +kernel)
 
 theorem covered_132_493 : Covered 132 493 475 :=
