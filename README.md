@@ -28,6 +28,24 @@ lake build
 
 ## Formalizations
 
+### What a complex derivative means — `LeanPlayground/ComplexDerivative/`
+
+Claims from Zundamon's Theorem, [*What Does a Complex Derivative Actually
+Mean?*](https://youtu.be/2-95hN4fgmE) (YouTube, 2026-10-26): near `a`, the derivative acts as the
+multiplier in `Δw ≈ f'(a) Δz`, and multiplying by `r e^{iθ}` scales the plane by `r` and rotates
+it by `θ`. So a complex derivative is a local rotation and scaling.
+
+| Lean | Claim |
+|---|---|
+| `hasDerivAt_iff_sub_mul_isLittleO` | `f(a+h) − f(a) = f'(a) h + o(h)` (and the real version) |
+| `polar_form`, `exp_mul_I_eq`, `polar_mul` | Euler's formula, `α = ‖α‖ e^{i arg α}`, lengths multiply and angles add |
+| `mul_eq_smul_rotation`, `isConformalMap_mul`, `dist_mul_mul` | Multiplying by `α` is a rotation by `arg α` then a scaling by `‖α‖`, keeps angles, and scales distances by `‖α‖` |
+| `sub_rotation_isLittleO_of_hasDerivAt`, `conformalAt_of_hasDerivAt` | Near `a`, `f` is that rotation and scaling up to `o(h)`; conformal when `f'(a) ≠ 0` |
+| `exp_deriv_at_log_add`, `exp_local_scale_rotate`, `exp_deriv_ln_two` | The worked example: `e^z` at `ln r + iθ` scales by `r` and rotates by `θ`; at `ln 2 + iπ/2` the derivative is `2i` |
+
+The transcript does not show the example's formulas on screen, so the file reads it as `e^z` at a
+point built from `ln 2` and proves the general case for every `r > 0` and `θ`.
+
 ### The productegral — `LeanPlayground/Productegral/`
 
 Claims from Sohil Rathi, [*The Missing Calculus Operation*](https://youtu.be/QN680Is4euw)
