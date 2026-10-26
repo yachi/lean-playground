@@ -28,6 +28,30 @@ lake build
 
 ## Formalizations
 
+### The center of a Clifford algebra — `LeanPlayground/CliffordCenter/`
+
+Both propositions of Chris Peters and Hans Sterk, [*On the center of the Clifford
+Algebra*](https://arxiv.org/abs/2610.23323) (arXiv, 2026-10), for Mathlib's `CliffordAlgebra Q`
+over a field `k`. Here `C₀(q)` is Mathlib's `CliffordAlgebra.even Q`.
+
+| Paper | Lean |
+|---|---|
+| Prop 1.1 (char ≠ 2, orthogonal basis `eᵢ` with `q(eᵢ) ≠ 0`, `e = e₁ ⋯ eₙ`): centralizer of `C₀(q)` is `k + ke` | `CliffordCenter.centralizer_even` |
+| Prop 1.1 a): center of `C(q)` is `k` (`n` even), `k + ke` (`n` odd) | `center_eq_bot`, `center_eq_span` |
+| Prop 1.1 b): center of `C₀(q)` is `k` (`n` odd), `k + ke` (`n` even) | `center_even_eq_bot`, `mem_center_even_iff`, `vol_mem_even` |
+| Prop 1.2 (char 2, symplectic basis `eᵢ, fᵢ`, `z = ∑ eᵢfᵢ`): centralizer of `C₀(q)` is `k + kz` | `CliffordCenter.CharTwo.centralizer_even` |
+| Prop 1.2 a): center of `C(q)` is `k` | `CharTwo.center_eq_bot` |
+| Prop 1.2 b): center of `C₀(q)` is `k + kz` | `CharTwo.mem_center_even_iff`, `z_mem_even` |
+| Prop 1.2 c): `z² + z = ∑ q(eᵢ) q(fᵢ)` (the Arf invariant) | `CharTwo.z_mul_z_add_z` |
+
+The proofs differ from the paper's in one respect: they never use that the monomials `e_J` are
+linearly independent, only that they span `C(q)`. For Prop 1.1, averaging over conjugation by
+`eᵢeⱼ` gives a linear map that fixes the centralizer and kills every `e_J` other than `1` and `e`.
+For Prop 1.2, whose degree-by-degree argument the paper only sketches from degree 6 on, the
+proof inducts on the number of blocks `eᵢ, fᵢ`. The coordinates of an element over one block are
+read off with an operator built from a separability idempotent of that block
+(`CliffordCenter.Block.coord_eq_zero`).
+
 ### What a complex derivative means — `LeanPlayground/ComplexDerivative/`
 
 Claims from Zundamon's Theorem, [*What Does a Complex Derivative Actually

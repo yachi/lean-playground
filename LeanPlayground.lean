@@ -1,5 +1,8 @@
 import LeanPlayground.Basic
 import LeanPlayground.ComplexDerivative.Basic
+import LeanPlayground.CliffordCenter.Basic
+import LeanPlayground.CliffordCenter.Block
+import LeanPlayground.CliffordCenter.CharTwo
 import LeanPlayground.Productegral.Defs
 import LeanPlayground.Productegral.Finite
 import LeanPlayground.Productegral.Integrals

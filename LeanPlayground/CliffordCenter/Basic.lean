@@ -230,7 +230,8 @@ theorem pair_mul_self {i j : Fin n} (hij : i ≠ j) :
 
 /-- If `eᵢeⱼ x = t x eᵢeⱼ`, then the averaging map multiplies `x` by `(1 + t)/2`. -/
 theorem avg_apply_of (hQ : ∀ i, Q (v i) ≠ 0) {i j : Fin n} (hij : i ≠ j)
-    {x : CliffordAlgebra Q} {t : k} (hx : ι Q (v i) * ι Q (v j) * x = t • (x * (ι Q (v i) * ι Q (v j)))) :
+    {x : CliffordAlgebra Q} {t : k}
+    (hx : ι Q (v i) * ι Q (v j) * x = t • (x * (ι Q (v i) * ι Q (v j)))) :
     avg Q v i j x = ((1 + t) / 2) • x := by
   simp only [avg, LinearMap.smul_apply, LinearMap.add_apply, LinearMap.id_apply,
     LinearMap.comp_apply, LinearMap.mulLeft_apply, LinearMap.mulRight_apply]
