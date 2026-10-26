@@ -196,6 +196,26 @@ say that an elliptic curve has rank 0 and known torsion. Peschmann checks them f
 with PARI and, via modularity and Kolyvagin's theorem, with modular symbols; Mathlib cannot do
 that, so they stay as explicit hypotheses rather than `sorry`s.
 
+`CongruentRank.lean` takes a different route that applies to every perfect cuboid at once.
+Paulsen and West (Houston J. Math. 48, 2022) map a perfect cuboid to three points on the
+congruent-number curve `E_N : Y² = X³ − N²X`, `N = sf(abcg/2)`, and claim that `E_N` then has
+rank at least two. V. Asiryan, [*On the Rank Condition for Perfect
+Cuboids*](https://arxiv.org/abs/2610.10643) (arXiv, 2026-10), finds a gap in their proof and
+repairs it. The file proves the parts of that argument that Mathlib's group law can reach.
+
+| Paper | Result | Lean |
+|---|---|---|
+| Prop 1 | A perfect cuboid gives three points of `E_N` with `−N < Xᵢ < 0` and `X₁X₂ + X₁X₃ + X₂X₃ = N²` (a positive cuboid configuration), for squarefree `N` with `abcg/2 = Ns²` | `IsPerfectCuboid.exists_config`, `CongruentRank.exists_config`, `cuboid_compat` |
+| Lemma 1 | `±Q₁ ± Q₂ ± Q₃ ≠ S = (0, 0)`. Proved with Vieta's formulas instead of Riemann–Roch: the sum would force `(X₁² − N²)(X₂² − N²)(X₃² − N²) = 0` | `CongruentRank.add_add_ne_S`, `vieta_add` |
+| Prop 2 (the gap) | Replacing `G` by `G + T` swaps the sequences `A_k(G) = kG + ε(k)S` and `B_k(G) = A_k(G) + T` only for odd `k`. For even `k` the swap claimed by Paulsen–West fails for every `G`, and `A_k`, `B_k` never share an `X`-coordinate | `A_add_T_of_odd`, `A_add_T_of_even`, `A_add_T_ne_B_of_even`, `HasX.ne_of_add_T` |
+| §6.1, §6.4 | For the pattern `(aG, bG + T, cG + S + T)` the compatibility condition is `X_aX_b + X_aX_c − X_bX_c + N² = 0` (eq. 24), and `b = a + c` or `c = a + b` contradicts Lemma 1 | `eq24`, `eq24_ne`, `not_pattern` |
+| Thm 1 (rank one) | No positive configuration lies in `ℤG + E_N[2]`, **conditional** on the reduction to the pattern (Lemmas 2, 3) and on the primitive-divisor step (§6.2–6.3) | `not_rankOne`, `RankOneReduction`, `PrimitiveDivisorStep` |
+
+The two hypotheses of `not_rankOne` need tools that Mathlib does not have yet: the formula
+`x(kP) = Φ_k(x)/Ψ²_k(x)` (Mathlib has the division polynomials and their degrees, but not this
+link to the group law), Ingram's primitive-divisor theorem (which needs canonical heights), and
+reduction of points modulo a prime. The rank-zero case also needs `E_N(ℚ)_tors = E_N[2]`.
+
 ## Update Mathlib
 
 ```fish
