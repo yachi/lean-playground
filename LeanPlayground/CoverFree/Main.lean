@@ -1,6 +1,8 @@
 module
 
-public import LeanPlayground.CoverFree.Weighted
+public import LeanPlayground.CoverFree.Stehlik
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.Finite
 
 @[expose] public section
 
@@ -8,7 +10,7 @@ public import LeanPlayground.CoverFree.Weighted
 # The strong Erdős–Frankl–Füredi bound (Theorem 1.1)
 
 An `r`-cover-free family on `n` points with more than `n` members has `n ≥ (r + 1)²`
-(`CoverFree.sq_le_card_of_card_lt`, given Stehlík's theorem).
+(`CoverFree.sq_le_card_of_card_lt`).
 
 As in the paper: the incidence vectors of the members are linearly dependent, so
 `∑_{A ∈ P} a_A 1_A = ∑_{B ∈ N} b_B 1_B` with positive coefficients on disjoint subfamilies
@@ -27,7 +29,7 @@ variable {α : Type*} [DecidableEq α] [Fintype α]
 
 /-- The core of Theorem 1.1, for a linear relation `∑_{A ∈ F} g_A 1_A = 0` whose positive part
 `a` is at least its negative part `b`. -/
-theorem sq_le_card_of_relation (hst : StehlikBound α) {r : ℕ} {F : Finset (Finset α)}
+theorem sq_le_card_of_relation {r : ℕ} {F : Finset (Finset α)}
     (hF : IsCoverFree r F) (g : Finset α → ℝ) (hrel : ∀ x, ∑ A ∈ F with x ∈ A, g A = 0)
     {A₀ : Finset α} (hA₀ : A₀ ∈ F) (hgA₀ : g A₀ ≠ 0)
     (hab : ∑ A ∈ F with g A < 0, -g A ≤ ∑ A ∈ F with 0 < g A, g A) :
@@ -82,7 +84,7 @@ theorem sq_le_card_of_relation (hst : StehlikBound α) {r : ℕ} {F : Finset (Fi
       refine mem_erase.2 ⟨fun hBA => ?_, (mem_filter.1 hBN).1⟩
       subst hBA
       linarith [hgP _ hA, hgN _ hBN]
-    have := weighted hst N A w hw0 hw1 hpos
+    have := weighted stehlikBound N A w hw0 hw1 hpos
     calc ((r : ℝ) + 1) ^ 2 ≤ (coverNum N A : ℝ) ^ 2 := by
           gcongr; exact_mod_cast hκ
       _ ≤ ∑ x ∈ A, (weightAt N w x)⁻¹ := this
@@ -131,9 +133,9 @@ lemma ind_injective : Function.Injective (ind (α := α)) := by
   simp only [ind] at this
   split_ifs at this <;> simp_all
 
-/-- **Theorem 1.1** (Hu–Zhang), given Stehlík's theorem: an `r`-cover-free family on `n` points
+/-- **Theorem 1.1** (Hu–Zhang): an `r`-cover-free family on `n` points
 with more than `n` members has `n ≥ (r + 1)²`. -/
-theorem sq_le_card_of_card_lt (hst : StehlikBound α) {r : ℕ} {F : Finset (Finset α)}
+theorem sq_le_card_of_card_lt {r : ℕ} {F : Finset (Finset α)}
     (hF : IsCoverFree r F) (hcard : Fintype.card α < F.card) :
     (r + 1) ^ 2 ≤ Fintype.card α := by
   have ht : Module.finrank ℝ (α → ℝ) < (F.image ind).card := by
@@ -148,8 +150,8 @@ theorem sq_le_card_of_card_lt (hst : StehlikBound α) {r : ℕ} {F : Finset (Fin
       Pi.zero_apply] at this
     rw [sum_filter]; exact this
   rcases le_total (∑ A ∈ F with g A < 0, -g A) (∑ A ∈ F with 0 < g A, g A) with h | h
-  · exact sq_le_card_of_relation hst hF g hrel hA₀ hfv h
-  · refine sq_le_card_of_relation hst hF (fun A => -g A) (fun x => ?_) hA₀ (neg_ne_zero.2 hfv) ?_
+  · exact sq_le_card_of_relation hF g hrel hA₀ hfv h
+  · refine sq_le_card_of_relation hF (fun A => -g A) (fun x => ?_) hA₀ (neg_ne_zero.2 hfv) ?_
     · rw [sum_neg_distrib, hrel, neg_zero]
     · simpa only [neg_neg, neg_lt_zero, neg_pos] using h
 

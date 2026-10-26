@@ -68,5 +68,7 @@ import LeanPlayground.PerfectCuboid.FiberList
 import LeanPlayground.PerfectCuboid.CongruentRank
 import LeanPlayground.CoverFree.Basic
 import LeanPlayground.CoverFree.Weighted
+import LeanPlayground.CoverFree.Partition
+import LeanPlayground.CoverFree.Stehlik
 import LeanPlayground.CoverFree.Main
 import LeanPlayground.CoverFree.AffinePlane

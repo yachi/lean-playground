@@ -1,6 +1,7 @@
 module
 
 public import LeanPlayground.CoverFree.Main
+public import Mathlib.FieldTheory.Finite.GaloisField
 
 @[expose] public section
 
@@ -22,6 +23,7 @@ namespace CoverFree
 open Finset
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
 
 /-- Some `r`-cover-free family on `[n]` has more than `n` members, i.e. `f(n, r) > n`. -/
 def HasLarge (r n : ℕ) : Prop :=
@@ -94,7 +96,8 @@ variable (K : Type*) [Field K] [Fintype K] [DecidableEq K]
 /-- The lines of the affine plane `K²`: `y = m x + c` for `(some m, c)`, and `x = c` for
 `(none, c)`. -/
 def line : Option K × K → Finset (K × K)
-  | (some m, c) => univ.map ⟨fun x => (x, m * x + c), fun x y h => by simpa using congrArg Prod.fst h⟩
+  | (some m, c) =>
+    univ.map ⟨fun x => (x, m * x + c), fun x y h => by simpa using congrArg Prod.fst h⟩
   | (none, c) => univ.map ⟨fun y => (c, y), fun x y h => by simpa using congrArg Prod.snd h⟩
 
 variable {K}
@@ -194,15 +197,14 @@ lemma hasLarge_T (r : ℕ) : HasLarge r (T r) := by
   obtain ⟨p, hp, hp'⟩ := Nat.exists_infinite_primes (r + 1)
   exact Nat.sInf_mem (s := {n | HasLarge r n}) ⟨_, hasLarge_primePow hp'.isPrimePow (by omega)⟩
 
-/-- **Theorem 1.1**, for `T`: `T(r) ≥ (r + 1)²`, given Stehlík's theorem. -/
-theorem sq_le_T (hst : ∀ n, StehlikBound (Fin n)) (r : ℕ) : (r + 1) ^ 2 ≤ T r := by
+/-- **Theorem 1.1**, for `T`: `T(r) ≥ (r + 1)²`. -/
+theorem sq_le_T (r : ℕ) : (r + 1) ^ 2 ≤ T r := by
   obtain ⟨F, hF, hcard⟩ := hasLarge_T r
-  simpa using sq_le_card_of_card_lt (hst _) hF (by simpa using hcard)
+  simpa using sq_le_card_of_card_lt hF (by simpa using hcard)
 
-/-- **Corollary 1.2**: if `r + 1` is a prime power, `T(r) = (r + 1)²`, given Stehlík's
-theorem. -/
-theorem T_eq (hst : ∀ n, StehlikBound (Fin n)) {r : ℕ} (hr : IsPrimePow (r + 1)) :
+/-- **Corollary 1.2**: if `r + 1` is a prime power, `T(r) = (r + 1)²`. -/
+theorem T_eq {r : ℕ} (hr : IsPrimePow (r + 1)) :
     T r = (r + 1) ^ 2 :=
-  le_antisymm (T_le hr (Nat.lt_succ_self r)) (sq_le_T hst r)
+  le_antisymm (T_le hr (Nat.lt_succ_self r)) (sq_le_T r)
 
 end CoverFree

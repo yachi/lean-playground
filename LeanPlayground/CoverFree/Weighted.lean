@@ -1,6 +1,8 @@
 module
 
 public import LeanPlayground.CoverFree.Basic
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Algebra.Order.Star.Real
 
 @[expose] public section
 
@@ -13,7 +15,8 @@ number of `U` by `H` (`CoverFree.weighted`).
 
 The proof is by strong induction on `U`, as in the paper. It uses Stehlík's theorem, in the form
 `CoverFree.StehlikBound`: a critical family with connected graph has `|U| ≥ 2κ - 1`. Here this is
-a hypothesis; `LeanPlayground.CoverFree.Stehlik` proves it.
+a hypothesis here; `CoverFree.stehlikBound` proves it, and `CoverFree.weighted'` is the
+unconditional statement.
 
 Because `coverNum H W` counts members of `H` that need not lie in `W`, restricting to a subset `W`
 keeps the same family and the same weights, and no down-closure is needed.

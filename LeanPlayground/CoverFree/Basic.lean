@@ -1,6 +1,7 @@
 module
 
-public import Mathlib
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Order.Lattice.Nat
 
 @[expose] public section
 
