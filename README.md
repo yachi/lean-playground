@@ -236,6 +236,17 @@ repairs it. The file proves the parts of that argument that Mathlib's group law 
 | §6.1, §6.4 | For the pattern `(aG, bG + T, cG + S + T)` the compatibility condition is `X_aX_b + X_aX_c − X_bX_c + N² = 0` (eq. 24), and `b = a + c` or `c = a + b` contradicts Lemma 1 | `eq24`, `eq24_ne`, `not_pattern` |
 | Thm 1 (rank one) | No positive configuration lies in `ℤG + E_N[2]`, **conditional** on the reduction to the pattern (Lemmas 2, 3) and on the primitive-divisor step (§6.2–6.3) | `not_rankOne`, `RankOneReduction`, `PrimitiveDivisorStep` |
 
+`ConfigCuboid.lean` goes back from a configuration to a cuboid. Each point gives a right triangle
+of area `N` with leg `Uᵢ = 2NYᵢ/(N² − Xᵢ²)`; the box with edges `|U₁|, |U₂|, |U₃|` always has a
+rational space diagonal, and if one face diagonal is rational then all three are. So the converse
+of Prop 1 needs one extra condition, which the identities alone do not give.
+
+| Result | Lean |
+|---|---|
+| `U₁² + U₂² + U₃² = (U₁U₂U₃/2N)²` and `(U₁² + U₃²)H₂² = (U₁² + U₂²)H₃²` for every configuration | `IsConfigPts.space`, `IsConfigPts.face₁₃`, `face_poly` |
+| The box with edges `\|Uᵢ\|` is a rational perfect cuboid iff `U₁² + U₂²` is a square | `IsConfigPts.isRatCuboid_iff` |
+| A perfect cuboid exists iff some `E_N` has a positive configuration with `U₁² + U₂² = □` | `exists_isPerfectCuboid_iff` |
+
 The two hypotheses of `not_rankOne` need tools that Mathlib does not have yet: the formula
 `x(kP) = Φ_k(x)/Ψ²_k(x)` (Mathlib has the division polynomials and their degrees, but not this
 link to the group law), Ingram's primitive-divisor theorem (which needs canonical heights), and
