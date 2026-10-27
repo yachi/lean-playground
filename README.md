@@ -197,6 +197,7 @@ Three further files formalize the ingredients of the recent fiber-by-fiber attac
 | `MasterTuple.lean` | Every primitive Euler brick comes from two Pythagorean pairs `(a, b)`, `(m, n)` sharing an edge (the *master tuple*), and conversely | `IsEulerBrick.exists_masterTuple`, `isEulerBrick_of_euclidLegs`, `exists_euclidLegs` |
 | `SpaceDiagonal.lean` | In a primitive perfect cuboid every prime factor of the space diagonal is `≡ 1 (mod 4)`, so the diagonal is `≡ 1 (mod 4)` | `IsPerfectCuboid.prime_dvd_space_diagonal`, `space_diagonal_mod_four` |
 | `Korec.lean` | Korec (Math. Slovaca 42, 1992), Theorem 5.1: the space diagonal of a perfect cuboid is neither a prime power nor a product of two primes. The prime-power case is Euler's uniqueness of the representation of `p^m` as a sum of two squares; for `pq` we replace Korec's parametrization and Pocklington's theorem on `x⁴ + 18x²y² + y⁴` by a twelve-case polynomial argument that uses that `q` is prime | `IsPerfectCuboid.ne_prime_pow`, `IsPerfectCuboid.ne_prime_mul_prime`, `Korec.sq_add_sq_unique`, `Korec.sq_add_sq_factor` |
+| `Leech.lean` | Leech (Guy, D18): `2⁸ · 3⁴ · 5³ · 7 · 11 · 13 · 17 · 19 · 29 · 37` divides the product `abcdefg` of the edges and all four diagonals. Each prime power is a congruence check modulo `128, 27, 5` or `p`, on the squares of a unit edge and the profiles `(x² mod pʲ, min(v_p(x), j))` of the other two, after dividing out common factors | `Leech.leech_dvd`, `IsPerfectCuboid.leech_dvd` |
 
 Fermat's theorem is proved by his infinite descent on primitive triangles (Mathlib has the
 related `not_fermat_42`, but neither statement follows from the other directly). It is the one
@@ -237,6 +238,17 @@ repairs it. The file proves the parts of that argument that Mathlib's group law 
 | Lemmas 2, 3 | A configuration inside `ℤG + E_N[2]` can be brought to the pattern `(aG, bG + T, cG + S + T)`, `a, b` odd, `c` even, **conditional** only on `E_N(ℚ)_tors = E_N[2]` (Remark 1). Equation (18) `t(kG) = P_k(z)/Q_k(z)` with `N`-free integer polynomials comes from the division-polynomial formula for `n • P` and a weighted-homogeneity scaling (`DivPolyScale.lean`); Lemma 2 is the rational root theorem on `Z` (eq. 21); Lemma 3 is a descent on `k₁ + k₂ + k₃` through `G ↦ G + T` and `G ↦ 2G + S` (`RankOneReduction.lean`) | `rankOneReduction_of_torsion`, `rankOneReduction`, `hasX_pt`, `not_excluded`, `pattern_of_pt`, `aeval_bigZ_ne_zero`, `sub_Φ`, `sub_ΨSq` |
 | `n • P` | `n • (x, y) ≠ 0 ⇒ ΨSqₙ(x) ≠ 0` and `X(n • (x, y)) = Φₙ(x)/ΨSqₙ(x)` on any Weierstrass curve over a field, from the Tau Ceti project's `zsmul_point_eq_smulEval` (vendored, see below) | `WeierstrassCurve.exists_zsmul_some_eq`, `CongruentRank.divPolyX` |
 | Thm 1 (rank one) | No positive configuration lies in `ℤG + E_N[2]`, **conditional** on the torsion (Remark 1) and on the primitive-divisor step (§6.2–6.3) | `not_rankOne_of_torsion`, `not_rankOne`, `TorsionTwo`, `PrimitiveDivisorStep` |
+
+`ConfigCuboid.lean` goes back from a configuration to a cuboid. Each point gives a right triangle
+of area `N` with leg `Uᵢ = 2NYᵢ/(N² − Xᵢ²)`; the box with edges `|U₁|, |U₂|, |U₃|` always has a
+rational space diagonal, and if one face diagonal is rational then all three are. So the converse
+of Prop 1 needs one extra condition, which the identities alone do not give.
+
+| Result | Lean |
+|---|---|
+| `U₁² + U₂² + U₃² = (U₁U₂U₃/2N)²` and `(U₁² + U₃²)H₂² = (U₁² + U₂²)H₃²` for every configuration | `IsConfigPts.space`, `IsConfigPts.face₁₃`, `face_poly` |
+| The box with edges `\|Uᵢ\|` is a rational perfect cuboid iff `U₁² + U₂²` is a square | `IsConfigPts.isRatCuboid_iff` |
+| A perfect cuboid exists iff some `E_N` has a positive configuration with `U₁² + U₂² = □` | `exists_isPerfectCuboid_iff` |
 
 The two hypotheses left in `not_rankOne_of_torsion` need tools that Mathlib does not have yet:
 `E_N(ℚ)_tors = E_N[2]` (reduction modulo primes or Nagell–Lutz; it also settles the rank-zero
