@@ -17,3 +17,8 @@ rev = "v4.35.0"
 
 [[lean_lib]]
 name = "LeanPlayground"
+
+# Vendored from the Tau Ceti project (Apache-2.0, see TauCeti/LICENSE): the division-polynomial
+# formula for `n • P`.
+[[lean_lib]]
+name = "TauCeti"

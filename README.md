@@ -235,7 +235,9 @@ repairs it. The file proves the parts of that argument that Mathlib's group law 
 | Lemma 1 | `±Q₁ ± Q₂ ± Q₃ ≠ S = (0, 0)`. Proved with Vieta's formulas instead of Riemann–Roch: the sum would force `(X₁² − N²)(X₂² − N²)(X₃² − N²) = 0` | `CongruentRank.add_add_ne_S`, `vieta_add` |
 | Prop 2 (the gap) | Replacing `G` by `G + T` swaps the sequences `A_k(G) = kG + ε(k)S` and `B_k(G) = A_k(G) + T` only for odd `k`. For even `k` the swap claimed by Paulsen–West fails for every `G`, and `A_k`, `B_k` never share an `X`-coordinate | `A_add_T_of_odd`, `A_add_T_of_even`, `A_add_T_ne_B_of_even`, `HasX.ne_of_add_T` |
 | §6.1, §6.4 | For the pattern `(aG, bG + T, cG + S + T)` the compatibility condition is `X_aX_b + X_aX_c − X_bX_c + N² = 0` (eq. 24), and `b = a + c` or `c = a + b` contradicts Lemma 1 | `eq24`, `eq24_ne`, `not_pattern` |
-| Thm 1 (rank one) | No positive configuration lies in `ℤG + E_N[2]`, **conditional** on the reduction to the pattern (Lemmas 2, 3) and on the primitive-divisor step (§6.2–6.3) | `not_rankOne`, `RankOneReduction`, `PrimitiveDivisorStep` |
+| Lemmas 2, 3 | A configuration inside `ℤG + E_N[2]` can be brought to the pattern `(aG, bG + T, cG + S + T)`, `a, b` odd, `c` even, **conditional** only on `E_N(ℚ)_tors = E_N[2]` (Remark 1). Equation (18) `t(kG) = P_k(z)/Q_k(z)` with `N`-free integer polynomials comes from the division-polynomial formula for `n • P` and a weighted-homogeneity scaling (`DivPolyScale.lean`); Lemma 2 is the rational root theorem on `Z` (eq. 21); Lemma 3 is a descent on `k₁ + k₂ + k₃` through `G ↦ G + T` and `G ↦ 2G + S` (`RankOneReduction.lean`) | `rankOneReduction_of_torsion`, `rankOneReduction`, `hasX_pt`, `not_excluded`, `pattern_of_pt`, `aeval_bigZ_ne_zero`, `sub_Φ`, `sub_ΨSq` |
+| `n • P` | `n • (x, y) ≠ 0 ⇒ ΨSqₙ(x) ≠ 0` and `X(n • (x, y)) = Φₙ(x)/ΨSqₙ(x)` on any Weierstrass curve over a field, from the Tau Ceti project's `zsmul_point_eq_smulEval` (vendored, see below) | `WeierstrassCurve.exists_zsmul_some_eq`, `CongruentRank.divPolyX` |
+| Thm 1 (rank one) | No positive configuration lies in `ℤG + E_N[2]`, **conditional** on the torsion (Remark 1) and on the primitive-divisor step (§6.2–6.3) | `not_rankOne_of_torsion`, `not_rankOne`, `TorsionTwo`, `PrimitiveDivisorStep` |
 
 `ConfigCuboid.lean` goes back from a configuration to a cuboid. Each point gives a right triangle
 of area `N` with leg `Uᵢ = 2NYᵢ/(N² − Xᵢ²)`; the box with edges `|U₁|, |U₂|, |U₃|` always has a
@@ -248,10 +250,22 @@ of Prop 1 needs one extra condition, which the identities alone do not give.
 | The box with edges `\|Uᵢ\|` is a rational perfect cuboid iff `U₁² + U₂²` is a square | `IsConfigPts.isRatCuboid_iff` |
 | A perfect cuboid exists iff some `E_N` has a positive configuration with `U₁² + U₂² = □` | `exists_isPerfectCuboid_iff` |
 
-The two hypotheses of `not_rankOne` need tools that Mathlib does not have yet: the formula
-`x(kP) = Φ_k(x)/Ψ²_k(x)` (Mathlib has the division polynomials and their degrees, but not this
-link to the group law), Ingram's primitive-divisor theorem (which needs canonical heights), and
-reduction of points modulo a prime. The rank-zero case also needs `E_N(ℚ)_tors = E_N[2]`.
+The two hypotheses left in `not_rankOne_of_torsion` need tools that Mathlib does not have yet:
+`E_N(ℚ)_tors = E_N[2]` (reduction modulo primes or Nagell–Lutz; it also settles the rank-zero
+case), and Ingram's primitive-divisor theorem (canonical heights, reduction of points modulo a
+prime).
+
+#### Vendored: the division-polynomial formula — `TauCeti/`
+
+Mathlib's division polynomials are not yet linked to the group law (its pull request #13782 was
+closed unmerged). The [Tau Ceti project](https://github.com/TauCetiProject/TauCeti) proves the
+link, `WeierstrassCurve.zsmul_point_eq_smulEval`: `n • (x, y) = (φₙ : ωₙ : ψₙ)` in Jacobian
+coordinates. `TauCeti/` holds the files it needs, copied unchanged from Tau Ceti commit
+`6ff9009` (Apache-2.0, `TauCeti/LICENSE`; ported there from the AINTLIB work of J. Xu and
+D. K. Angdinata) except for one added import each. They need about 200 lines of newer Mathlib
+(J. Xu's `IsEllipticNet.normEDS` and `normEDS_mul_complEDS`), backported verbatim in
+`TauCeti/MathlibCompat/EllipticDivisibilitySequence.lean`; delete that file when the Mathlib pin
+moves past them.
 
 ## Update Mathlib
 
