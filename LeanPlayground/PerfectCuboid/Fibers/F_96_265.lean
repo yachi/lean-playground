@@ -2180,7 +2180,7 @@ theorem covered_ninetysix_265 : Covered 96 265 247 :=
 /-- The fiber `(m, n) = (16, 3)`: the descent for `(p, q) = (96, 265)`. -/
 theorem not_isSol_ninetysix_265 (M e r s : ℤ) : ¬ IsSol 96 265 M e r s := by
   simpa using not_isSol (p := 96) (q := 265) (a := 247) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_ninetysix_265 M e r s
+    (by norm_num) (by decide) covered_ninetysix_265 M e r s
 
 end Descent
 
@@ -2188,7 +2188,7 @@ end Descent
 theorem not_isSquare_sq_add_9216_and_sq_add_70225 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 9216) ∧ IsSquare (t ^ 2 + 70225)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 96) (q := 265) (a := 247)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_ninetysix_265 ht
   norm_num at this
   exact fun h ↦ this h.1 h.2

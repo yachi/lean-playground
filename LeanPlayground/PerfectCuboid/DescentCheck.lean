@@ -392,11 +392,19 @@ one of the three bounds of the descent then makes `|e'| < |e|`. -/
 /-- `x ≤ y` if `weak`, else `x < y`. -/
 def leB (weak : Bool) (x y : ℕ) : Bool := if weak then decide (x ≤ y) else decide (x < y)
 
-/-- With `A = (αβγδ)²`, the descent knows `A ≤ e²`, `4 P² A ≤ p² e²` and `N² A ≤ q² e²`
-(`P = c₁c₂`, `N = c₃c₄`). If the new solution has `X e'² < Y A` (`weak`) or `X e'² ≤ Y A`
-(`!weak`), one of these tests makes `e'² < e²`. -/
+/-- The factor of the first bound of the descent: `4` for even `p`, `1` for odd `p`. -/
+def boundK (p : ℕ) : ℕ := if p % 2 == 0 then 4 else 1
+
+theorem boundK_pos (p : ℕ) : 0 < boundK p := by
+  unfold boundK
+  split <;> norm_num
+
+/-- With `A = (αβγδ)²`, the descent knows `A ≤ e²`, `κ P² A ≤ p² e²` and `N² A ≤ q² e²`
+(`P = c₁c₂`, `N = c₃c₄`, `κ = boundK p`). If the new solution has `X e'² < Y A` (`weak`) or
+`X e'² ≤ Y A` (`!weak`), one of these tests makes `e'² < e²`. -/
 def boundOK (weak : Bool) (p q P N X Y : ℕ) : Bool :=
-  leB weak Y X || leB weak (Y * p ^ 2) (X * (4 * P ^ 2)) || leB weak (Y * q ^ 2) (X * N ^ 2)
+  leB weak Y X || leB weak (Y * p ^ 2) (X * (boundK p * P ^ 2)) ||
+    leB weak (Y * q ^ 2) (X * N ^ 2)
 
 /-- Family L, for `qλ = W²`, `λσ = h²` and `qσ = H²`: the new solution is `M' = u δ`, `e' = v α`
 with `v = c₃ / gcd(c₃, c₂W)`, and `|βγδ| ≥ 2` unless `q c₃² = λ c₁² + σ`. -/

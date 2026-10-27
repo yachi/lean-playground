@@ -6462,7 +6462,7 @@ theorem covered_736_785 : Covered 736 785 273 :=
 /-- The fiber `(m, n) = (23, 16)`: the descent for `(p, q) = (736, 785)`. -/
 theorem not_isSol_736_785 (M e r s : ℤ) : ¬ IsSol 736 785 M e r s := by
   simpa using not_isSol (p := 736) (q := 785) (a := 273) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_736_785 M e r s
+    (by norm_num) (by decide) covered_736_785 M e r s
 
 end Descent
 
@@ -6470,7 +6470,7 @@ end Descent
 theorem not_isSquare_sq_add_541696_and_sq_add_616225 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 541696) ∧ IsSquare (t ^ 2 + 616225)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 736) (q := 785) (a := 273)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_736_785 ht
   norm_num at this
   exact fun h ↦ this h.1 h.2

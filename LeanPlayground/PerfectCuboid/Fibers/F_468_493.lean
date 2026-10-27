@@ -4977,7 +4977,7 @@ theorem covered_468_493 : Covered 468 493 155 :=
 /-- The fiber `(m, n) = (18, 13)`: the descent for `(p, q) = (468, 493)`. -/
 theorem not_isSol_468_493 (M e r s : ℤ) : ¬ IsSol 468 493 M e r s := by
   simpa using not_isSol (p := 468) (q := 493) (a := 155) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_468_493 M e r s
+    (by norm_num) (by decide) covered_468_493 M e r s
 
 end Descent
 
@@ -4985,7 +4985,7 @@ end Descent
 theorem not_isSquare_sq_add_219024_and_sq_add_243049 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 219024) ∧ IsSquare (t ^ 2 + 243049)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 468) (q := 493) (a := 155)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_468_493 ht
   norm_num at this
   exact fun h ↦ this h.1 h.2

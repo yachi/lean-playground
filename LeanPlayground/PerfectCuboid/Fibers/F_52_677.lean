@@ -1014,7 +1014,7 @@ theorem covered_fiftytwo_677 : Covered 52 677 675 :=
 /-- The fiber `(m, n) = (26, 1)`: the descent for `(p, q) = (52, 677)`. -/
 theorem not_isSol_fiftytwo_677 (M e r s : ℤ) : ¬ IsSol 52 677 M e r s := by
   simpa using not_isSol (p := 52) (q := 677) (a := 675) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_fiftytwo_677 M e r s
+    (by norm_num) (by decide) covered_fiftytwo_677 M e r s
 
 end Descent
 
@@ -1022,7 +1022,7 @@ end Descent
 theorem not_isSquare_sq_add_2704_and_sq_add_458329 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 2704) ∧ IsSquare (t ^ 2 + 458329)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 52) (q := 677) (a := 675)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_fiftytwo_677 ht
   norm_num at this
   exact fun h ↦ this h.1 h.2

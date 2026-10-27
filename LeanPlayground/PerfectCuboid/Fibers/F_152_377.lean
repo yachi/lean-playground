@@ -4181,7 +4181,7 @@ theorem covered_152_377 : Covered 152 377 345 :=
 /-- The fiber `(m, n) = (19, 4)`: the descent for `(p, q) = (152, 377)`. -/
 theorem not_isSol_152_377 (M e r s : ℤ) : ¬ IsSol 152 377 M e r s := by
   simpa using not_isSol (p := 152) (q := 377) (a := 345) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_152_377 M e r s
+    (by norm_num) (by decide) covered_152_377 M e r s
 
 end Descent
 
@@ -4189,7 +4189,7 @@ end Descent
 theorem not_isSquare_sq_add_23104_and_sq_add_142129 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 23104) ∧ IsSquare (t ^ 2 + 142129)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 152) (q := 377) (a := 345)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_152_377 ht
   norm_num at this
   exact fun h ↦ this h.1 h.2

@@ -1397,7 +1397,7 @@ theorem covered_twentyfour_145 : Covered 24 145 143 :=
 /-- The fiber `(m, n) = (12, 1)`: the descent for `(p, q) = (24, 145)`. -/
 theorem not_isSol_twentyfour_145 (M e r s : ℤ) : ¬ IsSol 24 145 M e r s := by
   simpa using not_isSol (p := 24) (q := 145) (a := 143) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_twentyfour_145 M e r s
+    (by norm_num) (by decide) covered_twentyfour_145 M e r s
 
 end Descent
 
@@ -1405,7 +1405,7 @@ end Descent
 theorem not_isSquare_sq_add_576_and_sq_add_21025 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 576) ∧ IsSquare (t ^ 2 + 21025)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 24) (q := 145) (a := 143)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_twentyfour_145 ht
   norm_num at this
   exact fun h ↦ this h.1 h.2

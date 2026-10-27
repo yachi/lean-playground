@@ -76,35 +76,35 @@ namespace Descent
 /-- The `3 : 4` fiber again, now through the generic descent. -/
 theorem not_isSol_four_five (M e r s : ℤ) : ¬ IsSol 4 5 M e r s := by
   simpa using not_isSol (p := 4) (q := 5) (a := 3) (by norm_num) (by norm_num) (by norm_num)
-    (by norm_num) (by decide) covered_four_five M e r s
+    (by decide) covered_four_five M e r s
 
 theorem not_isSol_twelve_thirteen (M e r s : ℤ) : ¬ IsSol 12 13 M e r s := by
   simpa using not_isSol (p := 12) (q := 13) (a := 5) (by norm_num) (by norm_num) (by norm_num)
-    (by norm_num) (by decide) covered_twelve_thirteen M e r s
+    (by decide) covered_twelve_thirteen M e r s
 
 theorem not_isSol_eight_seventeen (M e r s : ℤ) : ¬ IsSol 8 17 M e r s := by
   simpa using not_isSol (p := 8) (q := 17) (a := 15) (by norm_num) (by norm_num) (by norm_num)
-    (by norm_num) (by decide) covered_eight_seventeen M e r s
+    (by decide) covered_eight_seventeen M e r s
 
 theorem not_isSol_twentyfour_twentyfive (M e r s : ℤ) : ¬ IsSol 24 25 M e r s := by
   simpa using not_isSol (p := 24) (q := 25) (a := 7) (by norm_num) (by norm_num) (by norm_num)
-    (by norm_num) (by decide) covered_twentyfour_twentyfive M e r s
+    (by decide) covered_twentyfour_twentyfive M e r s
 
 theorem not_isSol_twelve_thirtyseven (M e r s : ℤ) : ¬ IsSol 12 37 M e r s := by
   simpa using not_isSol (p := 12) (q := 37) (a := 35) (by norm_num) (by norm_num) (by norm_num)
-    (by norm_num) (by decide) covered_twelve_thirtyseven M e r s
+    (by decide) covered_twelve_thirtyseven M e r s
 
 theorem not_isSol_sixteen_sixtyfive (M e r s : ℤ) : ¬ IsSol 16 65 M e r s := by
   simpa using not_isSol (p := 16) (q := 65) (a := 63) (by norm_num) (by norm_num) (by norm_num)
-    (by norm_num) (by decide) covered_sixteen_sixtyfive M e r s
+    (by decide) covered_sixteen_sixtyfive M e r s
 
 theorem not_isSol_eightyfour_eightyfive (M e r s : ℤ) : ¬ IsSol 84 85 M e r s := by
   simpa using not_isSol (p := 84) (q := 85) (a := 13) (by norm_num) (by norm_num) (by norm_num)
-    (by norm_num) (by decide) covered_eightyfour_eightyfive M e r s
+    (by decide) covered_eightyfour_eightyfive M e r s
 
 theorem not_isSol_twentyeight_fiftythree (M e r s : ℤ) : ¬ IsSol 28 53 M e r s := by
   simpa using not_isSol (p := 28) (q := 53) (a := 45) (by norm_num) (by norm_num) (by norm_num)
-    (by norm_num) (by decide) covered_twentyeight_fiftythree M e r s
+    (by decide) covered_twentyeight_fiftythree M e r s
 
 end Descent
 
@@ -112,7 +112,7 @@ end Descent
 theorem not_isSquare_sq_add_144_and_sq_add_169 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 144) ∧ IsSquare (t ^ 2 + 169)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 12) (q := 13) (a := 5) (by norm_num)
-    (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by decide)
     Descent.covered_twelve_thirteen ht
   norm_num at this
   exact fun h ↦ this h.1 h.2
@@ -121,7 +121,7 @@ theorem not_isSquare_sq_add_144_and_sq_add_169 {t : ℚ} (ht : t ≠ 0) :
 theorem not_isSquare_sq_add_64_and_sq_add_289 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 64) ∧ IsSquare (t ^ 2 + 289)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 8) (q := 17) (a := 15) (by norm_num)
-    (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by decide)
     Descent.covered_eight_seventeen ht
   norm_num at this
   exact fun h ↦ this h.1 h.2
@@ -130,7 +130,7 @@ theorem not_isSquare_sq_add_64_and_sq_add_289 {t : ℚ} (ht : t ≠ 0) :
 theorem not_isSquare_sq_add_576_and_sq_add_625 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 576) ∧ IsSquare (t ^ 2 + 625)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 24) (q := 25) (a := 7) (by norm_num)
-    (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by decide)
     Descent.covered_twentyfour_twentyfive ht
   norm_num at this
   exact fun h ↦ this h.1 h.2
@@ -139,7 +139,7 @@ theorem not_isSquare_sq_add_576_and_sq_add_625 {t : ℚ} (ht : t ≠ 0) :
 theorem not_isSquare_sq_add_144_and_sq_add_1369 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 144) ∧ IsSquare (t ^ 2 + 1369)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 12) (q := 37) (a := 35) (by norm_num)
-    (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by decide)
     Descent.covered_twelve_thirtyseven ht
   norm_num at this
   exact fun h ↦ this h.1 h.2
@@ -148,7 +148,7 @@ theorem not_isSquare_sq_add_144_and_sq_add_1369 {t : ℚ} (ht : t ≠ 0) :
 theorem not_isSquare_sq_add_256_and_sq_add_4225 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 256) ∧ IsSquare (t ^ 2 + 4225)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 16) (q := 65) (a := 63) (by norm_num)
-    (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by decide)
     Descent.covered_sixteen_sixtyfive ht
   norm_num at this
   exact fun h ↦ this h.1 h.2
@@ -157,7 +157,7 @@ theorem not_isSquare_sq_add_256_and_sq_add_4225 {t : ℚ} (ht : t ≠ 0) :
 theorem not_isSquare_sq_add_7056_and_sq_add_7225 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 7056) ∧ IsSquare (t ^ 2 + 7225)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 84) (q := 85) (a := 13) (by norm_num)
-    (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by decide)
     Descent.covered_eightyfour_eightyfive ht
   norm_num at this
   exact fun h ↦ this h.1 h.2
@@ -166,7 +166,7 @@ theorem not_isSquare_sq_add_7056_and_sq_add_7225 {t : ℚ} (ht : t ≠ 0) :
 theorem not_isSquare_sq_add_784_and_sq_add_2809 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 784) ∧ IsSquare (t ^ 2 + 2809)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 28) (q := 53) (a := 45) (by norm_num)
-    (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by decide)
     Descent.covered_twentyeight_fiftythree ht
   norm_num at this
   exact fun h ↦ this h.1 h.2

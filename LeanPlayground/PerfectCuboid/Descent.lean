@@ -6,16 +6,17 @@ public import LeanPlayground.PerfectCuboid.FiberTwoOne
 /-!
 # A generic descent for two right triangles with a common leg
 
-Fix coprime positive integers `p < q` with `p` even and `q² − p² = a²` a square. This file proves,
+Fix coprime positive integers `p < q` with `q² − p² = a²` a square. This file proves,
 under a finite check that the kernel runs, that there are no integers `M, e ≠ 0` such that both
 `M² + p² e²` and `M² + q² e²` are squares. Geometrically: there is no rational `t ≠ 0` with
 `t² + p²` and `t² + q²` both squares, i.e. no point of infinite order on the elliptic curve
 `y² = x (x + p²)(x + q²)` with `x` a square. The elliptic curve never appears in the Lean code.
 
-For a fiber `(m, n)` of the master-tuple parametrization, `(p, q) = (2mn, m² + n²)` and
-`a = m² − n²`. A perfect cuboid with two edges `a k` and `2mn k` would give such `M, e`
-(`M` the third edge, `e = k`), so each successful check rules out one edge ratio
-`(m² − n²) : 2mn`. The case `(p, q) = (4, 5)` is the `3 : 4` fiber of
+For a fiber `(m, n)` of the master-tuple parametrization, with `U = m² − n²`, `V = 2mn` and
+`W = m² + n²`, a perfect cuboid with two edges `U k` and `V k` and third edge `M` has
+`M² + U²k²`, `M² + V²k²` and `M² + W²k²` all squares. So it gives such `M, e = k` for the pair
+`(p, q, a) = (V, W, U)` (`p` even) and for the pair `(p, q, a) = (U, W, V)` (`p` odd), and each
+successful check for either pair rules out the edge ratio `U : V`. The case `(p, q) = (4, 5)` is the `3 : 4` fiber of
 `LeanPlayground.PerfectCuboid.FiberTwoOne`, done there by hand.
 
 ## The descent
@@ -24,7 +25,8 @@ This is the descent of `FiberTwoOne` with `4, 5` replaced by `p, q`.
 
 1. (`exists_point`) Write `t = M/e`. Then `t = (p/2)(k − 1/k) = (q/2)(j − 1/j)` with
    `k = k₁/k₂`, `j = j₁/j₂` in lowest terms, so
-   `p j₁j₂ (k₁² − k₂²) = q k₁k₂ (j₁² − j₂²)`, and `4 (k₁k₂)² ≤ p² e²`.
+   `p j₁j₂ (k₁² − k₂²) = q k₁k₂ (j₁² − j₂²)`, and `κ (k₁k₂)² ≤ p² e²` with `κ = 4` for even `p`
+   and `κ = 1` for odd `p` (`boundK`).
 2. (`exists_lam`) Since `k₁k₂` is coprime to `k₁² − k₂²` there is `λ ∣ pq` with
    `p j₁j₂ = λ k₁k₂` and `λ (k₁² − k₂²) = q (j₁² − j₂²)`. Replacing `k` by `−1/k` makes `λ > 0`.
 3. (`exists_split`) With `g = gcd(p, λ)`, `p' = p/g`, `λ' = λ/g`, the four-number lemma writes
@@ -50,7 +52,7 @@ This is the descent of `FiberTwoOne` with `4, 5` replaced by `p, q`.
    * (`quadK_step`, family QK) the same point written as `M' = (q/F) w_d (j₁ + j₂)`,
      `e' = (w_n/F)(k₁ − k₂)` with `F = gcd(q, w_n)` and the sign of `δ` chosen so that
      `k₁k₂ ≥ 0`. Some fibers need QD and others QK, because the bounds below differ.
-   The new `|e'|` is compared with `|e|` through three bounds: `4 (k₁k₂)² ≤ p² e²` and
+   The new `|e'|` is compared with `|e|` through three bounds: `κ (k₁k₂)² ≤ p² e²` and
    `(j₁j₂)² ≤ q² e²` from step 1, and `(αβγδ)² ≤ e²`, because `αβγδ` divides both `k₁k₂ ∣ pe` and
    `j₁j₂ ∣ qe`, and `gcd(p, q) = 1`. Each family gives `X e'² ≤ Y (αβγδ)²` for explicit `X, Y`,
    and the checker (`boundOK`) tests that one of the three bounds then gives `e'² < e²`. For
@@ -84,25 +86,23 @@ def IsSol (p q M e r s : ℤ) : Prop :=
 
 /-! ### Step 1: from a solution to a point `(k, j)` -/
 
-theorem exists_point {p p₀ q M e r s : ℤ} (hp : p = 2 * p₀) (hp₀ : 0 < p₀) (hq : 0 < q)
-    (h : IsSol p q M e r s) :
+theorem exists_point {p q M e r s : ℤ} (hp : 0 < p) (hq : 0 < q) (h : IsSol p q M e r s) :
     ∃ k1 k2 j1 j2 : ℤ, k1 ≠ 0 ∧ k2 ≠ 0 ∧ j1 ≠ 0 ∧ j2 ≠ 0 ∧ IsCoprime k1 k2 ∧ IsCoprime j1 j2 ∧
       k1 ^ 2 ≠ k2 ^ 2 ∧ p * (j1 * j2) * (k1 ^ 2 - k2 ^ 2) = q * (k1 * k2) * (j1 ^ 2 - j2 ^ 2) ∧
-      4 * (k1 * k2) ^ 2 ≤ p ^ 2 * e ^ 2 ∧ (j1 * j2) ^ 2 ≤ q ^ 2 * e ^ 2 ∧ k1 * k2 ∣ p * e ∧
-      j1 * j2 ∣ q * e := by
-  subst hp
+      (∀ p₀, p = 2 * p₀ → 4 * (k1 * k2) ^ 2 ≤ p ^ 2 * e ^ 2) ∧ (k1 * k2) ^ 2 ≤ p ^ 2 * e ^ 2 ∧
+      (j1 * j2) ^ 2 ≤ q ^ 2 * e ^ 2 ∧ k1 * k2 ∣ p * e ∧ j1 * j2 ∣ q * e := by
   obtain ⟨hM, he, hr, hs⟩ := h
   have he2 : 0 < e ^ 2 := by positivity
   have hrM : r + M ≠ 0 := fun h0 => by
     rw [show r = -M by linarith] at hr
-    have : 0 < (2 * p₀) ^ 2 * e ^ 2 := by positivity
+    have : 0 < p ^ 2 * e ^ 2 := by positivity
     linarith
   have hsM : s + M ≠ 0 := fun h0 => by
     rw [show s = -M by linarith] at hs
     have : 0 < q ^ 2 * e ^ 2 := by positivity
     linarith
   obtain ⟨g, k1, k2, hg, hkg, hk1g, hk2g⟩ :=
-    Int.exists_gcd_one' (Int.gcd_pos_of_ne_zero_left (2 * p₀ * e) hrM)
+    Int.exists_gcd_one' (Int.gcd_pos_of_ne_zero_left (p * e) hrM)
   obtain ⟨g', j1, j2, hg', hjg, hj1g, hj2g⟩ :=
     Int.exists_gcd_one' (Int.gcd_pos_of_ne_zero_left (q * e) hsM)
   have hg0 : (g : ℤ) ≠ 0 := by exact_mod_cast hg.ne'
@@ -112,7 +112,7 @@ theorem exists_point {p p₀ q M e r s : ℤ} (hp : p = 2 * p₀) (hp₀ : 0 < p
   have hk1 : k1 ≠ 0 := by rintro rfl; exact hrM (by rw [hk1g]; ring)
   have hk2 : k2 ≠ 0 := by
     rintro rfl
-    have : 2 * p₀ * e = 0 := by rw [hk2g]; ring
+    have : p * e = 0 := by rw [hk2g]; ring
     rcases mul_eq_zero.mp this with h0 | h0
     · omega
     · exact he h0
@@ -125,37 +125,45 @@ theorem exists_point {p p₀ q M e r s : ℤ} (hp : p = 2 * p₀) (hp₀ : 0 < p
     · exact he h0
   have hk3 : k1 * (r - M) = k2 ^ 2 * g := by
     refine mul_left_cancel₀ hg0 ?_
-    linear_combination -(r - M) * hk1g - hr + (2 * p₀ * e + k2 * g) * hk2g
+    linear_combination -(r - M) * hk1g - hr + (p * e + k2 * g) * hk2g
   have hj3 : j1 * (s - M) = j2 ^ 2 * g' := by
     refine mul_left_cancel₀ hg0' ?_
     linear_combination -(s - M) * hj1g - hs + (q * e + j2 * g') * hj2g
-  have R1 : p₀ * e * (k1 ^ 2 - k2 ^ 2) = M * (k1 * k2) := by
+  have R1 : p * e * (k1 ^ 2 - k2 ^ 2) = 2 * M * (k1 * k2) := by
     refine mul_left_cancel₀ (mul_ne_zero two_ne_zero hg0) ?_
-    linear_combination g * (k1 ^ 2 - k2 ^ 2) * hk2g - g * k1 * k2 * hk1g + g * k2 * hk3
+    linear_combination 2 * g * (k1 ^ 2 - k2 ^ 2) * hk2g - 2 * g * k1 * k2 * hk1g
+      + 2 * g * k2 * hk3
   have R2 : q * e * (j1 ^ 2 - j2 ^ 2) = 2 * M * (j1 * j2) := by
     refine mul_left_cancel₀ (mul_ne_zero two_ne_zero hg0') ?_
     linear_combination 2 * g' * (j1 ^ 2 - j2 ^ 2) * hj2g - 2 * g' * j1 * j2 * hj1g
       + 2 * g' * j2 * hj3
-  have hC : 2 * p₀ * (j1 * j2) * (k1 ^ 2 - k2 ^ 2) = q * (k1 * k2) * (j1 ^ 2 - j2 ^ 2) := by
-    refine mul_left_cancel₀ (mul_ne_zero hq.ne' he) ?_
-    linear_combination 2 * q * (j1 * j2) * R1 - q * (k1 * k2) * R2
+  have hC : p * (j1 * j2) * (k1 ^ 2 - k2 ^ 2) = q * (k1 * k2) * (j1 ^ 2 - j2 ^ 2) := by
+    refine mul_left_cancel₀ he ?_
+    linear_combination (j1 * j2) * R1 - (k1 * k2) * R2
   have hne : k1 ^ 2 ≠ k2 ^ 2 := by
     intro h0
     rw [h0, sub_self, mul_zero] at R1
-    exact mul_ne_zero hM (mul_ne_zero hk1 hk2) R1.symm
-  have hdvd : k1 * k2 ∣ p₀ * e :=
-    (isCoprime_mul_sq_sub hk).dvd_of_dvd_mul_right ⟨M, by linear_combination R1⟩
-  have hle : (k1 * k2) ^ 2 ≤ (p₀ * e) ^ 2 :=
-    Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdvd (mul_ne_zero hp₀.ne' he))
+    exact mul_ne_zero (mul_ne_zero two_ne_zero hM) (mul_ne_zero hk1 hk2) R1.symm
+  have hdvd : k1 * k2 ∣ p * e :=
+    (isCoprime_mul_sq_sub hk).dvd_of_dvd_mul_right ⟨2 * M, by linear_combination R1⟩
+  have hle : (k1 * k2) ^ 2 ≤ (p * e) ^ 2 :=
+    Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdvd (mul_ne_zero hp.ne' he))
   have hdvd' : j1 * j2 ∣ q * e :=
     (isCoprime_mul_sq_sub hj).dvd_of_dvd_mul_right ⟨2 * M, by linear_combination R2⟩
   have hle' : (j1 * j2) ^ 2 ≤ (q * e) ^ 2 :=
     Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdvd' (mul_ne_zero hq.ne' he))
-  refine ⟨k1, k2, j1, j2, hk1, hk2, hj1, hj2, hk, hj, hne, hC, ?_, ?_, ?_, hdvd'⟩
-  · linear_combination 4 * hle
-  · linear_combination hle'
-  · rw [mul_assoc]
-    exact dvd_mul_of_dvd_right hdvd 2
+  refine ⟨k1, k2, j1, j2, hk1, hk2, hj1, hj2, hk, hj, hne, hC, ?_, by linear_combination hle,
+    by linear_combination hle', hdvd, hdvd'⟩
+  -- for even `p = 2 p₀`, even `k₁k₂ ∣ p₀ e`
+  rintro p₀ rfl
+  have hp₀ : p₀ ≠ 0 := by rintro rfl; simp at hp
+  have R1₀ : p₀ * e * (k1 ^ 2 - k2 ^ 2) = M * (k1 * k2) :=
+    mul_left_cancel₀ (two_ne_zero (α := ℤ)) (by linear_combination R1)
+  have hdvd₀ : k1 * k2 ∣ p₀ * e :=
+    (isCoprime_mul_sq_sub hk).dvd_of_dvd_mul_right ⟨M, by linear_combination R1₀⟩
+  have hle₀ : (k1 * k2) ^ 2 ≤ (p₀ * e) ^ 2 :=
+    Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdvd₀ (mul_ne_zero hp₀ he))
+  linear_combination 4 * hle₀
 
 /-! ### Step 2: the number `λ` -/
 
@@ -621,7 +629,8 @@ theorem sq_lt_of_bound {X Y K R A e e' : ℤ} (hK : 0 < K) (hX : 0 < X) (hY : 0 
 /-- **Soundness of `boundOK`.** -/
 theorem boundOK_sound {weak : Bool} {p q P N X Y : ℕ} (h : boundOK weak p q P N X Y = true)
     (hX : 0 < X) (hP : 0 < P) (hN : 0 < N) {A e e' : ℤ} (he : e ≠ 0)
-    (B1 : 4 * (P : ℤ) ^ 2 * A ≤ (p : ℤ) ^ 2 * e ^ 2) (B2 : (N : ℤ) ^ 2 * A ≤ (q : ℤ) ^ 2 * e ^ 2)
+    (B1 : (boundK p : ℤ) * (P : ℤ) ^ 2 * A ≤ (p : ℤ) ^ 2 * e ^ 2)
+    (B2 : (N : ℤ) ^ 2 * A ≤ (q : ℤ) ^ 2 * e ^ 2)
     (B3 : A ≤ e ^ 2) (hle : (X : ℤ) * e' ^ 2 ≤ Y * A)
     (hlt : weak = true → (X : ℤ) * e' ^ 2 < Y * A) : e' ^ 2 < e ^ 2 := by
   have key : ∀ {K R : ℕ}, 0 < K → (K : ℤ) * A ≤ R * e ^ 2 → leB weak (Y * R) (X * K) = true →
@@ -637,7 +646,8 @@ theorem boundOK_sound {weak : Bool} {p q P N X Y : ℕ} (h : boundOK weak p q P 
   simp only [boundOK, Bool.or_eq_true] at h
   rcases h with (h | h) | h
   · exact key (K := 1) (R := 1) one_pos (by simpa using B3) (by simpa using h)
-  · exact key (K := 4 * P ^ 2) (R := p ^ 2) (by positivity) (by push_cast; exact B1) h
+  · exact key (K := boundK p * P ^ 2) (R := p ^ 2) (Nat.mul_pos (boundK_pos p) (by positivity))
+      (by push_cast; exact B1) h
   · exact key (K := N ^ 2) (R := q ^ 2) (by positivity) (by push_cast; exact B2) h
 
 theorem natCast_sqrt_sq {n : ℕ} (h : isSq n = true) : ((Nat.sqrt n : ℕ) : ℤ) ^ 2 = n := by
@@ -657,7 +667,7 @@ theorem torsionOK1_sound {p q a lam c1 c2 c3 c4 σ : ℕ}
     (E2 : (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2)
     (hne : ((c1 : ℤ) * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2)
     (hα : α ≠ 0) (hβ : β ≠ 0) (hγ : γ ≠ 0) (hδ : δ ≠ 0) (he : e ≠ 0)
-    (B1 : 4 * ((c1 : ℤ) * (α * β) * (c2 * (γ * δ))) ^ 2 ≤ p ^ 2 * e ^ 2)
+    (B1 : (boundK p : ℤ) * ((c1 : ℤ) * (α * β) * (c2 * (γ * δ))) ^ 2 ≤ p ^ 2 * e ^ 2)
     (B2 : ((c3 : ℤ) * (α * γ) * (c4 * (β * δ))) ^ 2 ≤ q ^ 2 * e ^ 2)
     (B3 : (α * β * (γ * δ)) ^ 2 ≤ e ^ 2) :
     ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ e' ^ 2 < e ^ 2 := by
@@ -850,7 +860,7 @@ theorem torsionOK_sound {p q a lam c1 c2 c3 c4 σ : ℕ}
     (E2 : (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2)
     (hne : ((c1 : ℤ) * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2)
     (hα : α ≠ 0) (hβ : β ≠ 0) (hγ : γ ≠ 0) (hδ : δ ≠ 0) (he : e ≠ 0)
-    (B1 : 4 * ((c1 : ℤ) * (α * β) * (c2 * (γ * δ))) ^ 2 ≤ p ^ 2 * e ^ 2)
+    (B1 : (boundK p : ℤ) * ((c1 : ℤ) * (α * β) * (c2 * (γ * δ))) ^ 2 ≤ p ^ 2 * e ^ 2)
     (B2 : ((c3 : ℤ) * (α * γ) * (c4 * (β * δ))) ^ 2 ≤ q ^ 2 * e ^ 2)
     (B3 : (α * β * (γ * δ)) ^ 2 ≤ e ^ 2) :
     ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ e' ^ 2 < e ^ 2 := by
@@ -872,12 +882,10 @@ theorem natCast_div_gcd' {p L : ℕ} : ((L / Nat.gcd p L : ℕ) : ℤ) * (Nat.gc
 
 /-- **One descent step.** Given the finite check for `(p, q)`, every solution gives a solution
 with a smaller `|e|`. -/
-theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
+theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hpq : p < q)
     (ha : q ^ 2 = p ^ 2 + a ^ 2) (hcop : Nat.Coprime p q)
     (hchk : Covered p q a) {M e r s : ℤ} (h : IsSol p q M e r s) :
     ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ e' ^ 2 < e ^ 2 := by
-  obtain ⟨p₀, hp₀⟩ := hp2
-  have hpZ : (p : ℤ) = 2 * (p₀ : ℤ) := by exact_mod_cast hp₀
   have hpZ0 : (0 : ℤ) < p := by exact_mod_cast hp
   have hqZ0 : (0 : ℤ) < q := by exact_mod_cast hp.trans hpq
   have hpqZ : (p : ℤ) < q := by exact_mod_cast hpq
@@ -885,8 +893,8 @@ theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
     have : ((q ^ 2 : ℕ) : ℤ) = ((p ^ 2 + a ^ 2 : ℕ) : ℤ) := by rw [ha]
     push_cast at this
     linear_combination this
-  obtain ⟨k1, k2, j1, j2, hk1, hk2, hj1, hj2, hk, hj, hne, hC, hbound, hjbound, hkdvd, hjdvd⟩ :=
-    exists_point hpZ (by omega) hqZ0 h
+  obtain ⟨k1, k2, j1, j2, hk1, hk2, hj1, hj2, hk, hj, hne, hC, hbound4, hbound, hjbound, hkdvd,
+    hjdvd⟩ := exists_point hpZ0 hqZ0 h
   obtain ⟨L, k1', k2', hL, hLd, hk1', hk2', hk', hne', hsq, h4, h5⟩ :=
     exists_lam (by positivity) hk1 hk2 hj1 hj2 hk hj hne hC
   have hg : 0 < Nat.gcd p L := Nat.gcd_pos_of_pos_left _ hp
@@ -951,9 +959,14 @@ theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
       exact hσd
     exact_mod_cast this
   -- the three bounds on the new solution: `B1`, `B2` from step 1, and `αβγδ ∣ e`
-  have B1 : 4 * ((c1 : ℤ) * (α * β) * (c2 * (γ * δ))) ^ 2 ≤ p ^ 2 * e ^ 2 := by
+  have B1 : (boundK p : ℤ) * ((c1 : ℤ) * (α * β) * (c2 * (γ * δ))) ^ 2 ≤ p ^ 2 * e ^ 2 := by
     rw [hsq]
-    exact hbound
+    unfold boundK
+    split
+    · rename_i hev
+      obtain ⟨p₀, hp₀⟩ : 2 ∣ p := Nat.dvd_of_mod_eq_zero (by simpa using hev)
+      exact_mod_cast hbound4 p₀ (by exact_mod_cast hp₀)
+    · simpa using hbound
   have B3 : (α * β * (γ * δ)) ^ 2 ≤ e ^ 2 := by
     have hd1 : α * β * (γ * δ) ∣ k1 * k2 := by
       refine dvd_trans (b := c1 * (α * β) * (c2 * (γ * δ))) ⟨c1 * c2, by ring⟩ ?_
@@ -985,7 +998,7 @@ theorem exists_smaller {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
 /-- **The descent.** If every case is covered (`Covered p q a`, from `fiberCheck` or from a
 certificate), there are no integers `M, e ≠ 0` with
 `M² + p² e²` and `M² + q² e²` both squares. -/
-theorem not_isSol {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
+theorem not_isSol {p q a : ℕ} (hp : 0 < p) (hpq : p < q)
     (ha : q ^ 2 = p ^ 2 + a ^ 2) (hcop : Nat.Coprime p q)
     (hchk : Covered p q a) (M e r s : ℤ) :
     ¬ IsSol p q M e r s := by
@@ -994,12 +1007,12 @@ theorem not_isSol {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p) (hpq : p < q)
   induction n using Nat.strong_induction_on with
   | _ n ih =>
     intro M e r s hn h
-    obtain ⟨M', e', r', s', h', hlt⟩ := exists_smaller hp hp2 hpq ha hcop hchk h
+    obtain ⟨M', e', r', s', h', hlt⟩ := exists_smaller hp hpq ha hcop hchk h
     exact ih _ (hn ▸ Int.natAbs_lt_iff_sq_lt.mpr hlt) M' e' r' s' rfl h'
 
 /-- The descent over `ℚ`: for rational `t ≠ 0`, `t² + p²` and `t² + q²` are not both squares. -/
-theorem not_isSquare_sq_add_sq_and_sq_add_sq {p q a : ℕ} (hp : 0 < p) (hp2 : 2 ∣ p)
-    (hpq : p < q) (ha : q ^ 2 = p ^ 2 + a ^ 2) (hcop : Nat.Coprime p q)
+theorem not_isSquare_sq_add_sq_and_sq_add_sq {p q a : ℕ} (hp : 0 < p) (hpq : p < q)
+    (ha : q ^ 2 = p ^ 2 + a ^ 2) (hcop : Nat.Coprime p q)
     (hchk : Covered p q a) {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + (p : ℚ) ^ 2) ∧ IsSquare (t ^ 2 + (q : ℚ) ^ 2)) := by
   rintro ⟨hp', hq'⟩
@@ -1013,7 +1026,7 @@ theorem not_isSquare_sq_add_sq_and_sq_add_sq {p q a : ℕ} (hp : 0 < p) (hp2 : 2
     linear_combination (t.den : ℚ) ^ 2 * hw
   obtain ⟨r, hr⟩ := key p (by exact_mod_cast hp')
   obtain ⟨s, hs⟩ := key q (by exact_mod_cast hq')
-  exact not_isSol hp hp2 hpq ha hcop hchk t.num t.den r s
+  exact not_isSol hp hpq ha hcop hchk t.num t.den r s
     ⟨Rat.num_ne_zero.mpr ht, by exact_mod_cast t.den_nz, by rw [hr]; ring, by rw [hs]; ring⟩
 
 end Descent

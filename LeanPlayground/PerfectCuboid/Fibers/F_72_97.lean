@@ -386,7 +386,7 @@ theorem covered_seventytwo_ninetyseven : Covered 72 97 65 :=
 /-- The fiber `(m, n) = (9, 4)`: the descent for `(p, q) = (72, 97)`. -/
 theorem not_isSol_seventytwo_ninetyseven (M e r s : ℤ) : ¬ IsSol 72 97 M e r s := by
   simpa using not_isSol (p := 72) (q := 97) (a := 65) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_seventytwo_ninetyseven M e r s
+    (by norm_num) (by decide) covered_seventytwo_ninetyseven M e r s
 
 end Descent
 
@@ -394,7 +394,7 @@ end Descent
 theorem not_isSquare_sq_add_5184_and_sq_add_9409 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 5184) ∧ IsSquare (t ^ 2 + 9409)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 72) (q := 97) (a := 65)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_seventytwo_ninetyseven ht
   norm_num at this
   exact fun h ↦ this h.1 h.2
