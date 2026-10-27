@@ -250,6 +250,24 @@ of Prop 1 needs one extra condition, which the identities alone do not give.
 | The box with edges `\|Uᵢ\|` is a rational perfect cuboid iff `U₁² + U₂²` is a square | `IsConfigPts.isRatCuboid_iff` |
 | A perfect cuboid exists iff some `E_N` has a positive configuration with `U₁² + U₂² = □` | `exists_isPerfectCuboid_iff` |
 
+`TwistedCuboid.lean` names what a configuration is without that extra condition. A
+**`k`-twisted perfect cuboid** has rational edges `a, b, c` and space diagonal `g`, and face
+diagonals rational up to the same factor `√k`: `a² + b² = kd²`, `a² + c² = ke²`, `b² + c² = kf²`.
+Every configuration is one, with `k = U₁² + U₂²`, and `k = 1` is a perfect cuboid. So the square
+condition is automatic only if no twisted perfect cuboid with `k ∉ ℚ*²` exists, which is as open as
+the perfect cuboid problem. A search over all integer boxes with edges up to 6000 found none.
+Asiryan (Definition 1, Corollary 1) and Paulsen–West (Proposition 3.1) state the
+configuration-to-cuboid direction without this condition.
+
+| Result | Lean |
+|---|---|
+| Prop 1 works for twisted cuboids, with `de, df, ef` replaced by `kde, kdf, kef` | `isConfigPts_of_twistedCuboid` |
+| A configuration is a `k`-twisted perfect cuboid with `k = U₁² + U₂²` | `IsConfigPts.isTwistedCuboid` |
+| For each `k`: a configuration with `U₁² + U₂² ∈ k·ℚ*²` exists iff a `k`-twisted perfect cuboid does | `exists_config_iff_exists_twistedCuboid` |
+| A configuration exists iff a `k`-twisted perfect cuboid exists for some `k` | `exists_config_iff` |
+| A perfect cuboid exists iff a `1`-twisted one does; only the class of `k` in `ℚ*/ℚ*²` matters | `exists_isPerfectCuboid_iff_twisted`, `isTwistedCuboid_one_iff`, `IsTwistedCuboid.of_mul_sq` |
+| Every prime `q ≡ 3 (mod 4)` divides `k` to an even power (`k` is a sum of two squares) | `IsTwistedCuboid.even_padicValRat`, `even_padicValRat_sq_add_sq` |
+
 The two hypotheses left in `not_rankOne_of_torsion` need tools that Mathlib does not have yet:
 `E_N(ℚ)_tors = E_N[2]` (reduction modulo primes or Nagell–Lutz; it also settles the rank-zero
 case), and Ingram's primitive-divisor theorem (canonical heights, reduction of points modulo a
