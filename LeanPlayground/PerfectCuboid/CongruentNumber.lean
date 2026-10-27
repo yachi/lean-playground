@@ -2,7 +2,7 @@ module
 
 public import LeanPlayground.PerfectCuboid.ConfigCuboid
 public import LeanPlayground.PerfectCuboid.FermatTriangle
-public import LeanPlayground.PerfectCuboid.RankOneReduction
+public import LeanPlayground.PerfectCuboid.Torsion
 
 /-!
 # Congruent numbers and the curve `E_N`
@@ -19,17 +19,16 @@ Forms*, Ch. I §§1–2; Conrad, *The congruent number problem*) and applies it 
   `|(x² − N²)/y|`, `|2Nx/y|`, `|(x² + N²)/y|`.
 * `isCongruent_iff_exists_add_self_ne_zero`: the same with points of the group `E_N(ℚ)`: `N` is
   congruent if and only if `E_N(ℚ)` has a point of order other than `1` and `2`.
-* `isCongruent_iff_exists_nonTors`: if every torsion point of `E_N(ℚ)` has order at most `2`
-  (`TorsionTwo N`, Asiryan's Remark 1), `N` is congruent if and only if `E_N(ℚ)` has a point of
-  infinite order. The direction `←` needs no hypothesis (`IsCongruent.of_nonTors`).
+* `isCongruent_iff_exists_nonTors`: `N > 0` is congruent if and only if `E_N(ℚ)` has a point of
+  infinite order, since every torsion point has order at most `2` (`torsionTwo`, Asiryan's
+  Remark 1, proved in `Torsion.lean`).
 * `isCongruent_mul_sq_iff`: being congruent depends only on the square class of `N`.
 * `add_self_eq_zero_of_sq` (Fermat): for `N = q²`, in particular `N = 1`, every rational point of
   `E_N` is a `2`-torsion point, so `E_N(ℚ) = {0, (0, 0), (±N, 0)}`. This is "`E_1` has rank `0`"
   without Mordell–Weil, because the conclusion is about every point.
 * `IsPerfectCuboid.isCongruent`: a perfect cuboid with edges `a, b, c` and space diagonal `g`
   makes both `abcg/2` and its squarefree part `N` congruent numbers, and gives a point of `E_N`
-  outside the `2`-torsion. With `TorsionTwo N` that point has infinite order
-  (`IsPerfectCuboid.exists_nonTors`).
+  outside the `2`-torsion, which has infinite order (`IsPerfectCuboid.exists_nonTors`).
 -/
 
 @[expose] public section
@@ -159,13 +158,13 @@ theorem nonTors_of_add_self_ne_zero (htor : TorsionTwo N) {P : (curve N).Point} 
     NonTors P :=
   fun n hn h ↦ hP (htor P n hn h)
 
-/-- **Congruent numbers and rank.** If every torsion point of `E_N(ℚ)` has order at most `2`,
-then `N > 0` is congruent if and only if `E_N(ℚ)` has a point of infinite order. -/
-theorem isCongruent_iff_exists_nonTors (hN : 0 < N) (htor : TorsionTwo N) :
+/-- **Congruent numbers and rank.** `N > 0` is congruent if and only if `E_N(ℚ)` has a point of
+infinite order. -/
+theorem isCongruent_iff_exists_nonTors (hN : 0 < N) :
     IsCongruent N ↔ ∃ G : (curve N).Point, NonTors G := by
   refine ⟨fun h ↦ ?_, fun ⟨G, hG⟩ ↦ IsCongruent.of_nonTors hN hG⟩
   obtain ⟨P, hP⟩ := (isCongruent_iff_exists_add_self_ne_zero hN).mp h
-  exact ⟨P, nonTors_of_add_self_ne_zero htor hP⟩
+  exact ⟨P, nonTors_of_add_self_ne_zero (torsionTwo hN.ne') hP⟩
 
 /-! ### Fermat: `E_1(ℚ)` is the `2`-torsion -/
 
@@ -228,14 +227,19 @@ theorem _root_.PerfectCuboid.IsPerfectCuboid.isCongruent {a b c : ℕ}
   rw [hs, mul_comm]
   exact hN.mul_sq hs0
 
-/-- **Conditional on `TorsionTwo`**: the curve `E_N`, `N = sf(abcg/2)`, of a perfect cuboid has a
-rational point of infinite order. -/
+/-- The curve `E_N`, `N = sf(abcg/2)`, of a perfect cuboid has a rational point of infinite
+order. -/
 theorem _root_.PerfectCuboid.IsPerfectCuboid.exists_nonTors {a b c : ℕ}
     (h : IsPerfectCuboid a b c) :
     ∃ N : ℕ, Squarefree N ∧ ∃ (g : ℕ) (s : ℚ), g ^ 2 = a ^ 2 + b ^ 2 + c ^ 2 ∧
       (a * b * c * g : ℚ) / 2 = N * s ^ 2 ∧
-      (TorsionTwo (N : ℚ) → ∃ G : (curve N).Point, NonTors G) := by
-  obtain ⟨N, hsq, g, s, hg, hs, -, -, P, hP⟩ := h.isCongruent
-  exact ⟨N, hsq, g, s, hg, hs, fun htor ↦ ⟨P, nonTors_of_add_self_ne_zero htor hP⟩⟩
+      ∃ G : (curve N).Point, NonTors G := by
+  obtain ⟨N, hsq, g, s, hg, hs, hN, -, P, hP⟩ := h.isCongruent
+  have hN0 : (N : ℚ) ≠ 0 := by
+    rintro h0
+    obtain ⟨a, b, c, ha, hb, -, hab⟩ := hN
+    rw [h0, mul_zero] at hab
+    exact (mul_pos ha hb).ne' hab
+  exact ⟨N, hsq, g, s, hg, hs, P, nonTors_of_add_self_ne_zero (torsionTwo hN0) hP⟩
 
 end PerfectCuboid.CongruentRank

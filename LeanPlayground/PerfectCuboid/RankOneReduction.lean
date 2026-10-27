@@ -487,8 +487,8 @@ theorem pattern_of_pt (hdp : DivPolyX N) (hN : 0 < N) (s : ℕ) :
 /-! ### From a rank-one subgroup to entries `A_k(G)`, `B_k(G)` -/
 
 /-- **Hypothesis (Asiryan, Remark 1):** every rational torsion point of `E_N` has order at
-most `2`. True for squarefree `N`, but its proof (reduction modulo primes, or Nagell–Lutz) is not
-in Mathlib. -/
+most `2`. Proved for every `N ≠ 0` in `Torsion.lean` (`torsionTwo`), by reduction modulo primes
+`p ≡ 3 (mod 4)`. -/
 def TorsionTwo (N : ℚ) : Prop :=
   ∀ (P : (curve N).Point) (n : ℕ), 0 < n → n • P = 0 → P + P = 0
 
