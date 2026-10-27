@@ -492,6 +492,8 @@ is ruled out in three steps:
    polynomials and uses their degrees and leading coefficients (`deg Φ_k = k²`, `lc Ψ²_k = k²`)
    with the rational root theorem. Mathlib has those degrees (`WeierstrassCurve.natDegree_Φ`,
    `WeierstrassCurve.leadingCoeff_ΨSq`) but not yet the formula `x(kP) = Φ_k(x)/Ψ²_k(x)`.
+   `RankOneReduction.lean` and `DivPolyFormula.lean` prove this step from the torsion of `E_N`
+   alone (`rankOneReduction_of_torsion`), with the formula taken from the vendored Tau Ceti files.
 2. **Primitive divisors (§6.2, §6.3).** Ingram's theorem gives a prime of good reduction that
    divides the denominator of `x(mG)` for the largest index `m` and of no earlier one; reducing
    equation (24) modulo it forces `b = a + c` or `c = a + b`. Mathlib has neither Ingram's theorem
