@@ -269,6 +269,17 @@ configuration-to-cuboid direction without this condition.
 | A perfect cuboid exists iff a `1`-twisted one does; only the class of `k` in `ℚ*/ℚ*²` matters | `exists_isPerfectCuboid_iff_twisted`, `isTwistedCuboid_one_iff`, `IsTwistedCuboid.of_mul_sq` |
 | Every prime `q ≡ 3 (mod 4)` divides `k` to an even power (`k` is a sum of two squares) | `IsTwistedCuboid.even_padicValRat`, `even_padicValRat_sq_add_sq` |
 
+`CongruentNumber.lean` states the correspondence in the language of congruent numbers: `N` is
+*congruent* if it is the area of a right triangle with rational sides.
+
+| Result | Lean |
+|---|---|
+| For `N > 0`: `N` is congruent iff `E_N` has a rational point with `Y ≠ 0`, iff `E_N(ℚ)` has a point with `2P ≠ 0` | `isCongruent_iff`, `isCongruent_iff_exists_add_self_ne_zero` |
+| `N` is congruent iff `E_N(ℚ)` has a point of infinite order (using `torsionTwo`) | `isCongruent_iff_exists_nonTors`, `IsCongruent.of_nonTors` |
+| Being congruent depends only on the square class of `N` | `isCongruent_mul_sq_iff` |
+| Fermat: `1` (and every `q²`) is not congruent, so every rational point of `E_1` (and `E_{q²}`) is `2`-torsion; `E_1(ℚ)` has no point of infinite order | `add_self_eq_zero_one`, `add_self_eq_zero_of_sq`, `not_nonTors_one` |
+| A perfect cuboid makes `abcg/2` and its squarefree part `N` congruent, and `E_N` has a point outside `E_N[2]`, hence of infinite order | `IsPerfectCuboid.isCongruent`, `IsPerfectCuboid.exists_nonTors` |
+
 The one hypothesis left in `not_rankOne_of_primitiveDivisorStep` is Ingram's primitive-divisor
 theorem, which needs canonical heights; Mathlib does not have them yet.
 
