@@ -25,6 +25,7 @@ import LeanPlayground.PerfectCuboid.FermatTriangle
 import LeanPlayground.PerfectCuboid.MasterTuple
 import LeanPlayground.PerfectCuboid.SpaceDiagonal
 import LeanPlayground.PerfectCuboid.Korec
+import LeanPlayground.PerfectCuboid.Leech
 import LeanPlayground.PerfectCuboid.MasterTupleGcd
 import LeanPlayground.PerfectCuboid.Fiber
 import LeanPlayground.PerfectCuboid.FiberTwoOne
