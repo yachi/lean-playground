@@ -79,3 +79,4 @@ import LeanPlayground.CoverFree.Partition
 import LeanPlayground.CoverFree.Stehlik
 import LeanPlayground.CoverFree.Main
 import LeanPlayground.CoverFree.AffinePlane
+import LeanPlayground.PerfectCuboid.CongruentNumber
