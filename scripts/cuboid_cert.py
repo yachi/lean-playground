@@ -170,7 +170,8 @@ def boundOK(weak, p, q, P, Nn, X, Y):
 
 
 def linOK(p, q, lam, c1, c2, c3, c4, s):
-    return (isSq(q * lam) and isSq(lam * s) and isSq(q * s)
+    D = nsub(q ** 2, p ** 2)
+    return (isSq(q * lam) and isSq(D * lam * s) and isSq(D * q * s)
             and boundOK(False, p, q, c1 * c2, c3 * c4,
                         1 if q * c3 ** 2 == lam * c1 ** 2 + s else 4,
                         ndiv(c3, math.gcd(c3, c2 * nsqrt(q * lam))) ** 2))
@@ -275,6 +276,10 @@ def divsSq(D, m):
     return [u * v for u in D for v in D if math.gcd(u * v, m) == u]
 
 
+def divsProd(Dx, x, Dy):
+    return [u * v for u in Dx for v in Dy if math.gcd(u * v, x) == u]
+
+
 def caseKey(p, q, lam, c1, c3):
     return (lam * (p + 1) + c1) * (p * q + 1) + c3
 
@@ -284,16 +289,21 @@ def keyBound(p, q):
     return (p * q + 1) * ((p + 1) * (p * q + 1))
 
 
-def sigBound(p, q, a):
-    """The upper end of the `σ` range of `Covered p q a`."""
-    return (p * q) ** 2 * a ** 2 + 1
+def sigBound(p, q, a, pair="VW"):
+    """The upper end of the `σ` range of `Covered p q a`, or of `CoveredD p q D` for the pair
+    `UV` (where `a` stands for `D`)."""
+    return (p * q) ** 2 * (a if pair == "UV" else a ** 2) + 1
 
 
-def lamCases(p, q, a, lo, hi, slo, shi, lam):
+def lamCases(p, q, a, lo, hi, slo, shi, lam, pair="VW"):
     g = math.gcd(p, lam)
     pp, ll = ndiv(p, g), ndiv(lam, g)
     out = []
-    sigmas = [s for s in divsSq(divsMul(ll, a), ll * a) if slo <= s < shi]
+    if pair == "UV":  # `lamCasesD`: the divisors of `λ'² D`
+        sig = divsProd(divsSq(divs(ll), ll), ll * ll, divs(a))
+    else:
+        sig = divsSq(divsMul(ll, a), ll * a)
+    sigmas = [s for s in sig if slo <= s < shi]
     for c1 in divs(pp):
         if math.gcd(c1, ndiv(pp, c1)) != 1:
             continue
@@ -305,10 +315,10 @@ def lamCases(p, q, a, lo, hi, slo, shi, lam):
     return out
 
 
-def fiberCases(p, q, a, lo, hi, slo, shi):
+def fiberCases(p, q, a, lo, hi, slo, shi, pair="VW"):
     K = (p + 1) * (p * q + 1)
     return [(lam,) + c for lam in divs(p * q) if lam * K < hi and lo < (lam + 1) * K
-            for c in lamCases(p, q, a, lo, hi, slo, shi, lam)]
+            for c in lamCases(p, q, a, lo, hi, slo, shi, lam, pair)]
 
 
 # ---------------------------------------------------------------------------------------------
@@ -327,10 +337,10 @@ def prime_powers(bound):
     return out
 
 
-def certify(p, q, a, max_modulus):
+def certify(p, q, a, max_modulus, pair="VW"):
     """The certificate of the fiber `(p, q, a)`, a list of `None` (torsion) or `(N, l)`, and
     the list of cases that could not be certified."""
-    cases = fiberCases(p, q, a, 0, keyBound(p, q), 0, sigBound(p, q, a))
+    cases = fiberCases(p, q, a, 0, keyBound(p, q), 0, sigBound(p, q, a, pair), pair)
     big = [l for l in range(max_modulus + 1, q + 1)
            if q % l == 0 and all(l % d for d in range(2, nsqrt(l) + 1))]
     mods = prime_powers(max_modulus) + [(l, l) for l in big]
@@ -379,7 +389,7 @@ def cost(e):
     return 0.0045 if e is None else 0.0037 + 0.00012 * (e[0] // 2 + 1) ** 2
 
 
-def chunks(p, q, a, cases, cert, budget, sigma_budget=None):
+def chunks(p, q, a, cases, cert, budget, sigma_budget=None, pair="VW"):
     """Rectangles `(lo, hi, σlo, σhi)` of `caseKey × σ` whose cases cost at most about `budget`
     kernel seconds each (kernel memory grows with the time, ~65 MB/s). Adjacent `(λ, c₁, c₃)`
     groups are joined while they fit. A group that is too big alone is reported, and, if
@@ -392,7 +402,7 @@ def chunks(p, q, a, cases, cert, budget, sigma_budget=None):
         k = caseKey(p, q, c[0], c[1], c[3])
         groups[k] = groups.get(k, 0) + cost(e)
         sigs.setdefault(k, []).append((c[5], cost(e)))
-    S = sigBound(p, q, a)
+    S = sigBound(p, q, a, pair)
     out, lo, t = [], 0, 0.0
     keys = sorted(groups)
     for i, k in enumerate(keys):
@@ -441,14 +451,17 @@ def lean_list(entries, indent="  "):
     return "\n".join(lines)
 
 
-def emit_certs(m, n, p, q, a, cases, cert, budget, sigma_budget=None):
-    """The certificate definitions and the theorem `covered_<p>_<q> : Covered p q a`."""
+def emit_certs(m, n, p, q, a, cases, cert, budget, sigma_budget=None, pair="VW"):
+    """The certificate definitions and the theorem `covered_<p>_<q> : Covered p q a`, or
+    `CoveredD p q D` for the pair `UV` (where `a` stands for `D`)."""
     tag = f"{name(p)}_{name(q)}"
-    rngs = chunks(p, q, a, cases, cert, budget, sigma_budget)
-    S = sigBound(p, q, a)
+    rngs = chunks(p, q, a, cases, cert, budget, sigma_budget, pair)
+    S = sigBound(p, q, a, pair)
+    d = "D" if pair == "UV" else ""
     out = []
     ntors = sum(1 for e in cert if e is None)
-    out.append(f"/-! ### The fiber `(m, n) = ({m}, {n})`: `(p, q, a) = ({p}, {q}, {a})`, "
+    third = f"`(p, q, D) = ({p}, {q}, {a})`" if pair == "UV" else f"`(p, q, a) = ({p}, {q}, {a})`"
+    out.append(f"/-! ### The fiber `(m, n) = ({m}, {n})`: {third}, "
                f"{len(cases)} cases, {ntors} torsion -/\n")
     names = []
 
@@ -472,20 +485,21 @@ def emit_certs(m, n, p, q, a, cases, cert, budget, sigma_budget=None):
             out.append(fit(f"def cert_{nm[10:]} : List Cert :=", ":"))
             out.append(lean_list(part))
             out.append("")
-            out.append(fit(f"theorem {nm} : CoveredOn {p} {q} {a} {lo} {hi} {slo} {shi} :=", ":"))
-            out.append(fit(f"  coveredOn_of_fiberCheckCert (cert := cert_{nm[10:]}) "
+            out.append(fit(f"theorem {nm} : CoveredOn{d} {p} {q} {a} {lo} {hi} {slo} {shi} :=",
+                           ":"))
+            out.append(fit(f"  coveredOn{d}_of_fiberCheckCert{d} (cert := cert_{nm[10:]}) "
                            "(by decide +kernel)", ")"))
             out.append("")
             sub.append(nm)
         if len(pieces) > 1:
             out.append(fit(f"theorem coveredOn_{tag}{suffix} : "
-                           f"CoveredOn {p} {q} {a} {lo} {hi} 0 {S} :=", ":"))
-            out.append("  " + " <|\n    ".join([f"CoveredOn.transσ {nm}" for nm in sub[:-1]]
+                           f"CoveredOn{d} {p} {q} {a} {lo} {hi} 0 {S} :=", ":"))
+            out.append("  " + " <|\n    ".join([f"CoveredOn{d}.transσ {nm}" for nm in sub[:-1]]
                                                 + [sub[-1]]))
             out.append("")
         names.append(f"coveredOn_{tag}{suffix}")
-    out.append(fit(f"theorem covered_{tag} : Covered {p} {q} {a} :=", ":"))
-    out.append("  " + " <|\n    ".join([f"CoveredOn.trans {nm}" for nm in names[:-1]]
+    out.append(fit(f"theorem covered_{tag} : Covered{d} {p} {q} {a} :=", ":"))
+    out.append("  " + " <|\n    ".join([f"CoveredOn{d}.trans {nm}" for nm in names[:-1]]
                                         + [names[-1]]))
     out.append("")
     return "\n".join(out)
@@ -511,8 +525,11 @@ def fit(line, at, indent="    "):
 def emit_theorems(m, n, p, q, a, pair="VW"):
     """`not_isSol_…`, `not_isSquare_…` and `not_isPerfectCuboid_…` for one fiber. For the pair
     `VW`, `(p, q, a) = (V, W, U)` and the cuboid has `X = p k`, `Z = a k`; for the pair `UW`,
-    `(p, q, a) = (U, W, V)` and the cuboid has `X = a k`, `Z = p k`. Either way the statement is
-    `U X ≠ V Z`."""
+    `(p, q, a) = (U, W, V)` and the cuboid has `X = a k`, `Z = p k`. For the pair `UV`,
+    `{p, q} = {U, V}`, `a` stands for `D = q² − p²`, and the cuboid has `X = V k`, `Z = U k`.
+    Every time the statement is `U X ≠ V Z`."""
+    if pair == "UV":
+        return emit_theorems_uv(m, n, p, q, a)
     tag = f"{name(p)}_{name(q)}"
     lo, hi = sorted((a, p))
     ratio = f"{name(lo)}_{name(hi)}"
@@ -566,6 +583,58 @@ def emit_theorems(m, n, p, q, a, pair="VW"):
     return sol, sq, cub
 
 
+def emit_theorems_uv(m, n, p, q, D):
+    """`emit_theorems` for the pair `UV`: `M = Y`, `e = k`, with the face diagonals
+    `√(Y² + U²k²)` (`h.sq_bc`) and `√(Y² + V²k²)` (`h.sq_ab`)."""
+    U, V = m * m - n * n, 2 * m * n
+    tag = f"{name(p)}_{name(q)}"
+    lo, hi = sorted((U, V))
+    ratio = f"{name(lo)}_{name(hi)}"
+    P2, Q2 = p * p, q * q
+    sol = "\n".join([
+        wrap_doc(f"The fiber `(m, n) = ({m}, {n})`: the descent for `(p, q) = ({p}, {q})`."),
+        fit(f"theorem not_isSol_{tag} (M e r s : ℤ) : ¬ IsSol {p} {q} M e r s := by", "ℤ) :"),
+        f"  simpa using not_isSolD (p := {p}) (q := {q}) (D := {D}) (by norm_num) (by norm_num)",
+        fit(f"    (by norm_num) (by decide) covered_{tag} M e r s", "(by decide)"),
+        ""])
+    sq = "\n".join([
+        wrap_doc(f"For rational `t ≠ 0`, `t² + {P2}` and `t² + {Q2}` are not both squares."),
+        f"theorem not_isSquare_sq_add_{P2}_and_sq_add_{Q2} {{t : ℚ}} (ht : t ≠ 0) :",
+        f"    ¬ (IsSquare (t ^ 2 + {P2}) ∧ IsSquare (t ^ 2 + {Q2})) := by",
+        f"  have := Descent.not_isSquare_sq_add_sq_and_sq_add_sqD (p := {p}) (q := {q})",
+        f"    (D := {D}) (by norm_num) (by norm_num) (by norm_num) (by decide)",
+        f"    Descent.covered_{tag} ht",
+        "  norm_num at this",
+        "  exact fun h ↦ this h.1 h.2", ""])
+    dU = f"((Y ^ 2 + ({U} * k) ^ 2 : ℕ) : ℤ) = ((t * t : ℕ) : ℤ) := by rw [ht]"
+    dV = f"((({V} * k) ^ 2 + Y ^ 2 : ℕ) : ℤ) = ((r * r : ℕ) : ℤ) := by rw [hr]"
+    first, second = ("t", "r") if p == U else ("r", "t")
+    da, db = (dU, dV) if p == U else (dV, dU)
+    cub = "\n".join([
+        wrap_doc(f"**No perfect cuboid has two edges in ratio `{lo} : {hi}`.** This is the fiber "
+                 f"`(m, n) = ({m}, {n})`: with `X = {V}k`, `Z = {U}k`, the face diagonals "
+                 f"`√(Y² + {U * U}k²)` and `√(Y² + {V * V}k²)` cannot both be integers."),
+        fit(f"theorem not_isPerfectCuboid_{ratio} {{X Y Z : ℕ}} (h : IsPerfectCuboid X Y Z) :",
+            "{X Y Z : ℕ}"),
+        f"    {U} * X ≠ {V} * Z := by",
+        "  intro hXZ",
+        f"  obtain ⟨k, rfl⟩ : {V} ∣ X := by omega",
+        f"  obtain rfl : Z = {U} * k := by omega",
+        "  obtain ⟨r, hr⟩ := h.sq_ab",
+        "  obtain ⟨t, ht⟩ := h.sq_bc",
+        "  have hY := h.pos_b",
+        "  have hk : 0 < k := by have := h.pos_a; omega",
+        f"  apply Descent.not_isSol_{tag} (Y : ℤ) k {first} {second}",
+        "  refine ⟨by exact_mod_cast hY.ne', by exact_mod_cast hk.ne', ?_, ?_⟩",
+        fit(f"  · have : {da}", ":=", "      "),
+        "    push_cast at this",
+        "    linear_combination this",
+        fit(f"  · have : {db}", ":=", "      "),
+        "    push_cast at this",
+        "    linear_combination this", ""])
+    return sol, sq, cub
+
+
 HEADER_CERTS = """module
 
 public import LeanPlayground.PerfectCuboid.DescentCheck
@@ -610,10 +679,11 @@ These are fibers `(m, n)` of Peschmann's master-tuple parametrization (arXiv:260
 handled by the generic descent of `LeanPlayground.PerfectCuboid.Descent`. With `U = m² − n²`,
 `V = 2mn`, `W = m² + n²`, a perfect cuboid with edges `X = V k`, `Y`, `Z = U k` has
 `Y² + U²k²`, `Y² + V²k²` and `Y² + W²k²` all squares, so it gives a solution of `IsSol p q`
-for the pair `(p, q, a) = (V, W, U)` and for the pair `(p, q, a) = (U, W, V)`. For each fiber
-the certificate lists, for every case of `fiberCases p q a` in order, `.torsion` (a torsion
+for the pair `(p, q, a) = (V, W, U)`, for the pair `(p, q, a) = (U, W, V)` and for the pair
+`{{p, q}} = {{U, V}}` with `D = q² − p²` (not a square). For each fiber the certificate lists, for
+every case of `fiberCases p q a` (or `fiberCasesD p q D`) in order, `.torsion` (a torsion
 translate, `torsionOK`) or the modulus `.modulus N l` that rules the case out; the kernel replays
-it with `fiberCheckCert`.
+it with `fiberCheckCert` (or `fiberCheckCertD`).
 
 {fibers}
 
@@ -637,7 +707,7 @@ namespace Descent
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("fibers", nargs="+",
-                    help="fibers m,n (pair (V, W)) or m,n,UW (pair (U, W))")
+                    help="fibers m,n (pair (V, W)), m,n,UW (pair (U, W)) or m,n,UV (pair (U, V))")
     ap.add_argument("--max-modulus", type=int, default=211,
                     help="largest prime power N tried (default 211)")
     ap.add_argument("--budget", type=float, default=15.0,
@@ -655,7 +725,7 @@ def main():
         parts = spec.split(",")
         m, n = int(parts[0]), int(parts[1])
         pair = parts[2].upper() if len(parts) > 2 else "VW"
-        if pair not in ("VW", "UW"):
+        if pair not in ("VW", "UW", "UV"):
             print(f"fiber {spec}: unknown pair {pair}; skipped", file=sys.stderr)
             continue
         if not (0 < n < m and math.gcd(m, n) == 1 and (m - n) % 2 == 1):
@@ -664,10 +734,13 @@ def main():
             continue
         if pair == "VW":
             p, q, a = 2 * m * n, m * m + n * n, m * m - n * n
-        else:
+        elif pair == "UW":
             p, q, a = m * m - n * n, m * m + n * n, 2 * m * n
+        else:  # `a` stands for `D = q² − p²`
+            p, q = sorted((m * m - n * n, 2 * m * n))
+            a = q * q - p * p
         t0 = time.time()
-        cases, cert, bad = certify(p, q, a, args.max_modulus)
+        cases, cert, bad = certify(p, q, a, args.max_modulus, pair)
         dt = time.time() - t0
         if bad:
             print(f"fiber ({m}, {n}) = (p, q, a) = ({p}, {q}, {a}): {len(bad)} of {len(cases)} "
@@ -680,7 +753,8 @@ def main():
         print(f"fiber ({m}, {n}) = (p, q, a) = ({p}, {q}, {a}): {len(cases)} cases, "
               f"{sum(e is None for e in cert)} torsion, moduli {[N for N, _ in ms]}, "
               f"{dt:.1f}s", file=sys.stderr)
-        blocks.append(emit_certs(m, n, p, q, a, cases, cert, args.budget, args.sigma_budget))
+        blocks.append(emit_certs(m, n, p, q, a, cases, cert, args.budget, args.sigma_budget,
+                                 pair))
         fibers.append((m, n, p, q, a, pair))
 
     if not fibers:
@@ -701,17 +775,20 @@ def main():
             sols.append(sol)
             sqs.append(sq)
             cubs.append(cub)
-            lo, hi = sorted((a, p))
-            stmt = f"{a} X = {p} Z" if pair == "VW" else f"{p} X = {a} Z"
+            U, V = m * m - n * n, 2 * m * n
+            lo, hi = sorted((U, V))
             results.append(wrap_doc(f"`not_isPerfectCuboid_{name(lo)}_{name(hi)}` — no perfect "
-                                    f"cuboid has `{stmt}`.", first="* ", last="")
+                                    f"cuboid has `{U} X = {V} Z`.", first="* ", last="")
                            .replace("\n", "\n  "))
-        ratios = ", ".join(f"`{min(a, p)} : {max(a, p)}`" for (_, _, p, _, a, _) in fibers)
-        descs = [wrap_doc(f"`{min(a, p)} : {max(a, p)}`, the fiber `(m, n) = ({m}, {n})`. We use "
-                          f"the pair `(p, q) = ({p}, {q})`, `a = {a}`; the curve "
+        ratios = ", ".join(f"`{min(m * m - n * n, 2 * m * n)} : {max(m * m - n * n, 2 * m * n)}`"
+                           for (m, n, *_) in fibers)
+        descs = [wrap_doc(f"`{min(m * m - n * n, 2 * m * n)} : {max(m * m - n * n, 2 * m * n)}`, "
+                          f"the fiber `(m, n) = ({m}, {n})`. We use "
+                          f"the pair `(p, q) = ({p}, {q})`, "
+                          + (f"`D = {a}`" if pair == "UV" else f"`a = {a}`") + "; the curve "
                           f"`y² = x (x + {p * p})(x + {q * q})` has rank `0` and `Ш[2] = 0`.",
                           first="* ", last="").replace("\n", "\n  ")
-                 for (m, n, p, q, a, _) in fibers]
+                 for (m, n, p, q, a, pair) in fibers]
         text = HEADER_FULL.format(ratios=ratios or "(none)", args=argstr,
                                   fibers="\n".join(descs),
                                   results="\n".join(results) or "(none)")
