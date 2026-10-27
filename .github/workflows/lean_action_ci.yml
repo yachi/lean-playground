@@ -1,24 +1,177 @@
 name: Lean Action CI
 
+# Branch pushes get CI through their pull request; a push trigger on every
+# branch as well ran each PR commit twice.
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
+# A new push to a PR cancels its older run; main runs every commit.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Modules too big to build side by side: each takes ~3 GB and up to 20 min,
+  # and four at once on a 16 GB runner got the job killed. Each gets a job.
+  HEAVY: LeanPlayground.PerfectCuboid.Fibers.*
+  # Heavy modules to start first, slowest first (timings from run 61).
+  SLOW_FIRST: >-
+    LeanPlayground.PerfectCuboid.Fibers.F_52_677
+    LeanPlayground.PerfectCuboid.Fibers.F_684_1525
+    LeanPlayground.PerfectCuboid.Fibers.F_228_397
+    LeanPlayground.PerfectCuboid.Fibers.F_400_689
+    LeanPlayground.PerfectCuboid.Fibers.F_432_793
+    LeanPlayground.PerfectCuboid.Fibers.F_644_725
+    LeanPlayground.PerfectCuboid.Fibers.F_336_625
+    LeanPlayground.PerfectCuboid.Fibers.F_736_785
+
+# The build runs in three stages that share one cache of the project's own
+# .lake/build, saved from main and restored everywhere, so a run rebuilds only
+# the modules whose sources (or imports) changed:
+#   core:  every module that imports no heavy module, in one job, then lists
+#          the heavy modules that are out of date;
+#   heavy: one job per out-of-date heavy module, all in parallel;
+#   build: the rest (FiberList, the root), from the cache plus the outputs of
+#          the other jobs, passed along as artifacts.
+# Mathlib's oleans come from `lake exe cache get` in each job, as before.
 jobs:
-  build:
+  core:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     permissions:
       contents: read # Read access to repository contents
-
+    outputs:
+      cache-key: ${{ steps.cache.outputs.cache-matched-key }}
+      heavy: ${{ steps.plan.outputs.heavy }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      # No GitHub cache for .lake: lean-action keys it per commit (~2 GB
-      # each), which overflows the 10 GB repo limit, and `lake exe cache get`
-      # refetches Mathlib's oleans on every run anyway.
+      # lean-action's own cache keys all of .lake per commit (~2 GB each), which
+      # overflows the 10 GB repo limit, so only .lake/build is cached here.
       - uses: leanprover/lean-action@24581d74d674803a25a81b10b059c5c0cdd344c6 # v1
         with:
           use-github-cache: "false"
+          build: "false"
+      - id: cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: .lake/build
+          key: >-
+            lake-build-v1-${{ runner.os }}-${{ hashFiles('lean-toolchain',
+            'lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: >-
+            lake-build-v1-${{ runner.os }}-${{ hashFiles('lean-toolchain',
+            'lake-manifest.json') }}-
+      - run: touch "$RUNNER_TEMP/stamp"
+      - id: plan
+        run: |
+          python3 scripts/ci_plan.py LeanPlayground "$HEAVY" $SLOW_FIRST > "$RUNNER_TEMP/plan.json"
+          jq -r '.core[]' "$RUNNER_TEMP/plan.json" | xargs -r lake build
+          # `--no-build` exits non-zero when the module would be rebuilt.
+          stale=()
+          for m in $(jq -r '.heavy[]' "$RUNNER_TEMP/plan.json"); do
+            lake build --no-build "$m" > /dev/null 2>&1 || stale+=("$m")
+          done
+          echo "Out of date: ${#stale[@]} heavy module(s): ${stale[*]}"
+          echo "heavy=$(jq -cn '$ARGS.positional' --args "${stale[@]}")" >> "$GITHUB_OUTPUT"
+      # Only the files built here; the next jobs restore the same cache first.
+      - run: >-
+          find .lake/build -type f -newer "$RUNNER_TEMP/stamp" -print0 |
+          tar --null -czf "$RUNNER_TEMP/core.tgz" -T -
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: build-core
+          path: ${{ runner.temp }}/core.tgz
+          retention-days: 1
+          compression-level: 0
+
+  heavy:
+    needs: core
+    if: needs.core.outputs.heavy != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read # Read access to repository contents
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJSON(needs.core.outputs.heavy) }}
+    name: heavy (${{ matrix.module }})
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: leanprover/lean-action@24581d74d674803a25a81b10b059c5c0cdd344c6 # v1
+        with:
+          use-github-cache: "false"
+          build: "false"
+      - if: needs.core.outputs.cache-key != ''
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: .lake/build
+          key: ${{ needs.core.outputs.cache-key }}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: build-core
+          path: ${{ runner.temp }}
+      - run: |
+          tar -xzf "$RUNNER_TEMP/core.tgz"
+          touch "$RUNNER_TEMP/stamp"
+      - run: lake build "${{ matrix.module }}"
+      - run: >-
+          find .lake/build -type f -newer "$RUNNER_TEMP/stamp" -print0 |
+          tar --null -czf "$RUNNER_TEMP/heavy.tgz" -T -
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: build-heavy-${{ matrix.module }}
+          path: ${{ runner.temp }}/heavy.tgz
+          retention-days: 1
+          compression-level: 0
+
+  build:
+    needs: [core, heavy]
+    # Also after a failed heavy job, so the cache keeps the modules that built.
+    if: ${{ !cancelled() && needs.core.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read # Read access to repository contents
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: leanprover/lean-action@24581d74d674803a25a81b10b059c5c0cdd344c6 # v1
+        with:
+          use-github-cache: "false"
+          build: "false"
+      - if: needs.core.outputs.cache-key != ''
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: .lake/build
+          key: ${{ needs.core.outputs.cache-key }}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: build-*
+          path: ${{ runner.temp }}/outputs
+      # Core first: the heavy outputs are newer and must win.
+      - run: |
+          for f in "$RUNNER_TEMP"/outputs/build-core/*.tgz "$RUNNER_TEMP"/outputs/build-heavy-*/*.tgz; do
+            [ -e "$f" ] && tar -xzf "$f"
+          done
+          true
+      - if: needs.heavy.result != 'failure'
+        run: lake build
+      - if: >-
+          !cancelled() && github.event_name == 'push' &&
+          github.ref == 'refs/heads/main'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: .lake/build
+          key: >-
+            lake-build-v1-${{ runner.os }}-${{ hashFiles('lean-toolchain',
+            'lake-manifest.json') }}-${{ github.sha }}-${{ github.run_attempt }}
+      - if: needs.heavy.result == 'failure'
+        run: |
+          echo "::error::A heavy module failed to build; see the heavy jobs."
+          exit 1
 
   # Publish API docs to https://yachi.github.io/lean-playground/docs/ from main only;
   # the github-pages environment rejects deploys from other branches.
