@@ -250,6 +250,17 @@ of Prop 1 needs one extra condition, which the identities alone do not give.
 | The box with edges `\|Uᵢ\|` is a rational perfect cuboid iff `U₁² + U₂²` is a square | `IsConfigPts.isRatCuboid_iff` |
 | A perfect cuboid exists iff some `E_N` has a positive configuration with `U₁² + U₂² = □` | `exists_isPerfectCuboid_iff` |
 
+`CongruentNumber.lean` states the correspondence in the language of congruent numbers: `N` is
+*congruent* if it is the area of a right triangle with rational sides.
+
+| Result | Lean |
+|---|---|
+| For `N > 0`: `N` is congruent iff `E_N` has a rational point with `Y ≠ 0`, iff `E_N(ℚ)` has a point with `2P ≠ 0` | `isCongruent_iff`, `isCongruent_iff_exists_add_self_ne_zero` |
+| With `E_N(ℚ)_tors = E_N[2]`: `N` is congruent iff `E_N(ℚ)` has a point of infinite order (`⇐` unconditional) | `isCongruent_iff_exists_nonTors`, `IsCongruent.of_nonTors` |
+| Being congruent depends only on the square class of `N` | `isCongruent_mul_sq_iff` |
+| Fermat: `1` (and every `q²`) is not congruent, so every rational point of `E_1` (and `E_{q²}`) is `2`-torsion; `E_1(ℚ)` has no point of infinite order | `add_self_eq_zero_one`, `add_self_eq_zero_of_sq`, `not_nonTors_one` |
+| A perfect cuboid makes `abcg/2` and its squarefree part `N` congruent, and `E_N` has a point outside `E_N[2]`, of infinite order given `E_N(ℚ)_tors = E_N[2]` | `IsPerfectCuboid.isCongruent`, `IsPerfectCuboid.exists_nonTors` |
+
 The two hypotheses left in `not_rankOne_of_torsion` need tools that Mathlib does not have yet:
 `E_N(ℚ)_tors = E_N[2]` (reduction modulo primes or Nagell–Lutz; it also settles the rank-zero
 case), and Ingram's primitive-divisor theorem (canonical heights, reduction of points modulo a
