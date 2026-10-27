@@ -28,6 +28,30 @@ lake build
 
 ## Formalizations
 
+### The strong Erdős–Frankl–Füredi cover-free conjecture — `LeanPlayground/CoverFree/`
+
+Yanan Hu and Leilei Zhang, [*A proof of the strong Erdős–Frankl–Füredi cover-free
+conjecture*](https://arxiv.org/abs/2610.24442) (arXiv, 2026-10). A family is `r`-cover-free if no
+member lies in the union of at most `r` others, and `T(r)` is the least `n` with an `r`-cover-free
+family of more than `n` subsets of `[n]`. Everything is unconditional: Stehlík's theorem, which the
+paper uses as a black box, is proved too.
+
+| Paper | Lean |
+|---|---|
+| Lemma 2.1 (Stehlík 2006, dual form): critical, connected `⇒ \|U\| ≥ 2κ − 1` | `CoverFree.stehlikBound` |
+| Lemma 2.2: `κ² ≤ ∑_{x ∈ U} 1 / p_x` for a probability weighting | `CoverFree.weighted'` |
+| Theorem 1.1: more than `n` members on `n` points `⇒ n ≥ (r + 1)²` | `CoverFree.sq_le_card_of_card_lt` |
+| Theorem 1.1 for `T`: `T(r) ≥ (r + 1)²` | `CoverFree.sq_le_T` |
+| Affine planes: `T(r) ≤ q²` for prime powers `q > r` | `CoverFree.T_le` |
+| Corollary 1.2: `T(r) = (r + 1)²` when `r + 1` is a prime power | `CoverFree.T_eq` |
+
+`coverNum H W` counts members of `H` that need not lie inside `W`, so restricting to a subset keeps
+the same family and weights, and Lemma 2.2 needs no down-closure. Stehlík's theorem
+(*Minimal connected τ-critical hypergraphs*, Graphs Combin. 22 (2006)) is proved in the dual
+setting of good partitions (`CoverFree.IsPart`), following his Lemmas 2–5. Lemma 4 (two singleton
+blocks never share a component) is proved by induction on the distance between them, moving the
+singleton one step along a shortest walk, instead of Stehlík's cut of a shortest path.
+
 ### The center of a Clifford algebra — `LeanPlayground/CliffordCenter/`
 
 Both propositions of Chris Peters and Hans Sterk, [*On the center of the Clifford
