@@ -235,9 +235,10 @@ repairs it. The file proves the parts of that argument that Mathlib's group law 
 | Lemma 1 | `±Q₁ ± Q₂ ± Q₃ ≠ S = (0, 0)`. Proved with Vieta's formulas instead of Riemann–Roch: the sum would force `(X₁² − N²)(X₂² − N²)(X₃² − N²) = 0` | `CongruentRank.add_add_ne_S`, `vieta_add` |
 | Prop 2 (the gap) | Replacing `G` by `G + T` swaps the sequences `A_k(G) = kG + ε(k)S` and `B_k(G) = A_k(G) + T` only for odd `k`. For even `k` the swap claimed by Paulsen–West fails for every `G`, and `A_k`, `B_k` never share an `X`-coordinate | `A_add_T_of_odd`, `A_add_T_of_even`, `A_add_T_ne_B_of_even`, `HasX.ne_of_add_T` |
 | §6.1, §6.4 | For the pattern `(aG, bG + T, cG + S + T)` the compatibility condition is `X_aX_b + X_aX_c − X_bX_c + N² = 0` (eq. 24), and `b = a + c` or `c = a + b` contradicts Lemma 1 | `eq24`, `eq24_ne`, `not_pattern` |
-| Lemmas 2, 3 | A configuration inside `ℤG + E_N[2]` can be brought to the pattern `(aG, bG + T, cG + S + T)`, `a, b` odd, `c` even, **conditional** only on `E_N(ℚ)_tors = E_N[2]` (Remark 1). Equation (18) `t(kG) = P_k(z)/Q_k(z)` with `N`-free integer polynomials comes from the division-polynomial formula for `n • P` and a weighted-homogeneity scaling (`DivPolyScale.lean`); Lemma 2 is the rational root theorem on `Z` (eq. 21); Lemma 3 is a descent on `k₁ + k₂ + k₃` through `G ↦ G + T` and `G ↦ 2G + S` (`RankOneReduction.lean`) | `rankOneReduction_of_torsion`, `rankOneReduction`, `hasX_pt`, `not_excluded`, `pattern_of_pt`, `aeval_bigZ_ne_zero`, `sub_Φ`, `sub_ΨSq` |
+| Lemmas 2, 3 | A configuration inside `ℤG + E_N[2]` can be brought to the pattern `(aG, bG + T, cG + S + T)`, `a, b` odd, `c` even, now **unconditional** (the torsion hypothesis of Remark 1 is proved in `Torsion.lean`). Equation (18) `t(kG) = P_k(z)/Q_k(z)` with `N`-free integer polynomials comes from the division-polynomial formula for `n • P` and a weighted-homogeneity scaling (`DivPolyScale.lean`); Lemma 2 is the rational root theorem on `Z` (eq. 21); Lemma 3 is a descent on `k₁ + k₂ + k₃` through `G ↦ G + T` and `G ↦ 2G + S` (`RankOneReduction.lean`) | `rankOneReduction_of_pos`, `rankOneReduction_of_torsion`, `rankOneReduction`, `hasX_pt`, `not_excluded`, `pattern_of_pt`, `aeval_bigZ_ne_zero`, `sub_Φ`, `sub_ΨSq` |
 | `n • P` | `n • (x, y) ≠ 0 ⇒ ΨSqₙ(x) ≠ 0` and `X(n • (x, y)) = Φₙ(x)/ΨSqₙ(x)` on any Weierstrass curve over a field, from the Tau Ceti project's `zsmul_point_eq_smulEval` (vendored, see below) | `WeierstrassCurve.exists_zsmul_some_eq`, `CongruentRank.divPolyX` |
-| Thm 1 (rank one) | No positive configuration lies in `ℤG + E_N[2]`, **conditional** on the torsion (Remark 1) and on the primitive-divisor step (§6.2–6.3) | `not_rankOne_of_torsion`, `not_rankOne`, `TorsionTwo`, `PrimitiveDivisorStep` |
+| Remark 1 | `E_N(ℚ)_tors = {0, S, T, U}` for every rational `N ≠ 0` (Koblitz, Ch. I §9). No point of order `4`, by the doubling formula. No point of odd prime order `ℓ`: Dirichlet gives a prime `p ≡ 3 (mod 4)`, `p ≡ 1 (mod ℓ)` prime to the denominators of the point and of `N`; reducing through `ℤ_[p]` gives a nonzero point of `E_N(𝔽_p)` killed by `ℓ` (since `ΨSq_ℓ(x̄) = 0`), but `#E_N(𝔽_p) = p + 1 ≢ 0 (mod ℓ)`. So every point with `Y ≠ 0`, in particular every point of a configuration, has infinite order | `torsionTwo`, `add_self_eq_zero_of_four`, `eq_zero_of_prime_nsmul`, `exists_reduction`, `WeierstrassCurve.Affine.natCard_point`, `WeierstrassCurve.zsmul_eq_zero_iff`, `nonTors_of_hasX` |
+| Thm 1 (rank one) | No positive configuration lies in `ℤG + E_N[2]`, **conditional** only on the primitive-divisor step (§6.2–6.3) | `not_rankOne_of_primitiveDivisorStep`, `not_rankOne_of_torsion`, `not_rankOne`, `PrimitiveDivisorStep` |
 
 `ConfigCuboid.lean` goes back from a configuration to a cuboid. Each point gives a right triangle
 of area `N` with leg `Uᵢ = 2NYᵢ/(N² − Xᵢ²)`; the box with edges `|U₁|, |U₂|, |U₃|` always has a
@@ -250,10 +251,8 @@ of Prop 1 needs one extra condition, which the identities alone do not give.
 | The box with edges `\|Uᵢ\|` is a rational perfect cuboid iff `U₁² + U₂²` is a square | `IsConfigPts.isRatCuboid_iff` |
 | A perfect cuboid exists iff some `E_N` has a positive configuration with `U₁² + U₂² = □` | `exists_isPerfectCuboid_iff` |
 
-The two hypotheses left in `not_rankOne_of_torsion` need tools that Mathlib does not have yet:
-`E_N(ℚ)_tors = E_N[2]` (reduction modulo primes or Nagell–Lutz; it also settles the rank-zero
-case), and Ingram's primitive-divisor theorem (canonical heights, reduction of points modulo a
-prime).
+The one hypothesis left in `not_rankOne_of_primitiveDivisorStep` is Ingram's primitive-divisor
+theorem, which needs canonical heights; Mathlib does not have them yet.
 
 #### Vendored: the division-polynomial formula — `TauCeti/`
 

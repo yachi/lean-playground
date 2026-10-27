@@ -72,6 +72,7 @@ import LeanPlayground.PerfectCuboid.ConfigCuboid
 import LeanPlayground.PerfectCuboid.DivPolyScale
 import LeanPlayground.PerfectCuboid.RankOneReduction
 import LeanPlayground.PerfectCuboid.DivPolyFormula
+import LeanPlayground.PerfectCuboid.Torsion
 import LeanPlayground.CoverFree.Basic
 import LeanPlayground.CoverFree.Weighted
 import LeanPlayground.CoverFree.Partition
