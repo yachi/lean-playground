@@ -13,8 +13,8 @@ three pairs `(V, W)`, `(U, W)` and `(U, V)`, and the descent of
 `LeanPlayground.PerfectCuboid.Descent` for any one of them rules out the fiber.
 
 The three curves `y² = x (x + p²)(x + q²)` have different ranks: among the `331` fibers with
-`m ≤ 40`, `70` have a usable pair `(V, W)` (rank `0`, `Ш[2] = 0`) and `88` a usable pair
-`(U, W)`, so `131` have at least one of the two (PARI/GP).
+`m ≤ 40`, `70` have a usable pair `(V, W)` (rank `0`, `Ш[2] = 0`), `88` a usable pair
+`(U, W)` and `98` a usable pair `(U, V)`, so `179` have at least one of the three (PARI/GP).
 
 ## Main results
 
@@ -53,7 +53,7 @@ theorem IsPerfectCuboid.isSol_three_pairs {X Y Z : ℕ} (h : IsPerfectCuboid X Y
 /-- **The descent for any one of the three pairs rules out a fiber.** On the fiber `(m, n)`, with
 `U = m² − n²`, `V = 2mn`, `W = m² + n²`, a perfect cuboid with `U X = V Z` gives solutions of
 `IsSol V W`, `IsSol U W` and `IsSol U V` (`isSol_three_pairs`), so it suffices that one of the
-three has none. The fibers of `provedFibers` use the pair `(V, W)` or the pair `(U, W)`. -/
+three has none. The fibers of `provedFibers` use each of the three pairs. -/
 theorem IsPerfectCuboid.not_onFiber_of_pair {X Y Z : ℕ} (h : IsPerfectCuboid X Y Z) {m n : ℤ}
     (hm : m ≠ 0) (hn : n ≠ 0)
     (hpair : (∀ M e r s, ¬ Descent.IsSol (2 * m * n) (m ^ 2 + n ^ 2) M e r s) ∨
