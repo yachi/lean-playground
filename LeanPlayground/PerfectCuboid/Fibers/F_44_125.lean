@@ -1063,7 +1063,7 @@ theorem covered_fortyfour_125 : Covered 44 125 117 :=
 /-- The fiber `(m, n) = (11, 2)`: the descent for `(p, q) = (44, 125)`. -/
 theorem not_isSol_fortyfour_125 (M e r s : ℤ) : ¬ IsSol 44 125 M e r s := by
   simpa using not_isSol (p := 44) (q := 125) (a := 117) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_fortyfour_125 M e r s
+    (by norm_num) (by decide) covered_fortyfour_125 M e r s
 
 end Descent
 
@@ -1071,7 +1071,7 @@ end Descent
 theorem not_isSquare_sq_add_1936_and_sq_add_15625 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 1936) ∧ IsSquare (t ^ 2 + 15625)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 44) (q := 125) (a := 117)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_fortyfour_125 ht
   norm_num at this
   exact fun h ↦ this h.1 h.2

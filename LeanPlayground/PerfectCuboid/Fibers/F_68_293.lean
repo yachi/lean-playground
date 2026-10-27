@@ -492,7 +492,7 @@ theorem covered_sixtyeight_293 : Covered 68 293 285 :=
 /-- The fiber `(m, n) = (17, 2)`: the descent for `(p, q) = (68, 293)`. -/
 theorem not_isSol_sixtyeight_293 (M e r s : ℤ) : ¬ IsSol 68 293 M e r s := by
   simpa using not_isSol (p := 68) (q := 293) (a := 285) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_sixtyeight_293 M e r s
+    (by norm_num) (by decide) covered_sixtyeight_293 M e r s
 
 end Descent
 
@@ -500,7 +500,7 @@ end Descent
 theorem not_isSquare_sq_add_4624_and_sq_add_85849 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 4624) ∧ IsSquare (t ^ 2 + 85849)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 68) (q := 293) (a := 285)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_sixtyeight_293 ht
   norm_num at this
   exact fun h ↦ this h.1 h.2

@@ -11884,7 +11884,7 @@ theorem covered_684_1525 : Covered 684 1525 1363 :=
 /-- The fiber `(m, n) = (38, 9)`: the descent for `(p, q) = (684, 1525)`. -/
 theorem not_isSol_684_1525 (M e r s : ℤ) : ¬ IsSol 684 1525 M e r s := by
   simpa using not_isSol (p := 684) (q := 1525) (a := 1363) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_684_1525 M e r s
+    (by norm_num) (by decide) covered_684_1525 M e r s
 
 end Descent
 
@@ -11892,7 +11892,7 @@ end Descent
 theorem not_isSquare_sq_add_467856_and_sq_add_2325625 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 467856) ∧ IsSquare (t ^ 2 + 2325625)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 684) (q := 1525) (a := 1363)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_684_1525 ht
   norm_num at this
   exact fun h ↦ this h.1 h.2

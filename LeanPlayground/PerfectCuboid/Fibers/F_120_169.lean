@@ -1492,7 +1492,7 @@ theorem covered_120_169 : Covered 120 169 119 :=
 /-- The fiber `(m, n) = (12, 5)`: the descent for `(p, q) = (120, 169)`. -/
 theorem not_isSol_120_169 (M e r s : ℤ) : ¬ IsSol 120 169 M e r s := by
   simpa using not_isSol (p := 120) (q := 169) (a := 119) (by norm_num) (by norm_num)
-    (by norm_num) (by norm_num) (by decide) covered_120_169 M e r s
+    (by norm_num) (by decide) covered_120_169 M e r s
 
 end Descent
 
@@ -1500,7 +1500,7 @@ end Descent
 theorem not_isSquare_sq_add_14400_and_sq_add_28561 {t : ℚ} (ht : t ≠ 0) :
     ¬ (IsSquare (t ^ 2 + 14400) ∧ IsSquare (t ^ 2 + 28561)) := by
   have := Descent.not_isSquare_sq_add_sq_and_sq_add_sq (p := 120) (q := 169) (a := 119)
-    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by decide)
+    (by norm_num) (by norm_num) (by norm_num) (by decide)
     Descent.covered_120_169 ht
   norm_num at this
   exact fun h ↦ this h.1 h.2
