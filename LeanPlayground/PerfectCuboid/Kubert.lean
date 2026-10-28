@@ -150,7 +150,8 @@ theorem exists_onEpp (h : IsPerfectCuboid X Y Z) (hf : (Z : ℚ) * U m n = X * V
     (b := U m n * e / X) (c := U m n * f / X) ht0
     (by rw [div_pow, div_pow, div_add' _ _ _ hX2, div_left_inj' hX2]; linear_combination -U m n ^ 2 * hd')
     (by rw [div_pow, div_pow, div_add' _ _ _ hX2, div_left_inj' hX2]; linear_combination hVX - U m n ^ 2 * he')
-    (by rw [W_sq, div_pow, div_pow, div_add' _ _ _ hX2, div_left_inj' hX2]
+    (by
+      rw [W_sq, div_pow, div_pow, div_add' _ _ _ hX2, div_left_inj' hX2]
       linear_combination hVX - U m n ^ 2 * hf'')
   refine ⟨_, _, hE, by positivity, ⟨_, sq _⟩, ⟨_, by rw [h1, sq]⟩, ⟨_, by rw [h2, sq]⟩,
     ⟨_, by rw [h3, sq]⟩⟩
