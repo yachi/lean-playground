@@ -89,6 +89,7 @@ import LeanPlayground.PerfectCuboid.Fibers.F_651_701
 import LeanPlayground.PerfectCuboid.Fibers.F_259_709
 import LeanPlayground.PerfectCuboid.Fibers.F_775_793
 import LeanPlayground.PerfectCuboid.FiberList
+import LeanPlayground.PerfectCuboid.Kubert
 import LeanPlayground.PerfectCuboid.CongruentRank
 import LeanPlayground.PerfectCuboid.ConfigCuboid
 import LeanPlayground.PerfectCuboid.TwistedCuboid
