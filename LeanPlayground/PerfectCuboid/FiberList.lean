@@ -6,6 +6,7 @@ public import LeanPlayground.PerfectCuboid.FiberPairs
 public import LeanPlayground.PerfectCuboid.Fibers.F_100_629
 public import LeanPlayground.PerfectCuboid.Fibers.F_115_252
 public import LeanPlayground.PerfectCuboid.Fibers.F_120_169
+public import LeanPlayground.PerfectCuboid.Fibers.F_1215696_1221025
 public import LeanPlayground.PerfectCuboid.Fibers.F_132_157
 public import LeanPlayground.PerfectCuboid.Fibers.F_132_493
 public import LeanPlayground.PerfectCuboid.Fibers.F_133_156
@@ -64,6 +65,7 @@ public import LeanPlayground.PerfectCuboid.Fibers.F_52_173
 public import LeanPlayground.PerfectCuboid.Fibers.F_52_677
 public import LeanPlayground.PerfectCuboid.Fibers.F_533_756
 public import LeanPlayground.PerfectCuboid.Fibers.F_540_629
+public import LeanPlayground.PerfectCuboid.Fibers.F_54264_133225
 public import LeanPlayground.PerfectCuboid.Fibers.F_56_785
 public import LeanPlayground.PerfectCuboid.Fibers.F_57_185
 public import LeanPlayground.PerfectCuboid.Fibers.F_60_229
@@ -87,11 +89,11 @@ public import LeanPlayground.PerfectCuboid.Fibers.F_9_40
 
 Every perfect cuboid lies on a fiber `(m, n)` of Peschmann's master-tuple parametrization
 (`IsEulerBrick.exists_fiber`): two of its edges `X, Z` satisfy `(m² − n²) X = 2mn Z` for coprime
-`m > n > 0` of opposite parity. This file collects the 86 fibers that the descent of
+`m > n > 0` of opposite parity. This file collects the 88 fibers that the descent of
 `LeanPlayground.PerfectCuboid.Descent` has ruled out unconditionally, in `FiberTwoOne.lean`,
 `FiberDescent.lean` and `Fibers/F_<p>_<q>.lean`, into one statement:
 
-* `provedFibers` — the list of the 86 pairs `(m, n)`;
+* `provedFibers` — the list of the 88 pairs `(m, n)`;
 * `IsPerfectCuboid.not_onFiber_of_mem` — a perfect cuboid has no two edges `X, Z` with
   `(m² − n²) X = 2mn Z` for `(m, n)` in the list;
 * `IsPerfectCuboid.exists_fiber_not_mem` — every perfect cuboid lies on a fiber outside the list.
@@ -119,6 +121,11 @@ descent runs with `D = |V² − U²|`, see `Descent.not_isSolD`), 24 more: `9 : 
 `319 : 360`, `399 : 40`, `435 : 308`, `279 : 440`, `465 : 368`, `231 : 520`, `455 : 528`,
 `165 : 532`, `385 : 552`, `589 : 300`, `595 : 468`, `627 : 364`, `629 : 540`, `533 : 756`.
 
+Through the curve `E″` of `LeanPlayground.PerfectCuboid.Kubert`, i.e. the pair `(2UV, W²)`
+(`IsPerfectCuboid.not_onFiber_of_isogeny`), 2 more: `357 : 76` and `817 : 744`, the fibers
+`(19, 2)` and `(31, 12)`. Their descents use the class lemma of
+`LeanPlayground.PerfectCuboid.DescentClass`, which kills whole groups of cases at once.
+
 The descent can only work on a pair whose curve has rank `0` and `Ш[2] = 0`. By PARI/GP, among the
 `331` fibers with `m ≤ 40`, `70` have a usable pair `(V, W)`, `88` a usable pair `(U, W)` and `98` a
 usable pair `(U, V)`; `179` have at least one. The list has every fiber with a usable pair `(V, W)`
@@ -138,13 +145,13 @@ def provedFibers : List (ℕ × ℕ) :=
    (9, 2), (9, 4), (9, 8), (10, 1), (10, 3), (10, 7), (10, 9), (11, 2), (11, 4), (11, 6), (11, 8),
    (11, 10), (12, 1), (12, 5), (13, 2), (13, 6), (14, 3), (14, 9), (14, 11), (14, 13), (15, 2),
    (16, 1), (16, 3), (16, 7), (16, 9), (16, 11), (16, 13), (17, 2), (17, 4), (18, 1), (18, 5),
-   (18, 11), (18, 13), (18, 17), (19, 4), (19, 6), (19, 8), (19, 10), (19, 14), (19, 18), (20, 1),
-   (20, 9), (20, 11), (20, 13), (21, 2), (21, 8), (22, 3), (22, 5), (22, 7), (22, 9), (22, 15),
-   (23, 4), (23, 6), (23, 8), (23, 10), (23, 12), (23, 14), (23, 16), (24, 7), (24, 11), (25, 2),
-   (25, 6), (25, 8), (26, 1), (26, 3), (26, 5), (26, 7), (26, 9), (27, 8), (27, 10), (27, 14),
-   (28, 1), (28, 3), (38, 9)]
+   (18, 11), (18, 13), (18, 17), (19, 2), (19, 4), (19, 6), (19, 8), (19, 10), (19, 14), (19, 18),
+   (20, 1), (20, 9), (20, 11), (20, 13), (21, 2), (21, 8), (22, 3), (22, 5), (22, 7), (22, 9),
+   (22, 15), (23, 4), (23, 6), (23, 8), (23, 10), (23, 12), (23, 14), (23, 16), (24, 7), (24, 11),
+   (25, 2), (25, 6), (25, 8), (26, 1), (26, 3), (26, 5), (26, 7), (26, 9), (27, 8), (27, 10),
+   (27, 14), (28, 1), (28, 3), (31, 12), (38, 9)]
 
-theorem provedFibers_length : provedFibers.length = 86 := rfl
+theorem provedFibers_length : provedFibers.length = 88 := rfl
 
 /-- A perfect cuboid has no two edges `X, Z` with `(m² − n²) X = 2mn Z` for `(m, n)` in
 `provedFibers`. -/
@@ -163,7 +170,7 @@ theorem IsPerfectCuboid.not_onFiber_of_mem {X Y Z : ℕ} (h : IsPerfectCuboid X 
     ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ |
     ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ |
     ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ |
-    ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+    ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
   · exact not_isPerfectCuboid_three_four h.swap
   · exact (not_isPerfectCuboid_five_twelve h.swap).symm
   · exact not_isPerfectCuboid_eight_fifteen h
@@ -210,6 +217,7 @@ theorem IsPerfectCuboid.not_onFiber_of_mem {X Y Z : ℕ} (h : IsPerfectCuboid X 
   · exact not_isPerfectCuboid_203_396 h
   · exact not_isPerfectCuboid_155_468 h
   · exact not_isPerfectCuboid_thirtyfive_612 h
+  · exact not_isPerfectCuboid_seventysix_357 h
   · exact not_isPerfectCuboid_152_345 h
   · exact not_isPerfectCuboid_228_325 h
   · exact not_isPerfectCuboid_297_304 h
@@ -249,6 +257,7 @@ theorem IsPerfectCuboid.not_onFiber_of_mem {X Y Z : ℕ} (h : IsPerfectCuboid X 
   · exact not_isPerfectCuboid_533_756 h
   · exact not_isPerfectCuboid_fiftysix_783 h
   · exact not_isPerfectCuboid_168_775 h
+  · exact not_isPerfectCuboid_744_817 h
   · exact not_isPerfectCuboid_684_1363 h
 
 /-- **Every perfect cuboid lies on a fiber outside `provedFibers`**: there are coprime `m > n > 0`
