@@ -272,6 +272,19 @@ configuration-to-cuboid direction without this condition.
 | A perfect cuboid exists iff a `1`-twisted one does; only the class of `k` in `ℚ*/ℚ*²` matters | `exists_isPerfectCuboid_iff_twisted`, `isTwistedCuboid_one_iff`, `IsTwistedCuboid.of_mul_sq` |
 | Every prime `q ≡ 3 (mod 4)` divides `k` to an even power (`k` is a sum of two squares) | `IsTwistedCuboid.even_padicValRat`, `even_padicValRat_sq_add_sq` |
 
+`TwistClass.lean` computes the twist from the `X`-coordinates alone:
+`U₁² + U₂² = −X₁X₂X₃·(2N(X₁ + X₂)/(Y₁Y₂))²`, so `k ≡ −X₁X₂X₃ (mod ℚ*²)`. Since `X mod ℚ*²` is the
+`2`-isogeny descent map of `E_N`, a configuration is a perfect cuboid exactly when
+`Q₁ + Q₂ + Q₃ + (0, 0)` lies in the image of the dual isogeny (this interpretation is not
+formalized). It never excludes a configuration on its own.
+
+| Result | Lean |
+|---|---|
+| `U₁² + U₂² = −X₁X₂X₃·(2N(X₁ + X₂)/(Y₁Y₂))²` for every configuration | `IsConfigPts.twist_class` |
+| The box with edges `\|Uᵢ\|` is `k`-twisted iff `k > 0` and `k·(−X₁X₂X₃) = □`; perfect iff `−X₁X₂X₃ = □` | `IsConfigPts.isTwistedCuboid_iff_isSquare`, `IsConfigPts.isRatCuboid_iff_isSquare` |
+| A perfect cuboid exists iff some `E_N` has a positive configuration with `−X₁X₂X₃ = □` (and the same for each `k`) | `exists_isPerfectCuboid_iff'`, `exists_config_iff_exists_twistedCuboid'` |
+| In cuboid coordinates: `2(kde + bc)(kdf + ac)(kef + ab) = kg²(af + be + cd)²`, so Prop 1's configuration has `k·(−X₁X₂X₃) = (2N²s/(af + be + cd))²` | `IsTwistedCuboid.twist_identity`, `IsRatCuboid.twist_identity`, `twist_class_of_twistedCuboid` |
+
 `CongruentNumber.lean` states the correspondence in the language of congruent numbers: `N` is
 *congruent* if it is the area of a right triangle with rational sides.
 
