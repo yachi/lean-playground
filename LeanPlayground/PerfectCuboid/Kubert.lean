@@ -34,6 +34,8 @@ uniform in `(m, n)` about `E″`.
 * `isSol_isogeny`, `IsPerfectCuboid.not_onFiber_of_isogeny` — `E″` is `2`-isogenous to the pair
   curve `(2UV, W²)`, which is the pair `(V, W)` of the fiber `(U, V)`: a cuboid on the fiber
   `(m, n)` gives the solution `M = UVW²e²`, `e = M s` of `IsSol (2UV) (W²)`.
+* `IsPerfectCuboid.not_onFiber_of_sq` — the same through `IsSol (U²) (V²)`, when its only
+  solutions have `M² = U²V² e²`.
 * `kubertChange_smul` — `E″` is Kubert's curve `y² + (1 − c)xy − by = x³ − bx²`,
   `b = (2τ − 1)(τ − 1)`, `c = b/τ`, at `τ = m(m + n)/(m² + 2mn − n²)`; the change of variables
   sends the point `P₈ = (4m²n(m − n)(m + n)²W, …)` of order `8` to `(0, 0)`. So the torsion of
@@ -234,6 +236,17 @@ theorem IsPerfectCuboid.not_onFiber_of_isogeny {X Y Z : ℕ} (h : IsPerfectCuboi
   intro hf
   obtain ⟨-, M, e, r, s, hs⟩ := IsPerfectCuboid.isSol_sq h hU hV hW hf
   exact hpair M e r s hs
+
+/-- **The fiber `(U, V)` through `E″` itself.** If every solution of `IsSol (U²) (V²)` has
+`M² = U²V² e²` (for instance by `Descent.sq_eq_of_isSol_of_casesOKT`), then no perfect cuboid
+has `U X = V Z`. -/
+theorem IsPerfectCuboid.not_onFiber_of_sq {X Y Z : ℕ} (h : IsPerfectCuboid X Y Z)
+    {U V W : ℤ} (hU : U ≠ 0) (hV : V ≠ 0) (hW : U ^ 2 + V ^ 2 = W ^ 2)
+    (hpair : ∀ M e r s, Descent.IsSol (U ^ 2) (V ^ 2) M e r s → M ^ 2 = U ^ 2 * V ^ 2 * e ^ 2) :
+    U * X ≠ V * Z := by
+  intro hf
+  obtain ⟨⟨M, e, r, s, hs, hne⟩, -⟩ := IsPerfectCuboid.isSol_sq h hU hV hW hf
+  exact hne (hpair M e r s hs)
 
 /-! ### Kubert's form -/
 

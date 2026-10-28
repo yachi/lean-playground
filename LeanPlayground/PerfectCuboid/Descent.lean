@@ -94,7 +94,8 @@ theorem exists_point {p q M e r s : ℤ} (hp : 0 < p) (hq : 0 < q) (h : IsSol p 
     ∃ k1 k2 j1 j2 : ℤ, k1 ≠ 0 ∧ k2 ≠ 0 ∧ j1 ≠ 0 ∧ j2 ≠ 0 ∧ IsCoprime k1 k2 ∧ IsCoprime j1 j2 ∧
       k1 ^ 2 ≠ k2 ^ 2 ∧ p * (j1 * j2) * (k1 ^ 2 - k2 ^ 2) = q * (k1 * k2) * (j1 ^ 2 - j2 ^ 2) ∧
       (∀ p₀, p = 2 * p₀ → 4 * (k1 * k2) ^ 2 ≤ p ^ 2 * e ^ 2) ∧ (k1 * k2) ^ 2 ≤ p ^ 2 * e ^ 2 ∧
-      (j1 * j2) ^ 2 ≤ q ^ 2 * e ^ 2 ∧ k1 * k2 ∣ p * e ∧ j1 * j2 ∣ q * e := by
+      (j1 * j2) ^ 2 ≤ q ^ 2 * e ^ 2 ∧ k1 * k2 ∣ p * e ∧ j1 * j2 ∣ q * e ∧
+      (M ^ 2 ≠ p * q * e ^ 2 → p * (k1 ^ 2 - k2 ^ 2) ^ 2 ≠ 4 * q * (k1 * k2) ^ 2) := by
   obtain ⟨hM, he, hr, hs⟩ := h
   have he2 : 0 < e ^ 2 := by positivity
   have hrM : r + M ≠ 0 := fun h0 => by
@@ -157,7 +158,11 @@ theorem exists_point {p q M e r s : ℤ} (hp : 0 < p) (hq : 0 < q) (h : IsSol p 
   have hle' : (j1 * j2) ^ 2 ≤ (q * e) ^ 2 :=
     Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdvd' (mul_ne_zero hq.ne' he))
   refine ⟨k1, k2, j1, j2, hk1, hk2, hj1, hj2, hk, hj, hne, hC, ?_, by linear_combination hle,
-    by linear_combination hle', hdvd, hdvd'⟩
+    by linear_combination hle', hdvd, hdvd', fun hT h0 ↦ hT ?_⟩
+  swap
+  · -- `M² = pq e²` exactly when `p (k₁² − k₂²)² = 4q (k₁k₂)²`, by `R1`
+    refine mul_left_cancel₀ (mul_ne_zero four_ne_zero (pow_ne_zero 2 (mul_ne_zero hk1 hk2))) ?_
+    linear_combination (-(p * e * (k1 ^ 2 - k2 ^ 2) + 2 * M * (k1 * k2))) * R1 + p * e ^ 2 * h0
   -- for even `p = 2 p₀`, even `k₁k₂ ∣ p₀ e`
   rintro p₀ rfl
   have hp₀ : p₀ ≠ 0 := by rintro rfl; simp at hp
@@ -177,6 +182,7 @@ theorem exists_lam {p q k1 k2 j1 j2 : ℤ} (hpq : 0 < p * q) (hk1 : k1 ≠ 0) (h
     (hC : p * (j1 * j2) * (k1 ^ 2 - k2 ^ 2) = q * (k1 * k2) * (j1 ^ 2 - j2 ^ 2)) :
     ∃ (L : ℕ) (k1' k2' : ℤ), 0 < L ∧ (L : ℤ) ∣ p * q ∧ k1' ≠ 0 ∧ k2' ≠ 0 ∧
       IsCoprime k1' k2' ∧ k1' ^ 2 ≠ k2' ^ 2 ∧ (k1' * k2') ^ 2 = (k1 * k2) ^ 2 ∧
+      (k1' ^ 2 - k2' ^ 2) ^ 2 = (k1 ^ 2 - k2 ^ 2) ^ 2 ∧
       p * (j1 * j2) = L * (k1' * k2') ∧ (L : ℤ) * (k1' ^ 2 - k2' ^ 2) = q * (j1 ^ 2 - j2 ^ 2) := by
   have hA : k1 * k2 ≠ 0 := mul_ne_zero hk1 hk2
   have hJ : j1 * j2 ≠ 0 := mul_ne_zero hj1 hj2
@@ -193,11 +199,11 @@ theorem exists_lam {p q k1 k2 j1 j2 : ℤ} (hpq : 0 < p * q) (hk1 : k1 ≠ 0) (h
   have h4 : p * (j1 * j2) = l * (k1 * k2) := by rw [hl]; ring
   rcases lt_or_gt_of_ne (show l ≠ 0 by rintro rfl; rw [zero_mul] at hlμ; linarith) with hneg | hpos
   · refine ⟨(-l).toNat, -k2, k1, by omega, ⟨-μ, ?_⟩, neg_ne_zero.mpr hk2, hk1, hk.symm.neg_left,
-      by rw [neg_sq]; exact Ne.symm hne, by ring, ?_, ?_⟩
+      by rw [neg_sq]; exact Ne.symm hne, by ring, by ring, ?_, ?_⟩
     · rw [Int.toNat_of_nonneg (by omega)]; linear_combination -hlμ
     · rw [Int.toNat_of_nonneg (by omega)]; linear_combination h4
     · rw [Int.toNat_of_nonneg (by omega)]; linear_combination h5
-  · refine ⟨l.toNat, k1, k2, by omega, ⟨μ, ?_⟩, hk1, hk2, hk, hne, rfl, ?_, ?_⟩
+  · refine ⟨l.toNat, k1, k2, by omega, ⟨μ, ?_⟩, hk1, hk2, hk, hne, rfl, rfl, ?_, ?_⟩
     · rw [Int.toNat_of_nonneg hpos.le]; exact hlμ.symm
     · rw [Int.toNat_of_nonneg hpos.le]; exact h4
     · rw [Int.toNat_of_nonneg hpos.le]; exact h5
@@ -317,8 +323,10 @@ theorem lin_step {p q D L c1 c2 c3 c4 σ α β γ δ W h H u v m : ℤ}
     (hW : W ^ 2 = q * L) (hh : h ^ 2 = D * L * σ) (hH : H ^ 2 = D * q * σ)
     (huv : u * c3 = v * (c2 * W)) (hc3 : c3 ≠ 0) (hh0 : h ≠ 0) (hH0 : H ≠ 0) (hu : u ≠ 0)
     (hv : v ≠ 0) (hα : α ≠ 0) (hβ : β ≠ 0) (hγ : γ ≠ 0) (hδ : δ ≠ 0)
-    (hm : m = 1 ∨ (m = 4 ∧ q * c3 ^ 2 ≠ L * c1 ^ 2 + σ)) :
-    ∃ M e r s, IsSol p q M e r s ∧ m * e ^ 2 ≤ v ^ 2 * (α * β * (γ * δ)) ^ 2 := by
+    (hm : m = 1 ∨ (m = 4 ∧ q * c3 ^ 2 ≠ L * c1 ^ 2 + σ))
+    (hne : (c1 * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2) (hp : 0 < p) (hq : 0 < q) (hc4 : c4 ≠ 0) :
+    ∃ M e r s, IsSol p q M e r s ∧ M ^ 2 ≠ p * q * e ^ 2 ∧
+      m * e ^ 2 ≤ v ^ 2 * (α * β * (γ * δ)) ^ 2 := by
   have K1 : c3 ^ 2 * (h ^ 2 * ((u * δ) ^ 2 + p ^ 2 * (v * α) ^ 2)) =
       c3 ^ 2 * (L * v * D * c2 * γ) ^ 2 := by
     linear_combination (c3 ^ 2 * ((u * δ) ^ 2 + p ^ 2 * (v * α) ^ 2)) * hh +
@@ -337,9 +345,27 @@ theorem lin_step {p q D L c1 c2 c3 c4 σ α β γ δ W h H u v m : ℤ}
   have K2' := mul_left_cancel₀ (pow_ne_zero 2 hc3) K2
   obtain ⟨r, hr⟩ : h ∣ L * v * D * c2 * γ := (Int.pow_dvd_pow_iff two_ne_zero).mp ⟨_, K1'.symm⟩
   obtain ⟨s, hs⟩ : H ∣ q * v * D * c4 * β := (Int.pow_dvd_pow_iff two_ne_zero).mp ⟨_, K2'.symm⟩
-  refine ⟨u * δ, v * α, r, s, ⟨mul_ne_zero hu hδ, mul_ne_zero hv hα, ?_, ?_⟩, ?_⟩
+  refine ⟨u * δ, v * α, r, s, ⟨mul_ne_zero hu hδ, mul_ne_zero hv hα, ?_, ?_⟩, ?_, ?_⟩
   · exact mul_left_cancel₀ (pow_ne_zero 2 hh0) (by rw [K1', hr]; ring)
   · exact mul_left_cancel₀ (pow_ne_zero 2 hH0) (by rw [K2', hs]; ring)
+  · -- `M'² = pq e'²` would give `c₂c₄δ² = c₁c₃α²`, then `c₂c₃γ² = c₁c₄β²`, so `k₁² = k₂²`
+    intro h0
+    have s1 : v ^ 2 * q * (c2 ^ 2 * L * δ ^ 2 - p * c3 ^ 2 * α ^ 2) = 0 := by
+      linear_combination (-(v ^ 2 * c2 ^ 2 * δ ^ 2)) * hW - δ ^ 2 * (v * c2 * W + u * c3) * huv +
+        c3 ^ 2 * h0
+    have s2 : c2 ^ 2 * L * δ ^ 2 - p * c3 ^ 2 * α ^ 2 = 0 :=
+      (mul_eq_zero.mp s1).resolve_left (mul_ne_zero (pow_ne_zero 2 hv) hq.ne')
+    have s3 : p * c3 * (c2 * c4 * δ ^ 2 - c1 * c3 * α ^ 2) = 0 := by
+      linear_combination (-(c2 * δ ^ 2)) * hrel + c1 * s2
+    have s4 := (mul_eq_zero.mp s3).resolve_left (mul_ne_zero hp.ne' hc3)
+    have s5 : c3 * c4 * (p + q) * (c2 * c3 * γ ^ 2 - c1 * c4 * β ^ 2) = 0 := by
+      linear_combination c2 * c4 * E1 - c1 * c3 * E2 + σ * s4 -
+        (c2 * c3 * γ ^ 2 - c1 * c4 * β ^ 2) * hrel
+    have s6 := (mul_eq_zero.mp s5).resolve_left
+      (mul_ne_zero (mul_ne_zero hc3 hc4) (by positivity))
+    have s7 : c3 * c4 * ((c1 * (α * β)) ^ 2 - (c2 * (γ * δ)) ^ 2) = 0 := by
+      linear_combination (-(c1 * c4 * β ^ 2)) * s4 - c2 * c4 * δ ^ 2 * s6
+    exact hne (sub_eq_zero.mp ((mul_eq_zero.mp s7).resolve_left (mul_ne_zero hc3 hc4)))
   · have e4 : v ^ 2 * (α * β * (γ * δ)) ^ 2 = (v * α) ^ 2 * (β * γ * δ) ^ 2 := by ring
     rw [e4]
     have h1 : m ≤ (β * γ * δ) ^ 2 := by
@@ -382,6 +408,43 @@ theorem exists_isSol {p q F1 F2 M e r0 s0 : ℤ} (hF1 : F1 ≠ 0) (hF2 : F2 ≠ 
   · rw [G1, hr]; ring
   · rw [G2, hs]; ring
 
+/-- The point of family QD is not `±T₄`: `X² ≠ pq Y²` for `X = w_d ((q − p) c₃c₄ βγ + σαδ)` and
+`Y = w_n (c₁c₄β² − c₂c₃γ²)`, since `pq Y² = X (X − 2 w_d σαδ)`. -/
+theorem qd_ne {p q L c1 c2 c3 c4 σ α β γ δ wn wd : ℤ}
+    (hrel : L * (c1 * c2) = p * (c3 * c4))
+    (E1 : q * c3 ^ 2 * γ ^ 2 - L * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
+    (E2 : q * c4 ^ 2 * β ^ 2 - L * c2 ^ 2 * γ ^ 2 = σ * α ^ 2)
+    (hne : (c1 * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2)
+    (hwn : wn ^ 2 = c3 * c4) (hwd : wd ^ 2 = c1 * c2)
+    (hp : 0 < p) (hq : 0 < q) (hσ : 0 < σ) (hwn0 : wn ≠ 0) (hwd0 : wd ≠ 0) (hα : α ≠ 0)
+    (hδ : δ ≠ 0) :
+    (wd * ((q - p) * (c3 * c4) * β * γ + σ * α * δ)) ^ 2 ≠
+      p * q * (wn * (c1 * c4 * β ^ 2 - c2 * c3 * γ ^ 2)) ^ 2 := by
+  have hO : wn ^ 2 * p = wd ^ 2 * L := by linear_combination p * hwn - L * hwd - hrel
+  have G3 : p * q * (wn * (c1 * c4 * β ^ 2 - c2 * c3 * γ ^ 2)) ^ 2 =
+      (wd * ((q - p) * (c3 * c4) * β * γ + σ * α * δ)) *
+        (wd * ((q - p) * (c3 * c4) * β * γ - σ * α * δ)) := by
+    linear_combination (-wd ^ 2 * α ^ 2 * σ) * E1 +
+      (-wd ^ 2 * (-L * c1 ^ 2 * β ^ 2 + c3 ^ 2 * q * γ ^ 2)) * E2 +
+      (q * (c1 * c4 * β ^ 2 - c2 * c3 * γ ^ 2) ^ 2) * hO +
+      (wd ^ 2 * β ^ 2 * γ ^ 2 * (L * c1 * c2 + c3 * c4 * p - 2 * c3 * c4 * q)) * hrel
+  have he0 : wn * (c1 * c4 * β ^ 2 - c2 * c3 * γ ^ 2) ≠ 0 := by
+    intro h0
+    have he : c1 * c4 * β ^ 2 = c2 * c3 * γ ^ 2 := by
+      linear_combination (mul_eq_zero.mp h0).resolve_left hwn0
+    have h1 : σ * ((c1 * (α * β)) ^ 2 - (c2 * (γ * δ)) ^ 2) = 0 := by
+      linear_combination (c2 ^ 2 * γ ^ 2) * E1 + (-c1 ^ 2 * β ^ 2) * E2 +
+        (q * (c1 * c4 * β ^ 2 + c2 * c3 * γ ^ 2)) * he
+    exact hne (sub_eq_zero.mp ((mul_eq_zero.mp h1).resolve_left hσ.ne'))
+  intro h0
+  have h1 : wd * ((q - p) * (c3 * c4) * β * γ + σ * α * δ) * (2 * wd * σ * α * δ) = 0 := by
+    linear_combination h0 + G3
+  rcases mul_eq_zero.mp h1 with h2 | h2
+  · rw [h2, zero_mul] at G3
+    have : 0 < p * q * (wn * (c1 * c4 * β ^ 2 - c2 * c3 * γ ^ 2)) ^ 2 := by positivity
+    linarith
+  · exact mul_ne_zero (mul_ne_zero (mul_ne_zero (mul_ne_zero two_ne_zero hwd0) hσ.ne') hα) hδ h2
+
 /-- **Family QD**, the class of a `4`-torsion point (`c₁c₂ = w_d²`, `c₃c₄ = w_n²`,
 `σ (q − p) = h²`). The new solution is `M' = w_d ((q − p) c₃c₄ βγ + σαδ) / F` and
 `e' = w_n (c₁c₄β² − c₂c₃γ²) / F`, with `pq F² e'² = c₁c₂ ((q − p)² (c₃c₄)² β²γ² − σ² α²δ²)`.
@@ -398,8 +461,9 @@ theorem quadD_step {p q L c1 c2 c3 c4 σ α β γ δ wn wd h F : ℤ}
     (hδ : δ ≠ 0) (hF : 0 < F) (hFM1 : F ∣ wd * (q - p) * (c3 * c4)) (hFM2 : F ∣ wd * σ)
     (hFe1 : F ∣ wn * c4 * c3 ^ 2 * (q - p)) (hFe2 : F ∣ wn * c4 * σ)
     (hFc : IsCoprime F (L * c1)) :
-    ∃ M e r s, IsSol p q M e r s ∧
+    ∃ M e r s, IsSol p q M e r s ∧ M ^ 2 ≠ p * q * e ^ 2 ∧
       p * q * F ^ 2 * e ^ 2 < c1 * c2 * (q - p) ^ 2 * (c3 * c4) ^ 2 * (α * β * (γ * δ)) ^ 2 := by
+  have hX := qd_ne hrel E1 E2 hne hwn hwd hp hq hσ hwn0 hwd0 hα hδ
   have hO : wn ^ 2 * p = wd ^ 2 * L := by linear_combination p * hwn - L * hwd - hrel
   have hw : wn ^ 2 * (c1 * c2) = wd ^ 2 * (c3 * c4) := by
     linear_combination (c1 * c2) * hwn - (c3 * c4) * hwd
@@ -460,6 +524,7 @@ theorem quadD_step {p q L c1 c2 c3 c4 σ α β γ δ wn wd h F : ℤ}
     rw [hediv, show wn * c4 * ((q - p) * c3 ^ 2 * γ ^ 2 - σ * δ ^ 2) =
       wn * c4 * c3 ^ 2 * (q - p) * γ ^ 2 - wn * c4 * σ * δ ^ 2 by ring]
     exact dvd_sub (hFe1.mul_right _) (hFe2.mul_right _)
+  rw [hM, he] at hX
   rw [hM] at G1 G2 hM0
   rw [he] at G1 G2 G3' he0
   obtain ⟨r, s, hsol⟩ := exists_isSol (p := p) (q := q) (F1 := F) (F2 := F) (M := M) (e := e)
@@ -467,7 +532,7 @@ theorem quadD_step {p q L c1 c2 c3 c4 σ α β γ δ wn wd h F : ℤ}
     hF.ne' hF.ne'
     (right_ne_zero_of_mul hM0) (right_ne_zero_of_mul he0) (by linear_combination G1)
     (by linear_combination G2)
-  refine ⟨M, e, r, s, hsol, ?_⟩
+  refine ⟨M, e, r, s, hsol, fun h0 ↦ hX (by linear_combination F ^ 2 * h0), ?_⟩
   have hc : 0 < c1 * c2 := by rw [← hwd]; positivity
   have k1 : 0 < c1 * c2 * (σ ^ 2 * (α ^ 2 * δ ^ 2)) := by positivity
   have k2 : c1 * c2 * ((q - p) ^ 2 * (c3 * c4) ^ 2 * (β ^ 2 * γ ^ 2)) * 1 ≤
@@ -496,8 +561,8 @@ theorem quadK_core {p q L c1 c2 c3 c4 σ α β γ δ wn wd h F qF wF : ℤ}
     (hwn : wn ^ 2 = c3 * c4) (hwd : wd ^ 2 = c1 * c2) (hh : σ * (q - p) = h ^ 2)
     (hL : 0 < L) (hq : 0 < q) (hσ : 0 < σ) (hwn0 : wn ≠ 0) (hwd0 : wd ≠ 0)
     (hqF : q = F * qF) (hwF : wn = F * wF) (hk1 : c1 * (α * β) ≠ 0) (hk2 : c2 * (γ * δ) ≠ 0)
-    (hsign : 0 ≤ c1 * (α * β) * (c2 * (γ * δ))) :
-    ∃ M e r s, IsSol p q M e r s ∧
+    (hsign : 0 ≤ c1 * (α * β) * (c2 * (γ * δ))) (hp : 0 < p) :
+    ∃ M e r s, IsSol p q M e r s ∧ M ^ 2 ≠ p * q * e ^ 2 ∧
       F ^ 2 * e ^ 2 < wn ^ 2 * (c1 * c2) ^ 2 * (α * β * (γ * δ)) ^ 2 ∧
       F ^ 2 * e ^ 2 ≤ 2 * wn ^ 2 * ((c1 * (α * β)) ^ 2 + (c2 * (γ * δ)) ^ 2) := by
   have hO : wn ^ 2 * p = wd ^ 2 * L := by linear_combination p * hwn - L * hwd - hrel
@@ -559,7 +624,30 @@ theorem quadK_core {p q L c1 c2 c3 c4 σ α β γ δ wn wd h F qF wF : ℤ}
     (s0 := q * h * wn * wd * (c1 * c4 * β ^ 2 + c2 * c3 * γ ^ 2))
     (by positivity) (by positivity) (mul_ne_zero (mul_ne_zero hqF0 hwd0) hj)
     (mul_ne_zero hwF0 hk) (by rw [← G1, hqF, hwF]; ring) (by rw [← G2, hqF, hwF]; ring)
-  refine ⟨_, _, r, s, hsol, ?_, ?_⟩
+  refine ⟨_, _, r, s, hsol, ?_, ?_, ?_⟩
+  · -- the point of QK is the point of QD, which is not `±T₄`
+    have hα : α ≠ 0 := left_ne_zero_of_mul (right_ne_zero_of_mul hk1)
+    have hδ : δ ≠ 0 := right_ne_zero_of_mul (right_ne_zero_of_mul hk2)
+    have hX := qd_ne hrel E1 E2 hne hwn hwd hp hq hσ hwn0 hwd0 hα hδ
+    have hid : q * wd * (c3 * (α * γ) + c4 * (β * δ)) * (wn * (c1 * c4 * β ^ 2 - c2 * c3 * γ ^ 2)) =
+        wd * ((q - p) * (c3 * c4) * β * γ + σ * α * δ) * (wn * (c1 * (α * β) - c2 * (γ * δ))) := by
+      linear_combination (c1 * wd * wn * β * δ) * E2 - (c2 * wd * wn * α * γ) * E1 -
+        (wd * wn * β * γ * (c1 * α * β - c2 * γ * δ)) * hrel
+    intro h0
+    have h1 : (q * wd * (c3 * (α * γ) + c4 * (β * δ))) ^ 2 =
+        p * q * (wn * (c1 * (α * β) - c2 * (γ * δ))) ^ 2 := by
+      linear_combination F ^ 2 * h0 +
+        (q + F * qF) * (wd * (c3 * (α * γ) + c4 * (β * δ))) ^ 2 * hqF -
+        p * q * (wn + F * wF) * (c1 * (α * β) - c2 * (γ * δ)) ^ 2 * hwF
+    have h2 : (wn * (c1 * (α * β) - c2 * (γ * δ))) ^ 2 *
+        (p * q * (wn * (c1 * c4 * β ^ 2 - c2 * c3 * γ ^ 2)) ^ 2 -
+          (wd * ((q - p) * (c3 * c4) * β * γ + σ * α * δ)) ^ 2) = 0 := by
+      linear_combination (-(wn * (c1 * c4 * β ^ 2 - c2 * c3 * γ ^ 2)) ^ 2) * h1 +
+        (q * wd * (c3 * (α * γ) + c4 * (β * δ)) * (wn * (c1 * c4 * β ^ 2 - c2 * c3 * γ ^ 2)) +
+          wd * ((q - p) * (c3 * c4) * β * γ + σ * α * δ) *
+            (wn * (c1 * (α * β) - c2 * (γ * δ)))) * hid
+    exact hX (sub_eq_zero.mp ((mul_eq_zero.mp h2).resolve_left
+      (pow_ne_zero 2 (mul_ne_zero hwn0 hk)))).symm
   swap
   · calc F ^ 2 * (wF * (c1 * (α * β) - c2 * (γ * δ))) ^ 2 =
         wn ^ 2 * (c1 * (α * β) - c2 * (γ * δ)) ^ 2 := by rw [hwF]; ring
@@ -587,18 +675,19 @@ theorem quadK_step {p q L c1 c2 c3 c4 σ α β γ δ wn wd h F qF wF : ℤ}
     (hne : (c1 * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2)
     (hwn : wn ^ 2 = c3 * c4) (hwd : wd ^ 2 = c1 * c2) (hh : σ * (q - p) = h ^ 2)
     (hL : 0 < L) (hq : 0 < q) (hσ : 0 < σ) (hwn0 : wn ≠ 0) (hwd0 : wd ≠ 0)
-    (hqF : q = F * qF) (hwF : wn = F * wF) (hk1 : c1 * (α * β) ≠ 0) (hk2 : c2 * (γ * δ) ≠ 0) :
-    ∃ M e r s, IsSol p q M e r s ∧
+    (hqF : q = F * qF) (hwF : wn = F * wF) (hk1 : c1 * (α * β) ≠ 0) (hk2 : c2 * (γ * δ) ≠ 0)
+    (hp : 0 < p) :
+    ∃ M e r s, IsSol p q M e r s ∧ M ^ 2 ≠ p * q * e ^ 2 ∧
       F ^ 2 * e ^ 2 < wn ^ 2 * (c1 * c2) ^ 2 * (α * β * (γ * δ)) ^ 2 ∧
       F ^ 2 * e ^ 2 ≤ 2 * wn ^ 2 * ((c1 * (α * β)) ^ 2 + (c2 * (γ * δ)) ^ 2) := by
   rcases le_total 0 (c1 * (α * β) * (c2 * (γ * δ))) with hs | hs
-  · exact quadK_core hrel E1 E2 hne hwn hwd hh hL hq hσ hwn0 hwd0 hqF hwF hk1 hk2 hs
-  · obtain ⟨M, e, r, s, hsol, hlt, hle⟩ := quadK_core (δ := -δ) hrel (by rwa [neg_sq]) E2
+  · exact quadK_core hrel E1 E2 hne hwn hwd hh hL hq hσ hwn0 hwd0 hqF hwF hk1 hk2 hs hp
+  · obtain ⟨M, e, r, s, hsol, hT, hlt, hle⟩ := quadK_core (δ := -δ) hrel (by rwa [neg_sq]) E2
       (by rwa [mul_neg, mul_neg, neg_sq]) hwn hwd hh hL hq hσ hwn0 hwd0 hqF hwF hk1
       (by rwa [mul_neg, mul_neg, neg_ne_zero])
       (by linarith [show c1 * (α * β) * (c2 * (γ * -δ)) =
-        -(c1 * (α * β) * (c2 * (γ * δ))) by ring])
-    exact ⟨M, e, r, s, hsol, by rwa [mul_neg, mul_neg, neg_sq] at hlt,
+        -(c1 * (α * β) * (c2 * (γ * δ))) by ring]) hp
+    exact ⟨M, e, r, s, hsol, hT, by rwa [mul_neg, mul_neg, neg_sq] at hlt,
       by rwa [mul_neg, mul_neg, neg_sq] at hle⟩
 
 /-- The new solution of family QK is smaller than `αβγδ` as soon as `F |γδ| > 2 w_n c₁` and
@@ -676,7 +765,7 @@ theorem torsionOK1L_sound {lim p q lam c1 c2 c3 c4 σ : ℕ}
     (B1 : (boundK p : ℤ) * ((c1 : ℤ) * (α * β) * (c2 * (γ * δ))) ^ 2 ≤ p ^ 2 * e ^ 2)
     (B2 : ((c3 : ℤ) * (α * γ) * (c4 * (β * δ))) ^ 2 ≤ q ^ 2 * e ^ 2)
     (B3 : (α * β * (γ * δ)) ^ 2 ≤ e ^ 2) :
-    ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ e' ^ 2 < e ^ 2 := by
+    ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ M' ^ 2 ≠ p * q * e' ^ 2 ∧ e' ^ 2 < e ^ 2 := by
   have hq : 0 < q := hp.trans hpq
   have hpZ : (0 : ℤ) < p := by exact_mod_cast hp
   have hqZ : (0 : ℤ) < q := by exact_mod_cast hq
@@ -729,12 +818,12 @@ theorem torsionOK1L_sound {lim p q lam c1 c2 c3 c4 σ : ℕ}
       · refine ⟨4, Or.inr ⟨by norm_num, ?_⟩, hb⟩
         simp only [beq_iff_eq] at hc
         exact_mod_cast hc
-    obtain ⟨M', e', r', s', hsol, hlt⟩ := lin_step (m := m) (u := u) (v := v) hrel rfl E1 E2
+    obtain ⟨M', e', r', s', hsol, hT, hlt⟩ := lin_step (m := m) (u := u) (v := v) hrel rfl E1 E2
       hW' hh' hH' (by exact_mod_cast huv) hc3Z.ne'
       (ne_zero_of_sq_eq hh' (mul_pos (mul_pos hDZ hlamZ) hσZ))
       (ne_zero_of_sq_eq hH' (mul_pos (mul_pos hDZ hqZ) hσZ)) (by exact_mod_cast hu0)
-      (by exact_mod_cast hv0) hα hβ hγ hδ hm
-    exact ⟨M', e', r', s', hsol, fin hb (by rcases hm with h | ⟨h, -⟩ <;> omega)
+      (by exact_mod_cast hv0) hα hβ hγ hδ hm hne hpZ hqZ hc4Z.ne'
+    exact ⟨M', e', r', s', hsol, hT, fin hb (by rcases hm with h | ⟨h, -⟩ <;> omega)
       (by push_cast; exact hlt) (by simp)⟩
   · -- family QD
     simp only [quadDOK, Bool.and_eq_true, decide_eq_true_eq, beq_iff_eq] at h
@@ -755,10 +844,10 @@ theorem torsionOK1L_sound {lim p q lam c1 c2 c3 c4 σ : ℕ}
       have := Nat.isCoprime_iff_coprime.mpr (show Nat.Coprime F (lam * c1) from hcop)
       push_cast at this
       exact this
-    obtain ⟨M', e', r', s', hsol, hlt⟩ := quadD_step hrel E1 E2 hne hwn hwd hh.symm hpZ hqZ hσZ
-      (ne_zero_of_sq_eq hwn (by positivity)) (ne_zero_of_sq_eq hwd (by positivity)) hα hδ
+    obtain ⟨M', e', r', s', hsol, hT, hlt⟩ := quadD_step hrel E1 E2 hne hwn hwd hh.symm hpZ hqZ
+      hσZ (ne_zero_of_sq_eq hwn (by positivity)) (ne_zero_of_sq_eq hwd (by positivity)) hα hδ
       (by exact_mod_cast hF) d1' d2' d3' d4' hFc
-    refine ⟨M', e', r', s', hsol, fin hb (by positivity) ?_ fun _ ↦ ?_⟩
+    refine ⟨M', e', r', s', hsol, hT, fin hb (by positivity) ?_ fun _ ↦ ?_⟩
     · push_cast [Nat.cast_sub hpq.le]
       exact hlt.le
     · push_cast [Nat.cast_sub hpq.le]
@@ -773,13 +862,13 @@ theorem torsionOK1L_sound {lim p q lam c1 c2 c3 c4 σ : ℕ}
     have hF : 0 < Nat.gcd q (Nat.sqrt (c3 * c4)) := Nat.gcd_pos_of_pos_left _ hq
     obtain ⟨qF, hqF⟩ := Nat.gcd_dvd_left q (Nat.sqrt (c3 * c4))
     obtain ⟨wF, hwF⟩ := Nat.gcd_dvd_right q (Nat.sqrt (c3 * c4))
-    obtain ⟨M', e', r', s', hsol, hlt, hle⟩ :=
+    obtain ⟨M', e', r', s', hsol, hT, hlt, hle⟩ :=
       quadK_step (F := (Nat.gcd q (Nat.sqrt (c3 * c4)) : ℤ))
       (qF := qF) (wF := wF) hrel E1 E2 hne hwn hwd hh.symm hlamZ hqZ hσZ
       (ne_zero_of_sq_eq hwn (by positivity)) (ne_zero_of_sq_eq hwd (by positivity))
       (by exact_mod_cast hqF) (by exact_mod_cast hwF)
-      (mul_ne_zero hc1Z.ne' (mul_ne_zero hα hβ)) (mul_ne_zero hc2Z.ne' (mul_ne_zero hγ hδ))
-    refine ⟨M', e', r', s', hsol, ?_⟩
+      (mul_ne_zero hc1Z.ne' (mul_ne_zero hα hβ)) (mul_ne_zero hc2Z.ne' (mul_ne_zero hγ hδ)) hpZ
+    refine ⟨M', e', r', s', hsol, hT, ?_⟩
     rcases hb with hb | hb
     · exact fin hb (pow_pos hF 2) (by push_cast; exact hlt.le) fun _ ↦ by push_cast; exact hlt
     -- the small box of QK
@@ -834,7 +923,11 @@ theorem torsionOK1L_sound {lim p q lam c1 c2 c3 c4 σ : ℕ}
       rw [not_and_or] at hbig
       simp only [not_lt] at hbig
       rcases hb with ⟨⟨-, -⟩, hb⟩ | ⟨-, hb⟩
-      · exact hypCheck_sound hb hσ hlam hc1 hc2 E1 E2 hne hα hβ hγ hδ hbig
+      · refine hypCheck_sound hb hσ hlam hc1 hc2 E1 E2 hne ?_ hα hβ hγ hδ hbig
+        rw [Nat.cast_zero, zero_mul]
+        exact (mul_ne_zero (mul_ne_zero four_ne_zero hqZ.ne') (pow_ne_zero 2 (mul_ne_zero
+          (mul_ne_zero hc1Z.ne' (mul_ne_zero hα hβ))
+          (mul_ne_zero hc2Z.ne' (mul_ne_zero hγ hδ))))).symm
       rcases hbig with hg | ha
       · refine smallCheck_sound hb hσ E1 E2 hne hα hβ hγ hδ ?_ ?_
         · unfold quadKBoxβ
@@ -874,7 +967,7 @@ theorem torsionOKL_sound {lim p q lam c1 c2 c3 c4 σ : ℕ}
     (B1 : (boundK p : ℤ) * ((c1 : ℤ) * (α * β) * (c2 * (γ * δ))) ^ 2 ≤ p ^ 2 * e ^ 2)
     (B2 : ((c3 : ℤ) * (α * γ) * (c4 * (β * δ))) ^ 2 ≤ q ^ 2 * e ^ 2)
     (B3 : (α * β * (γ * δ)) ^ 2 ≤ e ^ 2) :
-    ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ e' ^ 2 < e ^ 2 := by
+    ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ M' ^ 2 ≠ p * q * e' ^ 2 ∧ e' ^ 2 < e ^ 2 := by
   rcases Bool.or_eq_true _ _ ▸ h with h | h
   · exact torsionOK1L_sound h hp hpq hlam hσ hc1 hc2 hc3 hc4 hrel E1 E2 hne hα hβ hγ hδ he
       B1 B2 B3
@@ -967,9 +1060,14 @@ theorem classKill_sound {p q D lam c1 c2 c3 c4 σ : ℕ} (hk : ClassKill p q D l
       field_simp)
   have hrs : IsCoprime r (s : ℤ) :=
     Int.isCoprime_iff_gcd_eq_one.mpr (by simpa [r, s, Int.gcd] using u.reduced)
-  exact classCheck_sound (a := a0) (b := b0) (c := a0 * b0) (P := p ^ 2) (Q := q ^ 2)
-    (W1 := W1) (W2 := W2) hl hN hk hc hrs (by push_cast at hW1 ⊢; linear_combination hW1)
-    (by push_cast at hW2 ⊢; linear_combination hW2)
+  rw [Bool.or_eq_true] at hc
+  rcases hc with hc | hc
+  · exact classCheck_sound (a := a0) (b := b0) (c := a0 * b0) (P := p ^ 2) (Q := q ^ 2)
+      (W1 := W1) (W2 := W2) hl hN hk hc hrs (by push_cast at hW1 ⊢; linear_combination hW1)
+      (by push_cast at hW2 ⊢; linear_combination hW2)
+  · exact classCheckE_sound (a := a0) (b := b0) (c := a0 * b0) (P := p ^ 2) (Q := q ^ 2)
+      (W1 := W1) (W2 := W2) hl hN hk hc hrs (by push_cast at hW1 ⊢; linear_combination hW1)
+      (by push_cast at hW2 ⊢; linear_combination hW2)
 
 /-! ### The descent -/
 
@@ -979,12 +1077,43 @@ theorem natCast_div_gcd {p L : ℕ} : ((p / Nat.gcd p L : ℕ) : ℤ) * (Nat.gcd
 theorem natCast_div_gcd' {p L : ℕ} : ((L / Nat.gcd p L : ℕ) : ℤ) * (Nat.gcd p L : ℕ) = L := by
   exact_mod_cast Nat.div_mul_cancel (Nat.gcd_dvd_right p L)
 
-/-- **One descent step.** Given the finite check for `(p, q)`, every solution gives a solution
-with a smaller `|e|`. -/
-theorem exists_smaller {p q D : ℕ} (hp : 0 < p) (hpq : p < q)
-    (ha : q ^ 2 = p ^ 2 + D) (hcop : Nat.Coprime p q)
-    (hchk : CasesOK p q D) {M e r s : ℤ} (h : IsSol p q M e r s) :
-    ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ e' ^ 2 < e ^ 2 := by
+/-- The coprimality of the splitting `k₁ = c₁αβ`, `k₂ = c₂γδ`, `j₁ = c₃αγ`, `j₂ = c₄βδ`, as
+`tupleOK_sound` uses it. -/
+structure TupleCop (α β γ δ : ℤ) (c1 c2 c3 c4 : ℕ) : Prop where
+  ab : IsCoprime α β
+  ag : IsCoprime α γ
+  ad : IsCoprime α δ
+  bg : IsCoprime β γ
+  bd : IsCoprime β δ
+  gd : IsCoprime γ δ
+  c1g : IsCoprime (c1 : ℤ) γ
+  c1d : IsCoprime (c1 : ℤ) δ
+  c2a : IsCoprime (c2 : ℤ) α
+  c2b : IsCoprime (c2 : ℤ) β
+  c3b : IsCoprime (c3 : ℤ) β
+  c3d : IsCoprime (c3 : ℤ) δ
+  c4a : IsCoprime (c4 : ℤ) α
+  c4g : IsCoprime (c4 : ℤ) γ
+
+/-- **From a solution to a case.** A solution `(M, e)` gives a case `(λ, c₁, c₂, c₃, c₄, σ)` of
+`CasesOK` with a solution `(α, β, γ, δ)` of `E₁`, `E₂` and the bounds of the descent step; `hstep`
+turns any such case into the goal. The last hypothesis of `hstep` says that `(M, e)` is `±T₄`
+(`M² = pq e²`) when `p (k₁² − k₂²)² = 4q (k₁k₂)²`. -/
+theorem exists_case {p q D : ℕ} (hp : 0 < p) (hpq : p < q)
+    (ha : q ^ 2 = p ^ 2 + D) (hcop : Nat.Coprime p q) {M e r s : ℤ} (h : IsSol p q M e r s)
+    {Goal : Prop}
+    (hstep : ∀ ⦃lam c1 c2 c3 c4 σ : ℕ⦄ ⦃α β γ δ : ℤ⦄, 0 < lam → lam ∣ p * q →
+      c1 * c2 = p / Nat.gcd p lam → Nat.Coprime c1 c2 → c3 * c4 = lam / Nat.gcd p lam →
+      Nat.Coprime c3 c4 → σ ∣ (lam / Nat.gcd p lam) ^ 2 * D → 0 < σ →
+      0 < c1 → 0 < c2 → 0 < c3 → 0 < c4 → (lam : ℤ) * (c1 * c2) = p * (c3 * c4) →
+      (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2 →
+      (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2 →
+      ((c1 : ℤ) * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2 → α ≠ 0 → β ≠ 0 → γ ≠ 0 → δ ≠ 0 →
+      (boundK p : ℤ) * ((c1 : ℤ) * (α * β) * (c2 * (γ * δ))) ^ 2 ≤ p ^ 2 * e ^ 2 →
+      ((c3 : ℤ) * (α * γ) * (c4 * (β * δ))) ^ 2 ≤ q ^ 2 * e ^ 2 →
+      (α * β * (γ * δ)) ^ 2 ≤ e ^ 2 → TupleCop α β γ δ c1 c2 c3 c4 →
+      (M ^ 2 ≠ p * q * e ^ 2 → (p : ℤ) * ((c1 * (α * β)) ^ 2 - (c2 * (γ * δ)) ^ 2) ^ 2 ≠
+        4 * q * (c1 * (α * β) * (c2 * (γ * δ))) ^ 2) → Goal) : Goal := by
   have hpZ0 : (0 : ℤ) < p := by exact_mod_cast hp
   have hqZ0 : (0 : ℤ) < q := by exact_mod_cast hp.trans hpq
   have hpqZ : (p : ℤ) < q := by exact_mod_cast hpq
@@ -993,8 +1122,8 @@ theorem exists_smaller {p q D : ℕ} (hp : 0 < p) (hpq : p < q)
     push_cast at this
     linear_combination this
   obtain ⟨k1, k2, j1, j2, hk1, hk2, hj1, hj2, hk, hj, hne, hC, hbound4, hbound, hjbound, hkdvd,
-    hjdvd⟩ := exists_point hpZ0 hqZ0 h
-  obtain ⟨L, k1', k2', hL, hLd, hk1', hk2', hk', hne', hsq, h4, h5⟩ :=
+    hjdvd, hT4⟩ := exists_point hpZ0 hqZ0 h
+  obtain ⟨L, k1', k2', hL, hLd, hk1', hk2', hk', hne', hsq, hdiff, h4, h5⟩ :=
     exists_lam (by positivity) hk1 hk2 hj1 hj2 hk hj hne hC
   have hg : 0 < Nat.gcd p L := Nat.gcd_pos_of_pos_left _ hp
   have hgZ : ((Nat.gcd p L : ℕ) : ℤ) ≠ 0 := by exact_mod_cast hg.ne'
@@ -1079,16 +1208,32 @@ theorem exists_smaller {p q D : ℕ} (hp : 0 < p) (hpq : p < q)
       exact dvd_add (dvd_mul_of_dvd_right hpe _) (dvd_mul_of_dvd_right hqe _)
     exact Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdiv h.2.1)
   have hLd' : L ∣ p * q := by exact_mod_cast hLd
-  rcases hchk hL hLd' hc12 hc12' hc34 hc34' hσNd with
+  exact hstep hL hLd' hc12 hc12' hc34 hc34' hσNd hσN (Nat.pos_of_ne_zero (by exact_mod_cast hc1))
+    (Nat.pos_of_ne_zero (by exact_mod_cast hc2)) (Nat.pos_of_ne_zero (by exact_mod_cast hc3))
+    (Nat.pos_of_ne_zero (by exact_mod_cast hc4)) hrel2 E1 E2 hne' hα hβ hγ hδ B1 hjbound B3
+    ⟨hab, hag, had, hbg, hbd, hgd, h1g, h1d, h2a, h2b, h3b, h3d, h4a, h4g⟩
+    fun hT ↦ by rw [hdiff, hsq]; exact hT4 hT
+
+/-- **One descent step.** Given the finite check for `(p, q)`, every solution gives a solution
+with a smaller `|e|`. -/
+theorem exists_smaller {p q D : ℕ} (hp : 0 < p) (hpq : p < q)
+    (ha : q ^ 2 = p ^ 2 + D) (hcop : Nat.Coprime p q)
+    (hchk : CasesOK p q D) {M e r s : ℤ} (h : IsSol p q M e r s) :
+    ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ e' ^ 2 < e ^ 2 := by
+  have haZ : (q : ℤ) ^ 2 - p ^ 2 = D := by
+    have : ((q ^ 2 : ℕ) : ℤ) = ((p ^ 2 + D : ℕ) : ℤ) := by rw [ha]
+    push_cast at this
+    linear_combination this
+  refine exists_case hp hpq ha hcop h fun lam c1 c2 c3 c4 σ α β γ δ hL hLd hc12 hc12' hc34 hc34'
+    hσd hσ hc1 hc2 hc3 hc4 hrel E1 E2 hne hα hβ hγ hδ B1 B2 B3 hc _ ↦ ?_
+  rcases hchk hL hLd hc12 hc12' hc34 hc34' hσd with
     ⟨lim, hT⟩ | ⟨N, l, hN, hl, hlN, hT⟩ | hK
-  · exact torsionOKL_sound hT hp hpq hL hσN (Nat.pos_of_ne_zero (by exact_mod_cast hc1))
-      (Nat.pos_of_ne_zero (by exact_mod_cast hc2)) (Nat.pos_of_ne_zero (by exact_mod_cast hc3))
-      (Nat.pos_of_ne_zero (by exact_mod_cast hc4)) hrel2 E1 E2 hne' hα hβ hγ hδ h.2.1 B1
-      hjbound B3
-  · exact (tupleOK_sound (by simpa using ⟨hN, hl, hlN⟩) hT hσN hab hag had hbg hbd hgd h1g h1d
-      h2a h2b h3b h3d h4a h4g E1 E2).elim
-  · exact (classKill_sound hK haZ hrel2 E1 E2 hσN (by exact_mod_cast hL)
-      (by have := Nat.pos_of_ne_zero (by exact_mod_cast hc4 : c4 ≠ 0); exact_mod_cast this)
+  · obtain ⟨M', e', r', s', hsol, -, hlt⟩ := torsionOKL_sound hT hp hpq hL hσ hc1 hc2 hc3 hc4
+      hrel E1 E2 hne hα hβ hγ hδ h.2.1 B1 B2 B3
+    exact ⟨M', e', r', s', hsol, hlt⟩
+  · exact (tupleOK_sound (by simpa using ⟨hN, hl, hlN⟩) hT hσ hc.ab hc.ag hc.ad hc.bg hc.bd
+      hc.gd hc.c1g hc.c1d hc.c2a hc.c2b hc.c3b hc.c3d hc.c4a hc.c4g E1 E2).elim
+  · exact (classKill_sound hK haZ hrel E1 E2 hσ (by exact_mod_cast hL) (by exact_mod_cast hc4)
       hδ).elim
 
 /-- **The descent.** If every case is covered (`CasesOK p q D` with `D = q² − p²`), there are no
