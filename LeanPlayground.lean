@@ -92,6 +92,7 @@ import LeanPlayground.PerfectCuboid.FiberList
 import LeanPlayground.PerfectCuboid.CongruentRank
 import LeanPlayground.PerfectCuboid.ConfigCuboid
 import LeanPlayground.PerfectCuboid.TwistedCuboid
+import LeanPlayground.PerfectCuboid.TwistClass
 import LeanPlayground.PerfectCuboid.DivPolyScale
 import LeanPlayground.PerfectCuboid.RankOneReduction
 import LeanPlayground.PerfectCuboid.DivPolyFormula
