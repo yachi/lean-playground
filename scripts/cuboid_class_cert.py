@@ -16,8 +16,12 @@ This script mirrors the Lean definitions of DescentClass.lean literally (the div
 Lean file of the fiber. The functions of the torsion families and the residue check come from
 scripts/cuboid_cert.py.
 
+With --sq, the pair is (U^2, V^2) of E'' itself (`IsPerfectCuboid.not_onFiber_of_sq`): its
+solutions with M^2 = pq e^2 come from the point T4 of order 4, so the cases in the class of a
+point of order 8 use family TR of LeanPlayground/PerfectCuboid/DescentTR.lean (`trOK`).
+
 Usage:
-  python3 scripts/cuboid_class_cert.py [--budget S] [--parts K] [-d DIR] m,n
+  python3 scripts/cuboid_class_cert.py [--budget S] [--parts K] [--sq] [-d DIR] m,n
 """
 
 import argparse
@@ -162,10 +166,144 @@ def classCheck(N, l, a, b, c, P, Q):
 # The certificate
 
 
-def certify(p, q, D, Ps, max_class=10 ** 6, max_modulus=211, lims=(65536, 1 << 20)):
+# ---------------------------------------------------------------------------------------------
+# Family TR (`trOK` of DescentTR.lean), for the pair `(U², V²)`
+
+
+def padd(a, b):
+    n = max(len(a), len(b))
+    return [(a[i] if i < len(a) else 0) + (b[i] if i < len(b) else 0) for i in range(n)]
+
+
+def pscale(c, a):
+    return [c * x for x in a]
+
+
+def psub(a, b):
+    return padd(a, pscale(-1, b))
+
+
+def pmul(a, b):
+    if not a or not b:
+        return []
+    out = [0] * (len(a) + len(b) - 1)
+    for i, x in enumerate(a):
+        for j, y in enumerate(b):
+            out[i + j] += x * y
+    return out
+
+
+def ppow(a, k):
+    out = [1]
+    for _ in range(k):
+        out = pmul(out, a)
+    return out
+
+
+def tr_polys(p, q, L, c1, c2, c3, c4, d1):
+    """`trG` and `trR0 · trRM · trRe` of DescentTR.lean."""
+    A, Dd, T = [-(L * c2 ** 2), q * c4 ** 2], [q * c3 ** 2, -(L * c1 ** 2)], [0, 1]
+    d2, d3, DD = d1 + p ** 2, d1 + q ** 2, q ** 2 - p ** 2
+    AD = pmul(A, Dd)
+    A0 = psub(pscale(c1 ** 2 * c4 ** 2 * q * L,
+                     padd(pscale(d2 * d3, AD), pscale(d1 * c3 ** 2 * c4 ** 2 * DD ** 2, T))),
+              pscale(p * q, ppow(psub(pscale(q * L * c1 ** 2, A), pscale(d1 * c4 ** 2, Dd)), 2)))
+    R0 = psub(ppow(A0, 2), pscale(4 * c1 ** 4 * c3 ** 2 * c4 ** 6 * q ** 2 * L ** 2 * DD ** 2 * d1
+                                  * d2 * d3, pmul(AD, T)))
+    RM = psub(pscale(d2 * d3, AD), pscale(d1 * c3 ** 2 * c4 ** 2 * DD ** 2, T))
+    Re = psub(pscale(q * L * c1 ** 2, A), pscale(d1 * c4 ** 2, Dd))
+    K1, K2 = pscale(c1 ** 2, pmul(A, T)), pscale(c2 ** 2, Dd)
+    G = psub(pscale(p, ppow(psub(K1, K2), 2)), pscale(4 * q, pmul(K1, K2)))
+    return G, pmul(pmul(R0, RM), Re)
+
+
+def pdivexact(a, b):
+    """`a / b` over `ℚ` if `b` divides `a`, else `None` (little-endian lists)."""
+    from fractions import Fraction
+    a = [Fraction(x) for x in a]
+    while b and b[-1] == 0:
+        b = b[:-1]
+    while a and a[-1] == 0:
+        a.pop()
+    if len(a) < len(b):
+        return [] if not a else None
+    out = [Fraction(0)] * (len(a) - len(b) + 1)
+    for i in range(len(out) - 1, -1, -1):
+        c = a[i + len(b) - 1] / b[-1]
+        out[i] = c
+        for j, y in enumerate(b):
+            a[i + j] -= c * y
+    return out if all(x == 0 for x in a) else None
+
+
+def tr_cert(p, q, L, c1, c2, c3, c4, d1, kmax=8):
+    """`(N, k, Z)` with `N G^k = R Z`, or `None`."""
+    G, R = tr_polys(p, q, L, c1, c2, c3, c4, d1)
+    for k in range(1, kmax + 1):
+        Gk = ppow(G, k)
+        Zq = pdivexact(Gk, R)
+        if Zq is not None:
+            N = 1
+            for z in Zq:
+                N = N * z.denominator // math.gcd(N, z.denominator)
+            Z = [int(z * N) for z in Zq]
+            assert all(x == 0 for x in psub(pscale(N, Gk), pmul(R, Z)))
+            return N, k, Z
+    return None
+
+
+def tr_points(U, V, W):
+    """The `x > 0` of the half-points of `T₄ = (U²V², ·)`, with `y_T`."""
+    p, q = sorted((U * U, V * V))
+    out = set()
+    for e1 in (1, -1):
+        for e2 in (1, -1):
+            x = U * U * V * V + e1 * U * U * V * W + e2 * U * V * V * W + e1 * e2 * U * V * W * W
+            if x > 0:
+                y2 = x * (x + p * p) * (x + q * q)
+                y = math.isqrt(y2)
+                if y * y == y2:
+                    out.add((x, y))
+    return sorted(out)
+
+
+def trOK(p, q, lam, c1, c2, c3, c4, s, Ts):
+    """A certificate `("tr", d₁, y_T, X, Y, N, k, Z, pairs)` of family TR, or `None`."""
+    best = None
+    D = q * q - p * p
+    for d1, yT in Ts:
+        d2, d3 = d1 + p * p, d1 + q * q
+        if not (C.isSq(q * lam * d1) and C.isSq(D * lam * s * d2) and C.isSq(D * q * s * d3)):
+            continue
+        w, h, H = C.nsqrt(q * lam * d1), C.nsqrt(D * lam * s * d2), C.nsqrt(D * q * s * d3)
+        F = math.gcd(math.gcd(c4 * c1 * w * d2 * d3 * s ** 2, c4 * c1 * d1 * c3 * c4 * h * H),
+                     math.gcd(yT * s ** 2 * q * lam * c1 ** 2, yT * s ** 2 * d1 * c4 ** 2))
+        KA = (yT * s ** 2 * q * lam * c1 ** 2) ** 2 * (q * c4 ** 2)
+        KB = (yT * s ** 2 * d1 * c4 ** 2) ** 2 * (q * c3 ** 2)
+        X = max(0, math.isqrt(KA // (s * F * F)) - 1)
+        while not KA < s * F * F * (X + 1) ** 2:
+            X += 1
+        Y = max(0, math.isqrt(KB // (s * F * F)) - 1)
+        while not KB < s * F * F * (Y + 1) ** 2:
+            Y += 1
+        pairs = C.hypPairs(X, Y)
+        if best is not None and pairs >= best[-1]:
+            continue
+        if not C.hypCheck(q, lam, c1, c2, c3, c4, s, X, Y, p):
+            continue
+        cert = tr_cert(p, q, lam, c1, c2, c3, c4, d1)
+        if cert is None:
+            continue
+        best = ("tr", d1, yT, X, Y, *cert, pairs)
+    return best
+
+
+def certify(p, q, D, Ps, max_class=10 ** 6, max_modulus=211, lims=(65536, 1 << 20), Ts=None):
     """For each `λ` of `divsF (facOf Ps (p q))`: `(λ, a₀, [group certificates])`, where a group
     certificate is `("kill", key, b₀)` or `("cases", [tuple certificates])`, and a tuple
-    certificate is `("torsion", lim, pairs)` (`pairs` small cases searched) or `("modulus", N, l)`. Also returns the keys in order."""
+    certificate is `("torsion", lim, pairs)` (`pairs` small cases searched), `("modulus", N, l)`
+    or, with the torsion points `Ts` of family TR, `("tr", …)`. Also returns the keys in
+    order."""
     mods = []
     for l in Ps:
         N, k = l, 1
@@ -230,6 +368,10 @@ def certify(p, q, D, Ps, max_class=10 ** 6, max_modulus=211, lims=(65536, 1 << 2
                             e = ("torsion", lim, PAIRS[0])
                             stats["torsion"] += 1
                             break
+                if e is None and Ts:
+                    e = trOK(p, q, lam, c1, c2, c3, c4, s, Ts)
+                    if e is not None:
+                        stats["tr"] = stats.get("tr", 0) + 1
                 if e is None:
                     bad.append((lam, c1, c2, c3, c4, s))
                 tcs.append(e)
@@ -247,6 +389,8 @@ def cost_t(e):
     """Estimated kernel seconds of one case: a torsion family, or the `O(N²)` residue check."""
     if e[0] == "torsion":
         return 0.010 + 0.0005 * e[2]
+    if e[0] == "tr":
+        return 0.2 + 0.0005 * e[-1]
     return 0.0037 + 0.00012 * (e[1] // 2 + 1) ** 2
 
 
@@ -311,6 +455,9 @@ def chunks_(byval, pq, S, budget):
 
 
 def tcert_str(e):
+    if e[0] == "tr":
+        _, d1, yT, X, Y, N, k, Z, _ = e
+        return f".tr {d1} {yT} {X} {Y} {N} {k} [" + ", ".join(map(str, Z)) + "]"
     return f".torsion {e[1]}" if e[0] == "torsion" else f".modulus {e[1]} {e[2]}"
 
 
@@ -365,7 +512,10 @@ def wrap_tree(s, indent="  ", width=100):
 
 
 def cases_on(*args):
-    """The statement `CasesOn p q D lo hi slo shi`, broken before `slo` if it is too long."""
+    """The statement `CasesOn p q D lo hi slo shi [true]`, broken before `slo` if it is too
+    long. In the `--sq` mode (`SQMODE`), the last argument `t4 = true` allows family TR."""
+    if SQMODE:
+        args = args + ("true",)
     line = "    CasesOn " + " ".join(map(str, args)) + " :="
     if len(line) <= 100:
         return line
@@ -386,6 +536,9 @@ def chunk_lines(tag, p, q, D, j, r):
             f"theorem casesOn_{tag}_{j} :", cases_on(p, q, D, lo, hi, slo, shi),
             f"  casesOn_of_classCert (cert := {nm}) (by norm_num) ps_{tag}_prime",
             f"    keys_{tag}_ok (by decide +kernel)", ""]
+    if len(out[-3]) > 100:
+        out[-3:-1] = [f"  casesOn_of_classCert (cert := {nm}) (by norm_num)",
+                      f"    ps_{tag}_prime keys_{tag}_ok (by decide +kernel)"]
     return out
 
 
@@ -415,29 +568,36 @@ def combine_lines(tag, p, q, D, rngs, S):
         out += [f"theorem {new} :", cases_on(p, q, D, 0, hi, 0, S),
                 f"  {name}.trans {b}", ""]
         name = new
-    out += [f"theorem casesOK_{tag} : CasesOK {p} {q} {D} :=",
-            f"  {name}.casesOK (by norm_num) (by norm_num) (by norm_num)", ""]
+    if SQMODE:
+        out += [f"theorem casesOK_{tag} : CasesOKT true {p} {q} {D} :=",
+                f"  {name}.casesOKT (by norm_num) (by norm_num) (by norm_num)", ""]
+    else:
+        out += [f"theorem casesOK_{tag} : CasesOK {p} {q} {D} :=",
+                f"  {name}.casesOK (by norm_num) (by norm_num) (by norm_num)", ""]
     return out
+
+
+SQMODE = False
 
 
 def emit(m, n, args, budget, parts):
     """The Lean files of the fiber: `{name: text}`."""
     U, V, W = m * m - n * n, 2 * m * n, m * m + n * n
-    p, q = 2 * U * V, W * W
+    p, q = (min(U, V) ** 2, max(U, V) ** 2) if SQMODE else (2 * U * V, W * W)
     assert p < q and math.gcd(p, q) == 1
     D = q * q - p * p
     from sympy import factorint
     Ps = sorted(set(factorint(p * q * D)) | {2})
     assert all(primeB(l) for l in Ps)
     t0 = time.time()
-    cert, keys, bad, stats = certify(p, q, D, Ps)
+    cert, keys, bad, stats = certify(p, q, D, Ps, Ts=tr_points(U, V, W) if SQMODE else None)
     print(f"({m},{n}) p={p} q={q}: {stats}, keys {len(keys)}, bad {len(bad)}, "
           f"{time.time() - t0:.0f}s", file=sys.stderr)
     if bad:
         print(f"  uncertified: {bad[:10]}", file=sys.stderr)
         return None
     tag = f"{C.name(m)}_{C.name(n)}"
-    base = f"F_{p}_{q}"
+    base = f"F_{p}_{q}" + ("_sq" if SQMODE else "")
     lo_, hi_ = sorted((U, V))
     ratio = f"{C.name(lo_)}_{C.name(hi_)}"
     S = (p * q) ** 2 * D + 1
@@ -456,6 +616,8 @@ def emit(m, n, args, budget, parts):
            f"def keys_{tag} : KTree :=", wrap_tree(ktree(keys)), "",
            f"theorem keys_{tag}_ok : keys_{tag}.all (keyOK {p} {q}) = true := by",
            "  decide +kernel", ""]
+    if len(pre[-3]) > 100:
+        pre[-3:-2] = [f"theorem keys_{tag}_ok :", f"    keys_{tag}.all (keyOK {p} {q}) = true := by"]
     post = [C.wrap_doc(f"The descent for the pair `(2UV, W²) = ({p}, {q})` of the fiber "
                        f"`({m}, {n})`."),
             f"theorem not_isSol_{tag} (M e r s : ℤ) : ¬ IsSol {p} {q} M e r s :=",
@@ -471,6 +633,30 @@ def emit(m, n, args, budget, parts):
             "    (by norm_num) (by norm_num) (by norm_num) (fun M e r s ↦ ?_)",
             "    (by exact_mod_cast hXZ)",
             f"  simpa using Descent.not_isSol_{tag} M e r s", "", "end PerfectCuboid", ""]
+    if SQMODE:
+        doc = SQ_DOC.format(args=args, m=m, n=n, U=U, V=V, W=W, p=p, q=q, D=D, lo=lo_, hi=hi_,
+                            ratio=ratio, groups=stats["groups"], killed=stats["killed"],
+                            tuples=stats["tuples"], torsion=stats["torsion"],
+                            tr=stats.get("tr", 0), nkeys=len(keys), nlam=len(cert), tag=tag)
+        sol = "hs" if U * U == p else "⟨hs.1, hs.2.1, hs.2.2.2, hs.2.2.1⟩"
+        post = [C.wrap_doc(f"The descent for the pair `(U², V²)` of the fiber `({m}, {n})`: "
+                           f"every solution of `IsSol {p} {q}` has `M² = pq e²`."),
+                f"theorem sq_eq_{tag} {{M e r s : ℤ}} (h : IsSol {p} {q} M e r s) :",
+                f"    M ^ 2 = {p} * {q} * e ^ 2 :=",
+                "  sq_eq_of_isSol_of_casesOKT (by norm_num) (by norm_num) (by norm_num) (by decide)",
+                f"    casesOK_{tag} h", "", "end Descent", "",
+                C.wrap_doc(f"**No perfect cuboid has two edges in ratio `{lo_} : {hi_}`.** This is "
+                           f"the fiber `(m, n) = ({m}, {n})`, through the pair curve "
+                           f"`({p}, {q})` of `E″` itself."),
+                f"theorem not_isPerfectCuboid_{ratio} {{X Y Z : ℕ}} (h : IsPerfectCuboid X Y Z) :",
+                f"    {U} * X ≠ {V} * Z := by",
+                "  intro hXZ",
+                f"  refine Kubert.IsPerfectCuboid.not_onFiber_of_sq h (U := {U}) (V := {V}) "
+                f"(W := {W})",
+                "    (by norm_num) (by norm_num) (by norm_num) (fun M e r s hs ↦ ?_)",
+                "    (by exact_mod_cast hXZ)",
+                "  norm_num at hs",
+                f"  linear_combination Descent.sq_eq_{tag} {sol}", "", "end PerfectCuboid", ""]
     body = []
     for j, r in enumerate(rngs, 1):
         body += chunk_lines(tag, p, q, D, j, r)
@@ -545,6 +731,39 @@ only the reason to expect the descent to work, and the proofs do not depend on i
 """
 
 
+SQ_DOC = """/-!
+# No perfect cuboid has two edges in ratio `{lo} : {hi}`
+
+Generated by `scripts/cuboid_class_cert.py` (do not edit by hand):
+
+```
+{args}
+```
+
+This is the fiber `(m, n) = ({m}, {n})`, with `U = {U}`, `V = {V}`, `W = {W}`,
+through the curve `E″` itself: moving a root to `0` makes it the pair curve of
+`(p, q) = (U², V²) = ({p}, {q})` (sorted), with `D = q² − p² = {D}`,
+and a cuboid on the fiber gives a solution with `M² ≠ pq e²`
+(`IsPerfectCuboid.not_onFiber_of_sq`). Unlike the pair `(2UV, W²)`, this pair has the
+solutions `M² = pq e²` of the point `T₄` of order `4`, so the descent shows only that every
+solution is of this kind (`sq_eq_of_isSol_of_casesOKT`). It has {groups} groups
+`(λ, σ₀)` over {nlam} values of `λ`; {killed} of them are ruled out by their `2`-descent
+class (`ClassKill`, with {nkeys} distinct class tests), and the other {tuples} cases are
+split out, {torsion} of them torsion translates and {tr} of them by family TR (the
+half-points of `±T₄` minus a point of order `8`, `trOK`). The kernel replays the certificate
+with `classCert` (`decide +kernel`).
+
+The curve `E″` has rank `0` and its `2`-Selmer group is its torsion modulo `2` (PARI/GP); this is
+only the reason to expect the descent to work, and the proofs do not depend on it.
+
+## Main results
+
+* `Descent.sq_eq_{tag}` — the descent for the pair `({p}, {q})`.
+* `not_isPerfectCuboid_{ratio}` — no perfect cuboid has `{U} X = {V} Z`.
+-/
+"""
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("fiber", help="the fiber m,n")
@@ -554,7 +773,11 @@ def main():
                     help="split the certificates over this many modules (default 1)")
     ap.add_argument("-d", "--dir", default="LeanPlayground/PerfectCuboid/Fibers",
                     help="output directory (default LeanPlayground/PerfectCuboid/Fibers)")
+    ap.add_argument("--sq", action="store_true",
+                    help="use the pair (U^2, V^2) of E'' itself, with family TR")
     a = ap.parse_args()
+    global SQMODE
+    SQMODE = a.sq
     m, n = map(int, a.fiber.split(","))
     args = "python3 scripts/cuboid_class_cert.py " + " ".join(sys.argv[1:])
     files = emit(m, n, args, a.budget, a.parts)

@@ -230,23 +230,36 @@ def smallBad(q, lam, c1, c2, c3, c4, s, b, g):
             and c1 * nsqrt(ndiv(A, s)) * b != c2 * g * nsqrt(ndiv(D, s)))
 
 
+def t4B(p, q, K1, K2):
+    return p * nsub(K1 ** 2, K2 ** 2) ** 2 + p * nsub(K2 ** 2, K1 ** 2) ** 2 == 4 * q * (K1 * K2) ** 2
+
+
+def smallBadT(p, q, lam, c1, c2, c3, c4, s, b, g):
+    """`smallBad`, and not `±T₄` for the pair `(p, q)` (`p = 0`: `smallBad`)."""
+    if not smallBad(q, lam, c1, c2, c3, c4, s, b, g):
+        return False
+    D = nsub(q * c3 ** 2 * g ** 2, lam * c1 ** 2 * b ** 2)
+    A = nsub(q * c4 ** 2 * b ** 2, lam * c2 ** 2 * g ** 2)
+    return not t4B(p, q, c1 * nsqrt(ndiv(A, s)) * b, c2 * g * nsqrt(ndiv(D, s)))
+
+
 def smallCheck(q, lam, c1, c2, c3, c4, s, Bb, Bg):
     return all(not smallBad(q, lam, c1, c2, c3, c4, s, b, g)
                for b in range(1, Bb + 1) for g in range(1, Bg + 1))
 
 
-def hypBadGD(q, lam, c1, c2, c3, c4, s, g, d):
+def hypBadGD(q, lam, c1, c2, c3, c4, s, g, d, p=0):
     y, z = q * c3 ** 2 * g ** 2, s * d ** 2
     L = lam * c1 ** 2
     return (z < y and nmod(y - z, L) == 0 and isSq(ndiv(y - z, L))
-            and smallBad(q, lam, c1, c2, c3, c4, s, nsqrt(ndiv(y - z, L)), g))
+            and smallBadT(p, q, lam, c1, c2, c3, c4, s, nsqrt(ndiv(y - z, L)), g))
 
 
-def hypBadAB(q, lam, c1, c2, c3, c4, s, a, b):
+def hypBadAB(q, lam, c1, c2, c3, c4, s, a, b, p=0):
     y, z = q * c4 ** 2 * b ** 2, s * a ** 2
     L = lam * c2 ** 2
     return (z < y and nmod(y - z, L) == 0 and isSq(ndiv(y - z, L))
-            and smallBad(q, lam, c1, c2, c3, c4, s, b, nsqrt(ndiv(y - z, L))))
+            and smallBadT(p, q, lam, c1, c2, c3, c4, s, b, nsqrt(ndiv(y - z, L))))
 
 
 def hypPairs(X, Y):
@@ -254,10 +267,11 @@ def hypPairs(X, Y):
     return sum(X // i for i in range(1, X + 1)) + sum(Y // i for i in range(1, Y + 1))
 
 
-def hypCheck(q, lam, c1, c2, c3, c4, s, X, Y):
-    return (all(not hypBadGD(q, lam, c1, c2, c3, c4, s, i, j)
+def hypCheck(q, lam, c1, c2, c3, c4, s, X, Y, p=0):
+    """`hypCheck p q …` of the Lean file (`p = 0` for family QK)."""
+    return (all(not hypBadGD(q, lam, c1, c2, c3, c4, s, i, j, p)
                 for i in range(1, X + 1) for j in range(1, X // i + 1))
-            and all(not hypBadAB(q, lam, c1, c2, c3, c4, s, i, j)
+            and all(not hypBadAB(q, lam, c1, c2, c3, c4, s, i, j, p)
                     for i in range(1, Y + 1) for j in range(1, Y // i + 1)))
 
 

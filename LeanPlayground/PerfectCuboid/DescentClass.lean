@@ -1,6 +1,6 @@
 module
 
-public import LeanPlayground.PerfectCuboid.Descent
+public import LeanPlayground.PerfectCuboid.DescentTR
 
 /-!
 # The descent with the class lemma
@@ -187,25 +187,31 @@ theorem KTree.all_get {f : Key → Bool} : ∀ {t : KTree}, t.all f = true → �
     · exact KTree.all_get ht.2 h
 
 /-- The test of one case `(c₁, c₂, c₃, c₄, σ)`: a torsion family with a box of at most `lim`
-pairs, or the residue check modulo `N`. -/
+pairs, the residue check modulo `N`, or family TR (`trOK`). -/
 inductive TCert where
   | torsion (lim : ℕ)
   | modulus (N l : ℕ)
+  | tr (d1 yT X Y N k : ℕ) (Z : List ℤ)
 
-/-- The test `c` succeeds on the case `x = (c₁, c₂, c₃, c₄, σ)`. -/
-def tStep (p q lam : ℕ) (x : ℕ × ℕ × ℕ × ℕ × ℕ) : TCert → Bool
+/-- The test `c` succeeds on the case `x = (c₁, c₂, c₃, c₄, σ)`; family TR only counts when
+`t4`, for the descent up to `±T₄`. -/
+def tStep (t4 : Bool) (p q lam : ℕ) (x : ℕ × ℕ × ℕ × ℕ × ℕ) : TCert → Bool
   | .torsion lim => torsionOKL lim p q lam x.1 x.2.1 x.2.2.1 x.2.2.2.1 x.2.2.2.2
   | .modulus N l => decide (0 < N) && decide (2 ≤ l) && N % l == 0 &&
       tupleOK [(N, l)] q lam x.1 x.2.1 x.2.2.1 x.2.2.2.1 x.2.2.2.2
+  | .tr d1 yT X Y N k Z => t4 && trOK p q lam x.1 x.2.1 x.2.2.1 x.2.2.2.1 x.2.2.2.2 d1 yT X Y N k Z
 
-theorem tStep_sound {p q D lam : ℕ} {x : ℕ × ℕ × ℕ × ℕ × ℕ} {c : TCert}
-    (h : tStep p q lam x c = true) :
-    CaseOK p q D lam x.1 x.2.1 x.2.2.1 x.2.2.2.1 x.2.2.2.2 := by
+theorem tStep_sound {t4 : Bool} {p q D lam : ℕ} {x : ℕ × ℕ × ℕ × ℕ × ℕ} {c : TCert}
+    (h : tStep t4 p q lam x c = true) :
+    CaseOKT t4 p q D lam x.1 x.2.1 x.2.2.1 x.2.2.2.1 x.2.2.2.2 := by
   cases c with
-  | torsion lim => exact Or.inl ⟨lim, h⟩
+  | torsion lim => exact Or.inl (Or.inl ⟨lim, h⟩)
   | modulus N l =>
     simp only [tStep, Bool.and_eq_true, decide_eq_true_eq, beq_iff_eq] at h
-    exact Or.inr (Or.inl ⟨N, l, h.1.1.1, h.1.1.2, Nat.dvd_of_mod_eq_zero h.1.2, h.2⟩)
+    exact Or.inl (Or.inr (Or.inl ⟨N, l, h.1.1.1, h.1.1.2, Nat.dvd_of_mod_eq_zero h.1.2, h.2⟩))
+  | tr d1 yT X Y N k Z =>
+    simp only [tStep, Bool.and_eq_true] at h
+    exact Or.inr ⟨h.1, d1, yT, X, Y, N, k, Z, h.2⟩
 
 /-- The certificate of a group `(σ₀, ts)` of one `λ`: its class is ruled out by the key with
 index `j`, with `b₀ ≡ Dλσ₀` modulo squares, or the list of the tests of its cases. -/
@@ -231,57 +237,61 @@ def killOK (keys : KTree) (D lam a0 s0 j b0 : ℕ) : Bool :=
   | none => false
 
 /-- The certificate `c` handles the group `g`. -/
-def groupOK (p q D slo shi lam a0 p' l' : ℕ) (C1 C3 : List ℕ) (keys : KTree)
+def groupOK (t4 : Bool) (p q D slo shi lam a0 p' l' : ℕ) (C1 C3 : List ℕ) (keys : KTree)
     (g : ℕ × List ℕ) : GCert → Bool
   | .kill j b0 => killOK keys D lam a0 g.1 j b0
-  | .cases cs => allZip (tStep p q lam) (groupCases slo shi p' l' g.1 g.2 C1 C3) cs
+  | .cases cs => allZip (tStep t4 p q lam) (groupCases slo shi p' l' g.1 g.2 C1 C3) cs
 
 /-- `lamOK` with `p' = p / gcd(p, λ)`, `λ' = λ / gcd(p, λ)` and the factorizations `F1` of `p'`,
 `F3` of `λ'` and `Fσ` of `λ'² D`. -/
-def lamOKWith (p q D slo shi : ℕ) (keys : KTree) (lam a0 p' l' : ℕ)
+def lamOKWith (t4 : Bool) (p q D slo shi : ℕ) (keys : KTree) (lam a0 p' l' : ℕ)
     (F1 F3 Fσ : List (ℕ × ℕ)) (gs : List GCert) : Bool :=
   decide (0 < a0) && isSq (q * lam * a0) && prodF F1 == p' && prodF F3 == l' &&
     prodF Fσ == l' ^ 2 * D &&
-    allZip (groupOK p q D slo shi lam a0 p' l' (divsF F1) (divsF F3) keys) (sqGroups Fσ) gs
+    allZip (groupOK t4 p q D slo shi lam a0 p' l' (divsF F1) (divsF F3) keys) (sqGroups Fσ) gs
 
 /-- The certificate `(a₀, gs)` handles every case of `λ` with `σlo ≤ σ < σhi`: `a₀ ≡ qλ` modulo
 squares and `gs` handles the groups of `sqGroups`. -/
-def lamOK (p q D slo shi : ℕ) (Ps : List ℕ) (keys : KTree) (lam : ℕ) (c : ℕ × List GCert) :
-    Bool :=
-  lamOKWith p q D slo shi keys lam c.1 (p / Nat.gcd p lam) (lam / Nat.gcd p lam)
+def lamOK (t4 : Bool) (p q D slo shi : ℕ) (Ps : List ℕ) (keys : KTree) (lam : ℕ)
+    (c : ℕ × List GCert) : Bool :=
+  lamOKWith t4 p q D slo shi keys lam c.1 (p / Nat.gcd p lam) (lam / Nat.gcd p lam)
     (facOf Ps (p / Nat.gcd p lam)) (facOf Ps (lam / Nat.gcd p lam))
     (facOf Ps ((lam / Nat.gcd p lam) ^ 2 * D)) c.2
 
 /-- The grouped certificate for the `λ ∣ pq` with `lo ≤ λ < hi` and the `σlo ≤ σ < σhi`. -/
-def classCert (p q D lo hi slo shi : ℕ) (Ps : List ℕ) (keys : KTree)
+def classCert (t4 : Bool) (p q D lo hi slo shi : ℕ) (Ps : List ℕ) (keys : KTree)
     (cert : List (ℕ × List GCert)) : Bool :=
   prodF (facOf Ps (p * q)) == p * q &&
-    allZip (lamOK p q D slo shi Ps keys)
+    allZip (lamOK t4 p q D slo shi Ps keys)
       ((divsF (facOf Ps (p * q))).filter fun lam ↦ decide (lo ≤ lam) && decide (lam < hi)) cert
 
-/-- Every case with `lo ≤ λ < hi` and `σlo ≤ σ < σhi` is handled. -/
-def CasesOn (p q D lo hi slo shi : ℕ) : Prop :=
+/-- Every case with `lo ≤ λ < hi` and `σlo ≤ σ < σhi` is handled (`CaseOKT t4`; by default
+`t4 = false`, without family TR). -/
+def CasesOn (p q D lo hi slo shi : ℕ) (t4 : Bool := false) : Prop :=
   ∀ ⦃lam c1 c2 c3 c4 σ : ℕ⦄, 0 < lam → lam ∣ p * q → lo ≤ lam → lam < hi → slo ≤ σ → σ < shi →
     c1 * c2 = p / Nat.gcd p lam → Nat.Coprime c1 c2 → c3 * c4 = lam / Nat.gcd p lam →
-    Nat.Coprime c3 c4 → σ ∣ (lam / Nat.gcd p lam) ^ 2 * D → CaseOK p q D lam c1 c2 c3 c4 σ
+    Nat.Coprime c3 c4 → σ ∣ (lam / Nat.gcd p lam) ^ 2 * D → CaseOKT t4 p q D lam c1 c2 c3 c4 σ
 
-theorem CasesOn.trans {p q D lo mid hi slo shi : ℕ} (h1 : CasesOn p q D lo mid slo shi)
-    (h2 : CasesOn p q D mid hi slo shi) : CasesOn p q D lo hi slo shi := by
+theorem CasesOn.trans {p q D lo mid hi slo shi : ℕ} {t4 : Bool}
+    (h1 : CasesOn p q D lo mid slo shi t4) (h2 : CasesOn p q D mid hi slo shi t4) :
+    CasesOn p q D lo hi slo shi t4 := by
   intro lam c1 c2 c3 c4 σ h0 hd hlo hhi
   rcases lt_or_ge lam mid with h | h
   · exact h1 h0 hd hlo h
   · exact h2 h0 hd h hhi
 
-theorem CasesOn.transσ {p q D lo hi slo smid shi : ℕ} (h1 : CasesOn p q D lo hi slo smid)
-    (h2 : CasesOn p q D lo hi smid shi) : CasesOn p q D lo hi slo shi := by
+theorem CasesOn.transσ {p q D lo hi slo smid shi : ℕ} {t4 : Bool}
+    (h1 : CasesOn p q D lo hi slo smid t4) (h2 : CasesOn p q D lo hi smid shi t4) :
+    CasesOn p q D lo hi slo shi t4 := by
   intro lam c1 c2 c3 c4 σ h0 hd hlo hhi hslo hshi
   rcases lt_or_ge σ smid with h | h
   · exact h1 h0 hd hlo hhi hslo h
   · exact h2 h0 hd hlo hhi h hshi
 
 /-- The range `σ < (pq)² D + 1` holds for every case, since `σ ∣ λ'² D` and `λ' ≤ pq`. -/
-theorem CasesOn.casesOK {p q D : ℕ} (h : CasesOn p q D 0 (p * q + 1) 0 ((p * q) ^ 2 * D + 1))
-    (hp : 0 < p) (hq : 0 < q) (hD : 0 < D) : CasesOK p q D := by
+theorem CasesOn.casesOKT {p q D : ℕ} {t4 : Bool}
+    (h : CasesOn p q D 0 (p * q + 1) 0 ((p * q) ^ 2 * D + 1) t4)
+    (hp : 0 < p) (hq : 0 < q) (hD : 0 < D) : CasesOKT t4 p q D := by
   intro lam c1 c2 c3 c4 σ h0 hd hc12 hc12' hc34 hc34' hσd
   have hpq : 0 < p * q := Nat.mul_pos hp hq
   have hl' : 0 < lam / Nat.gcd p lam :=
@@ -291,6 +301,14 @@ theorem CasesOn.casesOK {p q D : ℕ} (h : CasesOn p q D 0 (p * q + 1) 0 ((p * q
     (Nat.lt_succ_of_le ((Nat.le_of_dvd (Nat.mul_pos (pow_pos hl' 2) hD) hσd).trans ?_)) hc12
     hc12' hc34 hc34' hσd
   exact Nat.mul_le_mul_right _ (Nat.pow_le_pow_left hl 2)
+
+/-- `CasesOn.casesOKT` without family TR. -/
+theorem CasesOn.casesOK {p q D : ℕ} (h : CasesOn p q D 0 (p * q + 1) 0 ((p * q) ^ 2 * D + 1))
+    (hp : 0 < p) (hq : 0 < q) (hD : 0 < D) : CasesOK p q D := by
+  intro lam c1 c2 c3 c4 σ h0 hd hc12 hc12' hc34 hc34' hσd
+  rcases h.casesOKT hp hq hD h0 hd hc12 hc12' hc34 hc34' hσd with h | ⟨h, -⟩
+  · exact h
+  · exact absurd h Bool.false_ne_true
 
 theorem isSq_mul_sq {n : ℕ} (h : isSq n = true) (t : ℕ) : isSq (n * t ^ 2) = true := by
   have hn := eq_sq_of_isSq h
@@ -318,10 +336,11 @@ theorem classKill_of_killOK {p q D lam a0 s0 j b0 : ℕ} {keys : KTree}
   · simp at h
 
 /-- **Soundness of the grouped certificate.** -/
-theorem casesOn_of_classCert {p q D lo hi slo shi : ℕ} {Ps : List ℕ} {keys : KTree}
+theorem casesOn_of_classCert {t4 : Bool} {p q D lo hi slo shi : ℕ} {Ps : List ℕ} {keys : KTree}
     {cert : List (ℕ × List GCert)} (hp : 0 < p) (hPs : ∀ l ∈ Ps, l.Prime)
     (hkeys : keys.all (keyOK p q) = true)
-    (h : classCert p q D lo hi slo shi Ps keys cert = true) : CasesOn p q D lo hi slo shi := by
+    (h : classCert t4 p q D lo hi slo shi Ps keys cert = true) :
+    CasesOn p q D lo hi slo shi t4 := by
   simp only [classCert, Bool.and_eq_true, beq_iff_eq] at h
   obtain ⟨hpq, h⟩ := h
   intro lam c1 c2 c3 c4 σ hlam hlpq hlo hhi hslo hshi hc12 hc12' hc34 hc34' hσd
@@ -340,7 +359,7 @@ theorem casesOn_of_classCert {p q D lo hi slo shi : ℕ} {Ps : List ℕ} {keys :
     exists_sqGroups (primes_facOf hPs _) (show σ ∣ prodF _ by rw [hFσ]; exact hσd)
   obtain ⟨gc, hgc⟩ := allZip_sound hgs G hG
   cases gc with
-  | kill j b0 => exact Or.inr (Or.inr (classKill_of_killOK hkeys ha0 hA hgc t))
+  | kill j b0 => exact Or.inl (Or.inr (Or.inr (classKill_of_killOK hkeys ha0 hA hgc t)))
   | cases cs =>
     have hc1 : 0 < c1 := Nat.pos_of_mul_pos_right (hc12 ▸ hp')
     have hc3 : 0 < c3 := Nat.pos_of_mul_pos_right (hc34 ▸ hl')
@@ -361,7 +380,7 @@ theorem casesOn_of_classCert {p q D lo hi slo shi : ℕ} {Ps : List ℕ} {keys :
       simp only [bne_self_eq_false, Bool.false_eq_true, ↓reduceIte, List.mem_singleton]
     rw [groupOK] at hgc
     obtain ⟨c, hc⟩ := allZip_sound hgc _ hx
-    exact tStep_sound (p := p) (q := q) (D := D) (lam := lam)
+    exact tStep_sound (t4 := t4) (p := p) (q := q) (D := D) (lam := lam)
       (x := (c1, c2, c3, c4, G.1 * t ^ 2)) hc
 
 end Descent
