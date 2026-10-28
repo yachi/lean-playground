@@ -152,10 +152,12 @@ theorem allZip_sound {α β : Type} {f : α → β → Bool} :
 of `x`, `x + p²` modulo `N`. -/
 abbrev Key := ℕ × ℕ × ℕ × ℕ × ℕ
 
-/-- `classCheck` succeeds for the key. -/
+/-- The class check succeeds for the key: `classCheck` for `N ≤ 10⁵`, and `classCheckE` above,
+where the mask of squares modulo `N` needs too much kernel memory. -/
 def keyOK (p q : ℕ) : Key → Bool
   | (N, l, k, A, B) => primeB l && decide (0 < k) && N == l ^ k &&
-      classCheck N l A B (A * B % N) (p ^ 2 % N) (q ^ 2 % N)
+      if N ≤ 100000 then classCheck N l A B (A * B % N) (p ^ 2 % N) (q ^ 2 % N)
+      else classCheckE N l A B (A * B % N) (p ^ 2 % N) (q ^ 2 % N)
 
 /-- A binary tree of keys: the root has index `0`, the left subtree the odd indices and the right
 subtree the even ones. -/
@@ -332,7 +334,10 @@ theorem classKill_of_killOK {p q D lam a0 s0 j b0 : ℕ} {keys : KTree}
     refine ⟨⟨⟨⟨ha0, hb0⟩, hA⟩, ?_⟩, ?_⟩
     · rw [show D * lam * (s0 * t ^ 2) * b0 = D * lam * s0 * b0 * t ^ 2 by ring]
       exact isSq_mul_sq hB t
-    · rwa [Nat.mul_mod a0 b0 N]
+    · rw [Nat.mul_mod a0 b0 N, Bool.or_eq_true]
+      split at hc
+      · exact Or.inl hc
+      · exact Or.inr hc
   · simp at h
 
 /-- **Soundness of the grouped certificate.** -/

@@ -2,6 +2,7 @@ module
 
 public import Mathlib.Data.Int.Lemmas
 public import Mathlib.Data.ZMod.Basic
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.Tactic.LinearCombination
 
@@ -1089,6 +1090,66 @@ def classCheck (N l a b c P Q : ℕ) : Bool :=
     allBelow (N / l) (fun t ↦ withNat (l * t * (l * t) % N) fun y ↦
       !(m.testBit (b * ((a + P * y) % N) % N) && m.testBit (c * ((a + Q * y) % N) % N)))
 
+/-- `classCheck` with the test `t` for the squares modulo `N` (`classCheck_eq`). -/
+def classCheckBy (t : ℕ → Bool) (N l a b c P Q : ℕ) : Bool :=
+  allBelow N (fun r ↦ withNat (a * (r * r % N) % N) fun x ↦
+      !(t (b * ((x + P) % N) % N) && t (c * ((x + Q) % N) % N))) &&
+    allBelow (N / l) (fun t' ↦ withNat (l * t' * (l * t') % N) fun y ↦
+      !(t (b * ((a + P * y) % N) % N) && t (c * ((a + Q * y) % N) % N)))
+
+theorem classCheck_eq (N l a b c P Q : ℕ) :
+    classCheck N l a b c P Q = classCheckBy (sqMask N 1 1 true).testBit N l a b c P Q := by
+  simp only [classCheck, classCheckBy, withNat_eq]
+
+/-- An over-approximation of the squares modulo `N = l` or `N = l²` by Euler's criterion
+(`sqTestE_of_sq`), for the moduli where the mask `sqMask N 1 1 true` is too big for the kernel:
+`y` reduced modulo `N` passes if `y = 0` or `y` is prime to `l` and `y^(l/2) ≡ 1` modulo `l`. -/
+def sqTestE (l y : ℕ) : Bool :=
+  y == 0 || (y % l != 0 && (y % l) ^ (l / 2) % l == 1)
+
+/-- `classCheck` with Euler's criterion as the test for squares, for `N = l` or `N = l²`. -/
+def classCheckE (N l a b c P Q : ℕ) : Bool :=
+  (N == l || N == l * l) && classCheckBy (sqTestE l) N l a b c P Q
+
+/-- A square modulo `N = l` or `N = l²` passes `sqTestE`. -/
+theorem sqTestE_of_sq {N l : ℕ} (hl : l.Prime) (hN : N = l ∨ N = l * l) {X : ℕ} {w : ZMod N}
+    (h : (X : ZMod N) = w ^ 2) : sqTestE l (X % N) = true := by
+  have hN0 : 0 < N := by rcases hN with rfl | rfl <;> positivity [hl.pos]
+  have : NeZero N := ⟨hN0.ne'⟩
+  have : Fact l.Prime := ⟨hl⟩
+  have hlN : l ∣ N := by rcases hN with rfl | rfl <;> simp
+  have hX : X % N = w.val ^ 2 % N := by
+    rw [← ZMod.natCast_eq_natCast_iff', h]
+    push_cast [ZMod.natCast_val, ZMod.cast_id', id]
+    rfl
+  have hXl : X % l = w.val ^ 2 % l := by
+    rw [← Nat.mod_mod_of_dvd X hlN, hX, Nat.mod_mod_of_dvd _ hlN]
+  simp only [sqTestE, Bool.or_eq_true, beq_iff_eq, Bool.and_eq_true, bne_iff_ne, ne_eq]
+  rw [Nat.mod_mod_of_dvd X hlN]
+  by_cases hy : X % l = 0
+  · left
+    rcases hN with rfl | rfl
+    · exact hy
+    · have hw : l ∣ w.val := hl.dvd_of_dvd_pow (Nat.dvd_of_mod_eq_zero (hXl ▸ hy))
+      rw [hX]
+      exact Nat.mod_eq_zero_of_dvd (by
+        obtain ⟨u, hu⟩ := hw
+        exact ⟨u ^ 2, by rw [hu]; ring⟩)
+  · right
+    refine ⟨hy, ?_⟩
+    have ha : ((X : ℕ) : ZMod l) ≠ 0 := by
+      rwa [Ne, ZMod.natCast_eq_zero_iff, Nat.dvd_iff_mod_eq_zero]
+    have hsq : IsSquare ((X : ℕ) : ZMod l) := by
+      refine ⟨(w.val : ZMod l), ?_⟩
+      rw [← sq, ← Nat.cast_pow, ZMod.natCast_eq_natCast_iff']
+      exact hXl
+    have he := (ZMod.euler_criterion l ha).mp hsq
+    have h1 : (((X % l) ^ (l / 2) : ℕ) : ZMod l) = ((1 : ℕ) : ZMod l) := by
+      push_cast [ZMod.natCast_mod]
+      exact he
+    rw [ZMod.natCast_eq_natCast_iff', Nat.mod_eq_of_lt hl.one_lt] at h1
+    exact h1
+
 /-- A square modulo `N` is in the mask of squares. -/
 theorem testBit_of_sq {N : ℕ} [NeZero N] {X : ℕ} {w : ZMod N} (h : (X : ZMod N) = w ^ 2) :
     (sqMask N 1 1 true).testBit (X % N) = true := by
@@ -1112,15 +1173,16 @@ theorem exists_inv_of_not_dvd {N l k : ℕ} (hl : l.Prime) (hN : N = l ^ k) {r :
   push_cast [ZMod.natCast_self] at this
   linear_combination this
 
-/-- **Soundness of the class check.** If `r, s` are coprime and `b (a r² + P s²)` and
-`c (a r² + Q s²)` are squares, then `classCheck` fails modulo every prime power `N = l^k`. -/
-theorem classCheck_sound {N l k a b c P Q : ℕ} (hl : l.Prime) (hN : N = l ^ k) (hk : 0 < k)
-    (h : classCheck N l (a % N) (b % N) (c % N) (P % N) (Q % N) = true) {r s W1 W2 : ℤ}
+/-- **Soundness of the class check**, for any test `t` that every square modulo `N` passes. If `r, s` are coprime and `b (a r² + P s²)` and
+`c (a r² + Q s²)` are squares, then `classCheckBy t` fails modulo every prime power `N = l^k`. -/
+theorem classCheckBy_sound {t : ℕ → Bool} {N l k a b c P Q : ℕ} (hl : l.Prime) (hN : N = l ^ k)
+    (hk : 0 < k) (htest : ∀ {X : ℕ} {w : ZMod N}, (X : ZMod N) = w ^ 2 → t (X % N) = true)
+    (h : classCheckBy t N l (a % N) (b % N) (c % N) (P % N) (Q % N) = true) {r s W1 W2 : ℤ}
     (hrs : IsCoprime r s) (h1 : (b : ℤ) * (a * r ^ 2 + P * s ^ 2) = W1 ^ 2)
     (h2 : (c : ℤ) * (a * r ^ 2 + Q * s ^ 2) = W2 ^ 2) : False := by
   have hN0 : 0 < N := hN ▸ pow_pos hl.pos k
   have : NeZero N := ⟨hN0.ne'⟩
-  simp only [classCheck, withNat_eq, allBelow_iff, Bool.and_eq_true] at h
+  simp only [classCheckBy, withNat_eq, allBelow_iff, Bool.and_eq_true] at h
   obtain ⟨hr, ht⟩ := h
   have H1 := congrArg (Int.cast : ℤ → ZMod N) h1
   have H2 := congrArg (Int.cast : ℤ → ZMod N) h2
@@ -1144,13 +1206,13 @@ theorem classCheck_sound {N l k a b c P Q : ℕ} (hl : l.Prime) (hN : N = l ^ k)
     have hy : ((l * t * (l * t) % N : ℕ) : ZMod N) = (l * s' * ri) ^ 2 := by
       rw [ZMod.natCast_mod, Nat.cast_mul, htl]
       ring
-    have T1 := testBit_of_sq (X := b % N * ((a % N + P % N * (l * t * (l * t) % N)) % N))
-      (N := N) (w := (W1 : ZMod N) * ri) (by
+    have T1 := htest (X := b % N * ((a % N + P % N * (l * t * (l * t) % N)) % N))
+      (w := (W1 : ZMod N) * ri) (by
         push_cast [ZMod.natCast_mod] at hy ⊢
         rw [hy]
         linear_combination ri ^ 2 * H1 - (b : ZMod N) * a * (1 + ri * r) * hri)
-    have T2 := testBit_of_sq (X := c % N * ((a % N + Q % N * (l * t * (l * t) % N)) % N))
-      (N := N) (w := (W2 : ZMod N) * ri) (by
+    have T2 := htest (X := c % N * ((a % N + Q % N * (l * t * (l * t) % N)) % N))
+      (w := (W2 : ZMod N) * ri) (by
         push_cast [ZMod.natCast_mod] at hy ⊢
         rw [hy]
         linear_combination ri ^ 2 * H2 - (c : ZMod N) * a * (1 + ri * r) * hri)
@@ -1161,24 +1223,43 @@ theorem classCheck_sound {N l k a b c P Q : ℕ} (hl : l.Prime) (hN : N = l ^ k)
     obtain ⟨si, hsi⟩ := exists_inv_of_not_dvd hl hN hs
     set ρ := ((r : ZMod N) * si).val
     have hρ : ((ρ : ℕ) : ZMod N) = r * si := ZMod.natCast_zmod_val _
-    have T1 := testBit_of_sq (X := b % N * ((a % N * (ρ * ρ % N) % N + P % N) % N))
-      (N := N) (w := (W1 : ZMod N) * si) (by
+    have T1 := htest (X := b % N * ((a % N * (ρ * ρ % N) % N + P % N) % N))
+      (w := (W1 : ZMod N) * si) (by
         push_cast [ZMod.natCast_mod, hρ]
         linear_combination si ^ 2 * H1 - (b : ZMod N) * P * (1 + si * s) * hsi)
-    have T2 := testBit_of_sq (X := c % N * ((a % N * (ρ * ρ % N) % N + Q % N) % N))
-      (N := N) (w := (W2 : ZMod N) * si) (by
+    have T2 := htest (X := c % N * ((a % N * (ρ * ρ % N) % N + Q % N) % N))
+      (w := (W2 : ZMod N) * si) (by
         push_cast [ZMod.natCast_mod, hρ]
         linear_combination si ^ 2 * H2 - (c : ZMod N) * Q * (1 + si * s) * hsi)
     have H := hr ρ (ZMod.val_lt _)
     rw [T1, T2] at H
     exact absurd H (by decide)
 
+/-- **Soundness of the class check.** If `r, s` are coprime and `b (a r² + P s²)` and
+`c (a r² + Q s²)` are squares, then `classCheck` fails modulo every prime power `N = l^k`. -/
+theorem classCheck_sound {N l k a b c P Q : ℕ} (hl : l.Prime) (hN : N = l ^ k) (hk : 0 < k)
+    (h : classCheck N l (a % N) (b % N) (c % N) (P % N) (Q % N) = true) {r s W1 W2 : ℤ}
+    (hrs : IsCoprime r s) (h1 : (b : ℤ) * (a * r ^ 2 + P * s ^ 2) = W1 ^ 2)
+    (h2 : (c : ℤ) * (a * r ^ 2 + Q * s ^ 2) = W2 ^ 2) : False := by
+  have : NeZero N := ⟨(hN ▸ pow_pos hl.pos k).ne'⟩
+  rw [classCheck_eq] at h
+  exact classCheckBy_sound hl hN hk (fun hw ↦ testBit_of_sq hw) h hrs h1 h2
+
+/-- **Soundness of the Euler class check**, the same for `classCheckE`. -/
+theorem classCheckE_sound {N l k a b c P Q : ℕ} (hl : l.Prime) (hN : N = l ^ k) (hk : 0 < k)
+    (h : classCheckE N l (a % N) (b % N) (c % N) (P % N) (Q % N) = true) {r s W1 W2 : ℤ}
+    (hrs : IsCoprime r s) (h1 : (b : ℤ) * (a * r ^ 2 + P * s ^ 2) = W1 ^ 2)
+    (h2 : (c : ℤ) * (a * r ^ 2 + Q * s ^ 2) = W2 ^ 2) : False := by
+  simp only [classCheckE, Bool.and_eq_true, Bool.or_eq_true, beq_iff_eq] at h
+  exact classCheckBy_sound hl hN hk (fun hw ↦ sqTestE_of_sq hl h.1 hw) h.2 hrs h1 h2
+
 /-- The class test of a pair `(λ, σ)`: `a₀ ≡ qλ` and `b₀ ≡ Dλσ` modulo squares, and
-`classCheck` succeeds modulo `N` for the classes `a₀`, `b₀` and `a₀ b₀` of `x`, `x + p²`,
-`x + q²`. -/
+`classCheck` (or `classCheckE`) succeeds modulo `N` for the classes `a₀`, `b₀` and `a₀ b₀` of
+`x`, `x + p²`, `x + q²`. -/
 def classKillOK (p q D lam σ a0 b0 N l : ℕ) : Bool :=
   decide (0 < a0) && decide (0 < b0) && isSq (q * lam * a0) && isSq (D * lam * σ * b0) &&
-    classCheck N l (a0 % N) (b0 % N) (a0 * b0 % N) (p ^ 2 % N) (q ^ 2 % N)
+    (classCheck N l (a0 % N) (b0 % N) (a0 * b0 % N) (p ^ 2 % N) (q ^ 2 % N) ||
+      classCheckE N l (a0 % N) (b0 % N) (a0 * b0 % N) (p ^ 2 % N) (q ^ 2 % N))
 
 /-- The pair `(λ, σ)` gives a class outside the `2`-Selmer group, as witnessed by `classKillOK`
 modulo a prime power. -/

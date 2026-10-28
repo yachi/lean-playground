@@ -22,168 +22,167 @@ def ps_thirtynine_thirtyeight : List ℕ := [2, 3, 5, 7, 11, 13, 19, 593, 2887, 
 theorem ps_thirtynine_thirtyeight_prime : ∀ l ∈ ps_thirtynine_thirtyeight, l.Prime :=
   primes_of_all (by decide +kernel)
 
-/-- The 451 class tests of the fiber `(39, 38)`. -/
+/-- The 450 class tests of the fiber `(39, 38)`. -/
 def keys_thirtynine_thirtyeight : KTree :=
   (.node (.node (.node (.node (.node (.node (.node (.node (.node .leaf (32, 2, 5, 15, 29) .leaf)
-    (25, 5, 2, 2, 20) (.node .leaf (13, 13, 1, 10, 7) .leaf)) (32, 2, 5, 17, 13) (.node (.node
-    .leaf (16, 2, 4, 14, 2) .leaf) (32, 2, 5, 23, 21) (.node .leaf (19, 19, 1, 6, 14) .leaf))) (7,
+    (25, 5, 2, 2, 20) (.node .leaf (593, 593, 1, 114, 1) .leaf)) (32, 2, 5, 17, 13) (.node (.node
+    .leaf (16, 2, 4, 14, 2) .leaf) (32, 2, 5, 23, 21) (.node .leaf (25, 5, 2, 12, 15) .leaf))) (7,
     7, 1, 1, 6) (.node (.node (.node .leaf (81, 3, 4, 15, 6) .leaf) (11, 11, 1, 4, 8) (.node .leaf
-    (81, 3, 4, 60, 51) .leaf)) (13, 13, 1, 12, 8) (.node (.node .leaf (13, 13, 1, 1, 5) .leaf) (32,
+    (81, 3, 4, 6, 42) .leaf)) (13, 13, 1, 12, 8) (.node (.node .leaf (13, 13, 1, 6, 7) .leaf) (32,
     2, 5, 15, 5) .leaf))) (5, 5, 1, 3, 1) (.node (.node (.node (.node .leaf (32, 2, 5, 5, 21)
-    .leaf) (169, 13, 2, 39, 83) (.node .leaf (81, 3, 4, 39, 48) .leaf)) (32, 2, 5, 1, 13) (.node
+    .leaf) (169, 13, 2, 39, 83) (.node .leaf (169, 13, 2, 66, 26) .leaf)) (32, 2, 5, 1, 13) (.node
     (.node .leaf (13, 13, 1, 2, 7) .leaf) (25, 5, 2, 8, 15) .leaf)) (13, 13, 1, 11, 5) (.node
-    (.node (.node .leaf (9, 3, 2, 7, 6) .leaf) (13, 13, 1, 3, 5) (.node .leaf (81, 3, 4, 12, 57)
-    .leaf)) (32, 2, 5, 11, 29) (.node (.node .leaf (13, 13, 1, 11, 6) .leaf) (19, 19, 1, 7, 2)
+    (.node (.node .leaf (9, 3, 2, 7, 6) .leaf) (13, 13, 1, 3, 5) (.node .leaf (169, 13, 2, 39, 136)
+    .leaf)) (32, 2, 5, 11, 29) (.node (.node .leaf (16, 2, 4, 2, 11) .leaf) (19, 19, 1, 7, 2)
     .leaf)))) (11, 11, 1, 1, 10) (.node (.node (.node (.node (.node .leaf (32, 2, 5, 7, 13) .leaf)
-    (9, 3, 2, 3, 8) (.node .leaf (81, 3, 4, 33, 60) .leaf)) (11, 11, 1, 7, 3) (.node (.node .leaf
+    (9, 3, 2, 3, 8) (.node .leaf (169, 13, 2, 6, 52) .leaf)) (11, 11, 1, 7, 3) (.node (.node .leaf
     (361, 19, 2, 26, 114) .leaf) (3041, 3041, 1, 2069, 2049) .leaf)) (32, 2, 5, 19, 13) (.node
-    (.node (.node .leaf (9, 3, 2, 1, 6) .leaf) (25, 5, 2, 3, 20) (.node .leaf (81, 3, 4, 60, 69)
-    .leaf)) (169, 13, 2, 156, 47) (.node (.node .leaf (16, 2, 4, 6, 15) .leaf) (13, 13, 1, 8, 2)
-    .leaf))) (5, 5, 1, 2, 3) (.node (.node (.node (.node .leaf (25, 5, 2, 3, 10) .leaf) (11, 11, 1,
-    4, 7) (.node .leaf (169, 13, 2, 66, 65) .leaf)) (169, 13, 2, 91, 11) (.node (.node .leaf (361,
-    19, 2, 19, 306) .leaf) (11, 11, 1, 10, 3) .leaf)) (25, 5, 2, 17, 20) (.node (.node (.node .leaf
-    (16, 2, 4, 2, 14) .leaf) (32, 2, 5, 13, 29) (.node .leaf (81, 3, 4, 66, 57) .leaf)) (32, 2, 5,
-    9, 21) (.node (.node .leaf (169, 13, 2, 53, 65) .leaf) (32, 2, 5, 21, 13) .leaf))))) (11, 11,
-    1, 1, 6) (.node (.node (.node (.node (.node (.node .leaf (27, 3, 3, 15, 3) .leaf) (9, 3, 2, 3,
-    5) (.node .leaf (11, 11, 1, 8, 4) .leaf)) (19, 19, 1, 7, 3) (.node (.node .leaf (8, 2, 3, 6, 5)
-    .leaf) (1331, 11, 3, 165, 440) .leaf)) (169, 13, 2, 19, 104) (.node (.node (.node .leaf (81, 3,
-    4, 69, 6) .leaf) (32, 2, 5, 7, 29) (.node .leaf (169, 13, 2, 65, 11) .leaf)) (13, 13, 1, 12, 6)
-    (.node (.node .leaf (13, 13, 1, 6, 8) .leaf) (27, 3, 3, 21, 6) .leaf))) (11, 11, 1, 5, 10)
-    (.node (.node (.node (.node .leaf (27, 3, 3, 15, 21) .leaf) (32, 2, 5, 7, 21) (.node .leaf (81,
-    3, 4, 66, 39) .leaf)) (169, 13, 2, 39, 98) (.node (.node .leaf (28561, 13, 4, 286, 18382)
-    .leaf) (11, 11, 1, 10, 1) .leaf)) (25, 5, 2, 18, 5) (.node (.node (.node .leaf (16, 2, 4, 2, 6)
-    .leaf) (19, 19, 1, 11, 8) (.node .leaf (81, 3, 4, 66, 75) .leaf)) (169, 13, 2, 91, 47) (.node
-    (.node .leaf (16, 2, 4, 14, 15) .leaf) (25, 5, 2, 12, 20) .leaf)))) (19, 19, 1, 13, 8) (.node
-    (.node (.node (.node (.node .leaf (13, 13, 1, 10, 5) .leaf) (11, 11, 1, 6, 9) (.node .leaf (19,
-    19, 1, 9, 18) .leaf)) (11, 11, 1, 3, 2) (.node (.node .leaf (16, 2, 4, 2, 10) .leaf) (361, 19,
-    2, 68, 209) .leaf)) (19, 19, 1, 11, 13) (.node (.node (.node .leaf (9, 3, 2, 2, 6) .leaf) (19,
-    19, 1, 14, 13) (.node .leaf (13, 13, 1, 7, 2) .leaf)) (169, 13, 2, 91, 136) (.node (.node .leaf
-    (169, 13, 2, 14, 26) .leaf) (25, 5, 2, 23, 10) .leaf))) (11, 11, 1, 5, 6) (.node (.node (.node
-    (.node .leaf (19, 19, 1, 3, 8) .leaf) (11, 11, 1, 4, 6) (.node .leaf (11, 11, 1, 7, 9) .leaf))
-    (25, 5, 2, 7, 5) (.node (.node .leaf (16, 2, 4, 6, 10) .leaf) (13, 13, 1, 9, 7) .leaf)) (7, 7,
-    1, 4, 3) (.node (.node (.node .leaf (16, 2, 4, 10, 10) .leaf) (27, 3, 3, 24, 21) (.node .leaf
-    (81, 3, 4, 12, 75) .leaf)) (19, 19, 1, 1, 13) (.node (.node .leaf (81, 3, 4, 6, 24) .leaf) (32,
-    2, 5, 21, 5) .leaf)))))) (4, 2, 2, 1, 3) (.node (.node (.node (.node (.node (.node (.node .leaf
-    (32, 2, 5, 21, 21) .leaf) (11, 11, 1, 3, 10) (.node .leaf (11, 11, 1, 1, 8) .leaf)) (169, 13,
-    2, 40, 65) (.node (.node .leaf (16, 2, 4, 14, 7) .leaf) (9, 3, 2, 6, 5) (.node .leaf (4, 2, 2,
-    1, 2) .leaf))) (11, 11, 1, 8, 9) (.node (.node (.node .leaf (169, 13, 2, 164, 65) .leaf) (361,
-    19, 2, 19, 279) (.node .leaf (343, 7, 3, 84, 28) .leaf)) (25, 5, 2, 13, 5) (.node (.node .leaf
-    (13, 13, 1, 6, 2) .leaf) (81, 3, 4, 75, 12) .leaf))) (7, 7, 1, 6, 4) (.node (.node (.node
-    (.node .leaf (81, 3, 4, 15, 24) .leaf) (11, 11, 1, 6, 4) (.node .leaf (81, 3, 4, 66, 66)
-    .leaf)) (11, 11, 1, 2, 3) (.node (.node .leaf (13, 13, 1, 2, 2) .leaf) (25, 5, 2, 8, 20)
-    .leaf)) (25, 5, 2, 18, 15) (.node (.node (.node .leaf (9, 3, 2, 5, 3) .leaf) (9, 3, 2, 6, 8)
-    (.node .leaf (81, 3, 4, 66, 3) .leaf)) (593, 593, 1, 43, 427) (.node (.node .leaf (19, 19, 1,
-    2, 13) .leaf) (19, 19, 1, 7, 12) .leaf)))) (11, 11, 1, 1, 7) (.node (.node (.node (.node (.node
-    .leaf (81, 3, 4, 69, 24) .leaf) (19, 19, 1, 1, 18) (.node .leaf (27, 3, 3, 6, 21) .leaf)) (343,
-    7, 3, 91, 28) (.node (.node .leaf (16, 2, 4, 6, 6) .leaf) (32, 2, 5, 13, 5) .leaf)) (3, 3, 1,
-    2, 2) (.node (.node (.node .leaf (9, 3, 2, 4, 6) .leaf) (11, 11, 1, 3, 7) (.node .leaf (343, 7,
-    3, 203, 238) .leaf)) (32, 2, 5, 9, 29) (.node (.node .leaf (169, 13, 2, 97, 91) .leaf) (32, 2,
-    5, 21, 29) .leaf))) (25, 5, 2, 22, 20) (.node (.node (.node (.node .leaf (19, 19, 1, 3, 14)
-    .leaf) (11, 11, 1, 4, 10) (.node .leaf (25, 5, 2, 23, 20) .leaf)) (32, 2, 5, 27, 5) (.node
-    (.node .leaf (361, 19, 2, 286, 190) .leaf) (13, 13, 1, 8, 8) .leaf)) (25, 5, 2, 18, 10) (.node
-    (.node (.node .leaf (16, 2, 4, 10, 3) .leaf) (81, 3, 4, 24, 42) (.node .leaf (343, 7, 3, 238,
-    203) .leaf)) (32, 2, 5, 9, 5) (.node (.node .leaf (169, 13, 2, 154, 117) .leaf) (169, 13, 2,
-    21, 91) .leaf))))) (4, 2, 2, 3, 3) (.node (.node (.node (.node (.node (.node .leaf (13, 13, 1,
-    10, 11) .leaf) (25, 5, 2, 7, 15) (.node .leaf (19, 19, 1, 6, 18) .leaf)) (13, 13, 1, 3, 11)
-    (.node (.node .leaf (16, 2, 4, 14, 10) .leaf) (32, 2, 5, 23, 13) .leaf)) (11, 11, 1, 8, 3)
-    (.node (.node (.node .leaf (81, 3, 4, 69, 33) .leaf) (19, 19, 1, 3, 18) (.node .leaf (81, 3, 4,
-    6, 78) .leaf)) (32, 2, 5, 9, 13) (.node (.node .leaf (13, 13, 1, 1, 11) .leaf) (11, 11, 1, 10,
-    9) .leaf))) (5, 5, 1, 2, 4) (.node (.node (.node (.node .leaf (81, 3, 4, 69, 60) .leaf) (11,
-    11, 1, 4, 2) (.node .leaf (169, 13, 2, 66, 156) .leaf)) (3041, 3041, 1, 1729, 1729) (.node
-    (.node .leaf (169, 13, 2, 26, 28) .leaf) (19, 19, 1, 2, 10) .leaf)) (7, 7, 1, 1, 5) (.node
-    (.node (.node .leaf (11, 11, 1, 5, 2) .leaf) (81, 3, 4, 24, 15) (.node .leaf (343, 7, 3, 238,
-    7) .leaf)) (169, 13, 2, 156, 136) (.node (.node .leaf (169, 13, 2, 53, 13) .leaf) (25, 5, 2,
-    12, 5) .leaf)))) (5, 5, 1, 3, 4) (.node (.node (.node (.node (.node .leaf (81, 3, 4, 15, 60)
-    .leaf) (11, 11, 1, 6, 3) (.node .leaf (1331, 11, 3, 1254, 682) .leaf)) (32, 2, 5, 27, 29)
-    (.node (.node .leaf (13, 13, 1, 9, 2) .leaf) (32, 2, 5, 13, 21) .leaf)) (361, 19, 2, 11, 209)
-    (.node (.node (.node .leaf (9, 3, 2, 8, 3) .leaf) (25, 5, 2, 2, 10) (.node .leaf (19, 19, 1, 2,
-    18) .leaf)) (32, 2, 5, 11, 21) (.node (.node .leaf (1331, 11, 3, 264, 616) .leaf) (25, 5, 2,
-    23, 15) .leaf))) (5, 5, 1, 3, 2) (.node (.node (.node (.node .leaf (169, 13, 2, 164, 78) .leaf)
-    (32, 2, 5, 5, 29) (.node .leaf (19, 19, 1, 14, 12) .leaf)) (11, 11, 1, 1, 2) (.node (.node
-    .leaf (16, 2, 4, 6, 2) .leaf) (13, 13, 1, 9, 11) .leaf)) (32, 2, 5, 17, 29) (.node (.node
-    (.node .leaf (19, 19, 1, 7, 13) .leaf) (593, 593, 1, 442, 286) (.node .leaf (361, 19, 2, 230,
-    209) .leaf)) (25, 5, 2, 13, 20) (.node (.node .leaf (13, 13, 1, 6, 6) .leaf) (32, 2, 5, 15, 21)
-    .leaf))))))) (3, 3, 1, 1, 2) (.node (.node (.node (.node (.node (.node (.node (.node .leaf (81,
-    3, 4, 75, 30) .leaf) (25, 5, 2, 2, 15) (.node .leaf (593, 593, 1, 114, 1) .leaf)) (169, 13, 2,
-    40, 130) (.node (.node .leaf (593, 593, 1, 494, 190) .leaf) (32, 2, 5, 23, 29) (.node .leaf
-    (25, 5, 2, 12, 15) .leaf))) (7, 7, 1, 1, 3) (.node (.node (.node .leaf (169, 13, 2, 164, 117)
-    .leaf) (27, 3, 3, 12, 24) (.node .leaf (81, 3, 4, 6, 42) .leaf)) (13, 13, 1, 7, 6) (.node
-    (.node .leaf (13, 13, 1, 6, 7) .leaf) (13, 13, 1, 9, 5) .leaf))) (11, 11, 1, 2, 1) (.node
-    (.node (.node (.node .leaf (343, 7, 3, 273, 287) .leaf) (19, 19, 1, 1, 14) (.node .leaf (169,
-    13, 2, 66, 26) .leaf)) (32, 2, 5, 1, 5) (.node (.node .leaf (13, 13, 1, 2, 5) .leaf) (25, 5, 2,
-    8, 5) .leaf)) (13, 13, 1, 11, 8) (.node (.node (.node .leaf (9, 3, 2, 5, 6) .leaf) (13, 13, 1,
-    7, 11) (.node .leaf (169, 13, 2, 39, 136) .leaf)) (343, 7, 3, 154, 287) (.node (.node .leaf
-    (16, 2, 4, 2, 11) .leaf) (11, 11, 1, 9, 2) .leaf)))) (32, 2, 5, 1, 21) (.node (.node (.node
-    (.node (.node .leaf (1331, 11, 3, 231, 616) .leaf) (13, 13, 1, 3, 8) (.node .leaf (169, 13, 2,
-    6, 52) .leaf)) (25, 5, 2, 7, 20) (.node (.node .leaf (16, 2, 4, 2, 2) .leaf) (593, 593, 1, 442,
-    539) .leaf)) (13, 13, 1, 11, 2) (.node (.node (.node .leaf (9, 3, 2, 4, 3) .leaf) (25, 5, 2, 3,
-    5) (.node .leaf (361, 19, 2, 185, 285) .leaf)) (19, 19, 1, 13, 14) (.node (.node .leaf (169,
-    13, 2, 14, 52) .leaf) (11, 11, 1, 10, 4) .leaf))) (7, 7, 1, 2, 3) (.node (.node (.node (.node
-    .leaf (25, 5, 2, 3, 15) .leaf) (81, 3, 4, 12, 30) (.node .leaf (25, 5, 2, 23, 5) .leaf)) (343,
-    7, 3, 91, 210) (.node (.node .leaf (169, 13, 2, 26, 60) .leaf) (13, 13, 1, 8, 7) .leaf)) (7, 7,
-    1, 3, 2) (.node (.node (.node .leaf (16, 2, 4, 10, 6) .leaf) (32, 2, 5, 13, 13) (.node .leaf
-    (169, 13, 2, 39, 47) .leaf)) (343, 7, 3, 315, 7) (.node (.node .leaf (169, 13, 2, 154, 78)
-    .leaf) (81, 3, 4, 21, 57) .leaf))))) (7, 7, 1, 5, 1) (.node (.node (.node (.node (.node (.node
-    .leaf (13, 13, 1, 10, 2) .leaf) (13, 13, 1, 3, 2) (.node .leaf (19, 19, 1, 6, 8) .leaf)) (11,
-    11, 1, 7, 1) (.node (.node .leaf (169, 13, 2, 156, 83) .leaf) (27, 3, 3, 24, 12) .leaf)) (11,
-    11, 1, 8, 1) (.node (.node (.node .leaf (169, 13, 2, 62, 117) .leaf) (81, 3, 4, 39, 57) (.node
-    .leaf (343, 7, 3, 84, 210) .leaf)) (19, 19, 1, 13, 13) (.node (.node .leaf (3041, 3041, 1, 266,
-    2056) .leaf) (13, 13, 1, 9, 8) .leaf))) (5, 5, 1, 2, 2) (.node (.node (.node (.node .leaf (13,
-    13, 1, 10, 6) .leaf) (32, 2, 5, 5, 5) (.node .leaf (81, 3, 4, 66, 48) .leaf)) (2197, 13, 3,
-    1729, 767) (.node (.node .leaf (16, 2, 4, 10, 11) .leaf) (13, 13, 1, 8, 5) .leaf)) (25, 5, 2,
-    17, 5) (.node (.node (.node .leaf (8, 2, 3, 6, 3) .leaf) (7, 7, 1, 2, 5) (.node .leaf (343, 7,
-    3, 238, 259) .leaf)) (361, 19, 2, 247, 109) (.node (.node .leaf (169, 13, 2, 53, 78) .leaf)
-    (11, 11, 1, 6, 5) .leaf)))) (7, 7, 1, 6, 1) (.node (.node (.node (.node (.node .leaf (13, 13,
-    1, 8, 11) .leaf) (32, 2, 5, 7, 5) (.node .leaf (81, 3, 4, 39, 75) .leaf)) (19, 19, 1, 15, 10)
-    (.node (.node .leaf (16, 2, 4, 2, 3) .leaf) (81, 3, 4, 24, 60) .leaf)) (7, 7, 1, 6, 2) (.node
-    (.node (.node .leaf (9, 3, 2, 8, 6) .leaf) (13, 13, 1, 7, 7) (.node .leaf (81, 3, 4, 12, 3)
-    .leaf)) (1331, 11, 3, 385, 880) (.node (.node .leaf (13, 13, 1, 11, 11) .leaf) (11, 11, 1, 9,
-    6) .leaf))) (11, 11, 1, 2, 9) (.node (.node (.node (.node .leaf (81, 3, 4, 15, 33) .leaf) (27,
-    3, 3, 12, 15) (.node .leaf (11, 11, 1, 7, 4) .leaf)) (25, 5, 2, 8, 10) (.node (.node .leaf (16,
-    2, 4, 6, 7) .leaf) (343, 7, 3, 56, 266) .leaf)) (169, 13, 2, 40, 26) (.node (.node (.node .leaf
-    (16, 2, 4, 10, 14) .leaf) (81, 3, 4, 51, 6) (.node .leaf (81, 3, 4, 12, 21) .leaf)) (19, 19, 1,
-    1, 8) (.node (.node .leaf (13, 13, 1, 6, 11) .leaf) (169, 13, 2, 61, 52) .leaf)))))) (13, 13,
-    1, 1, 8) (.node (.node (.node (.node (.node (.node (.node .leaf (169, 13, 2, 21, 39) .leaf) (7,
-    7, 1, 3, 1) (.node .leaf (11, 11, 1, 8, 5) .leaf)) (7, 7, 1, 4, 5) (.node (.node .leaf (16, 2,
-    4, 14, 14) .leaf) (32, 2, 5, 23, 5) (.node .leaf (4, 2, 2, 3, 2) .leaf))) (169, 13, 2, 19, 52)
-    (.node (.node (.node .leaf (169, 13, 2, 62, 78) .leaf) (361, 19, 2, 39, 266) (.node .leaf (361,
-    19, 2, 266, 257) .leaf)) (13, 13, 1, 7, 8) (.node (.node .leaf (11, 11, 1, 2, 5) .leaf) (13,
-    13, 1, 9, 6) .leaf))) (7, 7, 1, 2, 6) (.node (.node (.node (.node .leaf (343, 7, 3, 273, 238)
-    .leaf) (81, 3, 4, 39, 30) (.node .leaf (169, 13, 2, 66, 130) .leaf)) (11, 11, 1, 2, 4) (.node
-    (.node .leaf (1331, 11, 3, 286, 1034) .leaf) (19, 19, 1, 2, 3) .leaf)) (7, 7, 1, 3, 4) (.node
-    (.node (.node .leaf (8, 2, 3, 2, 5) .leaf) (7, 7, 1, 5, 2) (.node .leaf (343, 7, 3, 238, 105)
-    .leaf)) (343, 7, 3, 154, 238) (.node (.node .leaf (19, 19, 1, 2, 14) .leaf) (11, 11, 1, 9, 10)
-    .leaf)))) (13, 13, 1, 1, 6) (.node (.node (.node (.node (.node .leaf (13, 13, 1, 10, 8) .leaf)
-    (11, 11, 1, 6, 1) (.node .leaf (13, 13, 1, 1, 2) .leaf)) (11, 11, 1, 3, 6) (.node (.node .leaf
-    (16, 2, 4, 6, 14) .leaf) (81, 3, 4, 24, 33) .leaf)) (19, 19, 1, 11, 2) (.node (.node (.node
-    .leaf (9, 3, 2, 2, 3) .leaf) (9, 3, 2, 6, 2) (.node .leaf (13, 13, 1, 7, 5) .leaf)) (32, 2, 5,
-    11, 13) (.node (.node .leaf (169, 13, 2, 97, 39) .leaf) (361, 19, 2, 21, 133) .leaf))) (5, 5,
-    1, 2, 1) (.node (.node (.node (.node .leaf (19, 19, 1, 3, 15) .leaf) (81, 3, 4, 12, 48) (.node
-    .leaf (11, 11, 1, 7, 5) .leaf)) (32, 2, 5, 27, 21) (.node (.node .leaf (361, 19, 2, 286, 228)
-    .leaf) (27, 3, 3, 21, 15) .leaf)) (7, 7, 1, 4, 6) (.node (.node (.node .leaf (8, 2, 3, 2, 7)
-    .leaf) (19, 19, 1, 11, 18) (.node .leaf (361, 19, 2, 230, 114) .leaf)) (361, 19, 2, 279, 285)
-    (.node (.node .leaf (13, 13, 1, 6, 5) .leaf) (27, 3, 3, 21, 24) .leaf))))) (7, 7, 1, 5, 4)
-    (.node (.node (.node (.node (.node (.node .leaf (27, 3, 3, 15, 12) .leaf) (25, 5, 2, 7, 10)
-    (.node .leaf (81, 3, 4, 33, 78) .leaf)) (13, 13, 1, 3, 7) (.node (.node .leaf (16, 2, 4, 14, 6)
-    .leaf) (81, 3, 4, 51, 33) .leaf)) (32, 2, 5, 19, 21) (.node (.node (.node .leaf (9, 3, 2, 1, 3)
-    .leaf) (19, 19, 1, 3, 13) (.node .leaf (27, 3, 3, 6, 12) .leaf)) (351649, 593, 2, 1001, 120379)
-    (.node (.node .leaf (13, 13, 1, 1, 7) .leaf) (13, 13, 1, 8, 6) .leaf))) (25, 5, 2, 22, 5)
-    (.node (.node (.node (.node .leaf (361, 19, 2, 231, 285) .leaf) (27, 3, 3, 12, 6) (.node .leaf
-    (81, 3, 4, 66, 21) .leaf)) (343, 7, 3, 14, 238) (.node (.node .leaf (130321, 19, 4, 5434,
-    114285) .leaf) (11, 11, 1, 10, 5) .leaf)) (25, 5, 2, 17, 10) (.node (.node (.node .leaf (13,
-    13, 1, 12, 11) .leaf) (19, 19, 1, 11, 14) (.node .leaf (1331, 11, 3, 979, 308) .leaf)) (343, 7,
-    3, 315, 105) (.node (.node .leaf (169, 13, 2, 53, 117) .leaf) (11, 11, 1, 9, 7) .leaf)))) (5,
-    5, 1, 3, 3) (.node (.node (.node (.node (.node .leaf (32, 2, 5, 5, 13) .leaf) (9, 3, 2, 3, 2)
-    (.node .leaf (361, 19, 2, 171, 306) .leaf)) (19, 19, 1, 15, 12) (.node (.node .leaf (19, 19, 1,
-    3, 2) .leaf) (169, 13, 2, 91, 60) .leaf)) (32, 2, 5, 11, 5) (.node (.node (.node .leaf (9, 3,
-    2, 7, 3) .leaf) (13, 13, 1, 3, 6) (.node .leaf (343, 7, 3, 175, 287) .leaf)) (361, 19, 2, 247,
-    89) (.node (.node .leaf (3041, 3041, 1, 2926, 2249) .leaf) (11, 11, 1, 9, 8) .leaf))) (25, 5,
-    2, 13, 10) (.node (.node (.node (.node .leaf (169, 13, 2, 164, 13) .leaf) (3041, 3041, 1, 741,
-    1495) (.node .leaf (2197, 13, 3, 546, 767) .leaf)) (25, 5, 2, 2, 5) (.node (.node .leaf (19,
-    19, 1, 14, 10) .leaf) (11, 11, 1, 3, 8) .leaf)) (169, 13, 2, 40, 156) (.node (.node (.node
-    .leaf (16, 2, 4, 10, 2) .leaf) (27, 3, 3, 24, 3) (.node .leaf (343, 7, 3, 175, 238) .leaf))
-    (25, 5, 2, 13, 15) (.node (.node .leaf (27, 3, 3, 6, 3) .leaf) (169, 13, 2, 61, 26)
-    .leaf))))))))
+    (.node (.node .leaf (9, 3, 2, 1, 6) .leaf) (25, 5, 2, 3, 20) (.node .leaf (361, 19, 2, 185,
+    285) .leaf)) (169, 13, 2, 156, 47) (.node (.node .leaf (169, 13, 2, 14, 52) .leaf) (13, 13, 1,
+    8, 2) .leaf))) (5, 5, 1, 2, 3) (.node (.node (.node (.node .leaf (25, 5, 2, 3, 10) .leaf) (11,
+    11, 1, 4, 7) (.node .leaf (25, 5, 2, 23, 5) .leaf)) (169, 13, 2, 91, 11) (.node (.node .leaf
+    (169, 13, 2, 26, 60) .leaf) (11, 11, 1, 10, 3) .leaf)) (25, 5, 2, 17, 20) (.node (.node (.node
+    .leaf (16, 2, 4, 2, 14) .leaf) (32, 2, 5, 13, 29) (.node .leaf (169, 13, 2, 39, 47) .leaf))
+    (32, 2, 5, 9, 21) (.node (.node .leaf (169, 13, 2, 154, 78) .leaf) (32, 2, 5, 21, 13)
+    .leaf))))) (11, 11, 1, 1, 6) (.node (.node (.node (.node (.node (.node .leaf (27, 3, 3, 15, 3)
+    .leaf) (9, 3, 2, 3, 5) (.node .leaf (19, 19, 1, 6, 8) .leaf)) (19, 19, 1, 7, 3) (.node (.node
+    .leaf (8, 2, 3, 6, 5) .leaf) (1331, 11, 3, 165, 440) .leaf)) (169, 13, 2, 19, 104) (.node
+    (.node (.node .leaf (81, 3, 4, 69, 6) .leaf) (32, 2, 5, 7, 29) (.node .leaf (343, 7, 3, 84,
+    210) .leaf)) (13, 13, 1, 12, 6) (.node (.node .leaf (3041, 3041, 1, 266, 2056) .leaf) (27, 3,
+    3, 21, 6) .leaf))) (11, 11, 1, 5, 10) (.node (.node (.node (.node .leaf (27, 3, 3, 15, 21)
+    .leaf) (32, 2, 5, 7, 21) (.node .leaf (81, 3, 4, 66, 48) .leaf)) (169, 13, 2, 39, 98) (.node
+    (.node .leaf (28561, 13, 4, 286, 18382) .leaf) (11, 11, 1, 10, 1) .leaf)) (25, 5, 2, 18, 5)
+    (.node (.node (.node .leaf (16, 2, 4, 2, 6) .leaf) (19, 19, 1, 11, 8) (.node .leaf (343, 7, 3,
+    238, 259) .leaf)) (169, 13, 2, 91, 47) (.node (.node .leaf (169, 13, 2, 53, 78) .leaf) (25, 5,
+    2, 12, 20) .leaf)))) (19, 19, 1, 13, 8) (.node (.node (.node (.node (.node .leaf (13, 13, 1,
+    10, 5) .leaf) (11, 11, 1, 6, 9) (.node .leaf (81, 3, 4, 39, 75) .leaf)) (11, 11, 1, 3, 2)
+    (.node (.node .leaf (16, 2, 4, 2, 10) .leaf) (361, 19, 2, 68, 209) .leaf)) (19, 19, 1, 11, 13)
+    (.node (.node (.node .leaf (9, 3, 2, 2, 6) .leaf) (19, 19, 1, 14, 13) (.node .leaf (81, 3, 4,
+    12, 3) .leaf)) (169, 13, 2, 91, 136) (.node (.node .leaf (13, 13, 1, 11, 11) .leaf) (25, 5, 2,
+    23, 10) .leaf))) (11, 11, 1, 5, 6) (.node (.node (.node (.node .leaf (19, 19, 1, 3, 8) .leaf)
+    (11, 11, 1, 4, 6) (.node .leaf (11, 11, 1, 7, 4) .leaf)) (25, 5, 2, 7, 5) (.node (.node .leaf
+    (16, 2, 4, 6, 7) .leaf) (13, 13, 1, 9, 7) .leaf)) (7, 7, 1, 4, 3) (.node (.node (.node .leaf
+    (16, 2, 4, 10, 10) .leaf) (27, 3, 3, 24, 21) (.node .leaf (81, 3, 4, 12, 21) .leaf)) (19, 19,
+    1, 1, 13) (.node (.node .leaf (13, 13, 1, 6, 11) .leaf) (32, 2, 5, 21, 5) .leaf)))))) (4, 2, 2,
+    1, 3) (.node (.node (.node (.node (.node (.node (.node .leaf (32, 2, 5, 21, 21) .leaf) (11, 11,
+    1, 3, 10) (.node .leaf (11, 11, 1, 8, 5) .leaf)) (169, 13, 2, 40, 65) (.node (.node .leaf (16,
+    2, 4, 14, 7) .leaf) (9, 3, 2, 6, 5) (.node .leaf (4, 2, 2, 3, 2) .leaf))) (11, 11, 1, 8, 9)
+    (.node (.node (.node .leaf (169, 13, 2, 164, 65) .leaf) (361, 19, 2, 19, 279) (.node .leaf
+    (361, 19, 2, 266, 257) .leaf)) (25, 5, 2, 13, 5) (.node (.node .leaf (11, 11, 1, 2, 5) .leaf)
+    (81, 3, 4, 75, 12) .leaf))) (7, 7, 1, 6, 4) (.node (.node (.node (.node .leaf (81, 3, 4, 15,
+    24) .leaf) (11, 11, 1, 6, 4) (.node .leaf (169, 13, 2, 66, 130) .leaf)) (11, 11, 1, 2, 3)
+    (.node (.node .leaf (13, 13, 1, 2, 2) .leaf) (25, 5, 2, 8, 20) .leaf)) (25, 5, 2, 18, 15)
+    (.node (.node (.node .leaf (9, 3, 2, 5, 3) .leaf) (9, 3, 2, 6, 8) (.node .leaf (343, 7, 3, 238,
+    105) .leaf)) (593, 593, 1, 43, 427) (.node (.node .leaf (19, 19, 1, 2, 14) .leaf) (19, 19, 1,
+    7, 12) .leaf)))) (11, 11, 1, 1, 7) (.node (.node (.node (.node (.node .leaf (81, 3, 4, 69, 24)
+    .leaf) (19, 19, 1, 1, 18) (.node .leaf (13, 13, 1, 1, 2) .leaf)) (343, 7, 3, 91, 28) (.node
+    (.node .leaf (16, 2, 4, 6, 6) .leaf) (32, 2, 5, 13, 5) .leaf)) (3, 3, 1, 2, 2) (.node (.node
+    (.node .leaf (9, 3, 2, 4, 6) .leaf) (11, 11, 1, 3, 7) (.node .leaf (13, 13, 1, 7, 5) .leaf))
+    (32, 2, 5, 9, 29) (.node (.node .leaf (169, 13, 2, 97, 39) .leaf) (32, 2, 5, 21, 29) .leaf)))
+    (25, 5, 2, 22, 20) (.node (.node (.node (.node .leaf (19, 19, 1, 3, 14) .leaf) (11, 11, 1, 4,
+    10) (.node .leaf (11, 11, 1, 7, 5) .leaf)) (32, 2, 5, 27, 5) (.node (.node .leaf (361, 19, 2,
+    286, 228) .leaf) (13, 13, 1, 8, 8) .leaf)) (25, 5, 2, 18, 10) (.node (.node (.node .leaf (16,
+    2, 4, 10, 3) .leaf) (81, 3, 4, 24, 42) (.node .leaf (361, 19, 2, 230, 114) .leaf)) (32, 2, 5,
+    9, 5) (.node (.node .leaf (13, 13, 1, 6, 5) .leaf) (169, 13, 2, 21, 91) .leaf))))) (4, 2, 2, 3,
+    3) (.node (.node (.node (.node (.node (.node .leaf (13, 13, 1, 10, 11) .leaf) (25, 5, 2, 7, 15)
+    (.node .leaf (81, 3, 4, 33, 78) .leaf)) (13, 13, 1, 3, 11) (.node (.node .leaf (16, 2, 4, 14,
+    10) .leaf) (32, 2, 5, 23, 13) .leaf)) (11, 11, 1, 8, 3) (.node (.node (.node .leaf (81, 3, 4,
+    69, 33) .leaf) (19, 19, 1, 3, 18) (.node .leaf (27, 3, 3, 6, 12) .leaf)) (32, 2, 5, 9, 13)
+    (.node (.node .leaf (13, 13, 1, 1, 7) .leaf) (11, 11, 1, 10, 9) .leaf))) (5, 5, 1, 2, 4) (.node
+    (.node (.node (.node .leaf (81, 3, 4, 69, 60) .leaf) (11, 11, 1, 4, 2) (.node .leaf (81, 3, 4,
+    66, 21) .leaf)) (3041, 3041, 1, 1729, 1729) (.node (.node .leaf (169, 13, 2, 26, 28) .leaf)
+    (19, 19, 1, 2, 10) .leaf)) (7, 7, 1, 1, 5) (.node (.node (.node .leaf (11, 11, 1, 5, 2) .leaf)
+    (81, 3, 4, 24, 15) (.node .leaf (1331, 11, 3, 979, 308) .leaf)) (169, 13, 2, 156, 136) (.node
+    (.node .leaf (169, 13, 2, 53, 117) .leaf) (25, 5, 2, 12, 5) .leaf)))) (5, 5, 1, 3, 4) (.node
+    (.node (.node (.node (.node .leaf (81, 3, 4, 15, 60) .leaf) (11, 11, 1, 6, 3) (.node .leaf
+    (361, 19, 2, 171, 306) .leaf)) (32, 2, 5, 27, 29) (.node (.node .leaf (13, 13, 1, 9, 2) .leaf)
+    (32, 2, 5, 13, 21) .leaf)) (361, 19, 2, 11, 209) (.node (.node (.node .leaf (9, 3, 2, 8, 3)
+    .leaf) (25, 5, 2, 2, 10) (.node .leaf (343, 7, 3, 175, 287) .leaf)) (32, 2, 5, 11, 21) (.node
+    (.node .leaf (3041, 3041, 1, 2926, 2249) .leaf) (25, 5, 2, 23, 15) .leaf))) (5, 5, 1, 3, 2)
+    (.node (.node (.node (.node .leaf (169, 13, 2, 164, 78) .leaf) (32, 2, 5, 5, 29) (.node .leaf
+    (2197, 13, 3, 546, 767) .leaf)) (11, 11, 1, 1, 2) (.node (.node .leaf (19, 19, 1, 14, 10)
+    .leaf) (13, 13, 1, 9, 11) .leaf)) (32, 2, 5, 17, 29) (.node (.node (.node .leaf (19, 19, 1, 7,
+    13) .leaf) (593, 593, 1, 442, 286) (.node .leaf (343, 7, 3, 175, 238) .leaf)) (25, 5, 2, 13,
+    20) (.node (.node .leaf (27, 3, 3, 6, 3) .leaf) (32, 2, 5, 15, 21) .leaf))))))) (3, 3, 1, 1, 2)
+    (.node (.node (.node (.node (.node (.node (.node (.node .leaf (81, 3, 4, 75, 30) .leaf) (25, 5,
+    2, 2, 15) (.node .leaf (11, 11, 1, 1, 8) .leaf)) (169, 13, 2, 40, 130) (.node (.node .leaf
+    (593, 593, 1, 494, 190) .leaf) (32, 2, 5, 23, 29) (.node .leaf (4, 2, 2, 1, 2) .leaf))) (7, 7,
+    1, 1, 3) (.node (.node (.node .leaf (169, 13, 2, 164, 117) .leaf) (27, 3, 3, 12, 24) (.node
+    .leaf (343, 7, 3, 84, 28) .leaf)) (13, 13, 1, 7, 6) (.node (.node .leaf (13, 13, 1, 6, 2)
+    .leaf) (13, 13, 1, 9, 5) .leaf))) (11, 11, 1, 2, 1) (.node (.node (.node (.node .leaf (343, 7,
+    3, 273, 287) .leaf) (19, 19, 1, 1, 14) (.node .leaf (81, 3, 4, 66, 66) .leaf)) (32, 2, 5, 1, 5)
+    (.node (.node .leaf (13, 13, 1, 2, 5) .leaf) (25, 5, 2, 8, 5) .leaf)) (13, 13, 1, 11, 8) (.node
+    (.node (.node .leaf (9, 3, 2, 5, 6) .leaf) (13, 13, 1, 7, 11) (.node .leaf (81, 3, 4, 66, 3)
+    .leaf)) (343, 7, 3, 154, 287) (.node (.node .leaf (19, 19, 1, 2, 13) .leaf) (11, 11, 1, 9, 2)
+    .leaf)))) (32, 2, 5, 1, 21) (.node (.node (.node (.node (.node .leaf (1331, 11, 3, 231, 616)
+    .leaf) (13, 13, 1, 3, 8) (.node .leaf (27, 3, 3, 6, 21) .leaf)) (25, 5, 2, 7, 20) (.node (.node
+    .leaf (16, 2, 4, 2, 2) .leaf) (593, 593, 1, 442, 539) .leaf)) (13, 13, 1, 11, 2) (.node (.node
+    (.node .leaf (9, 3, 2, 4, 3) .leaf) (25, 5, 2, 3, 5) (.node .leaf (343, 7, 3, 203, 238) .leaf))
+    (19, 19, 1, 13, 14) (.node (.node .leaf (169, 13, 2, 97, 91) .leaf) (11, 11, 1, 10, 4) .leaf)))
+    (7, 7, 1, 2, 3) (.node (.node (.node (.node .leaf (25, 5, 2, 3, 15) .leaf) (81, 3, 4, 12, 30)
+    (.node .leaf (25, 5, 2, 23, 20) .leaf)) (343, 7, 3, 91, 210) (.node (.node .leaf (361, 19, 2,
+    286, 190) .leaf) (13, 13, 1, 8, 7) .leaf)) (7, 7, 1, 3, 2) (.node (.node (.node .leaf (16, 2,
+    4, 10, 6) .leaf) (32, 2, 5, 13, 13) (.node .leaf (343, 7, 3, 238, 203) .leaf)) (343, 7, 3, 315,
+    7) (.node (.node .leaf (169, 13, 2, 154, 117) .leaf) (81, 3, 4, 21, 57) .leaf))))) (7, 7, 1, 5,
+    1) (.node (.node (.node (.node (.node (.node .leaf (13, 13, 1, 10, 2) .leaf) (13, 13, 1, 3, 2)
+    (.node .leaf (19, 19, 1, 6, 18) .leaf)) (11, 11, 1, 7, 1) (.node (.node .leaf (169, 13, 2, 156,
+    83) .leaf) (27, 3, 3, 24, 12) .leaf)) (11, 11, 1, 8, 1) (.node (.node (.node .leaf (169, 13, 2,
+    62, 117) .leaf) (81, 3, 4, 39, 57) (.node .leaf (81, 3, 4, 6, 78) .leaf)) (19, 19, 1, 13, 13)
+    (.node (.node .leaf (13, 13, 1, 1, 11) .leaf) (13, 13, 1, 9, 8) .leaf))) (5, 5, 1, 2, 2) (.node
+    (.node (.node (.node .leaf (13, 13, 1, 10, 6) .leaf) (32, 2, 5, 5, 5) (.node .leaf (169, 13, 2,
+    66, 156) .leaf)) (2197, 13, 3, 1729, 767) (.node (.node .leaf (16, 2, 4, 10, 11) .leaf) (13,
+    13, 1, 8, 5) .leaf)) (25, 5, 2, 17, 5) (.node (.node (.node .leaf (8, 2, 3, 6, 3) .leaf) (7, 7,
+    1, 2, 5) (.node .leaf (343, 7, 3, 238, 7) .leaf)) (361, 19, 2, 247, 109) (.node (.node .leaf
+    (169, 13, 2, 53, 13) .leaf) (11, 11, 1, 6, 5) .leaf)))) (7, 7, 1, 6, 1) (.node (.node (.node
+    (.node (.node .leaf (13, 13, 1, 8, 11) .leaf) (32, 2, 5, 7, 5) (.node .leaf (1331, 11, 3, 1254,
+    682) .leaf)) (19, 19, 1, 15, 10) (.node (.node .leaf (16, 2, 4, 2, 3) .leaf) (81, 3, 4, 24, 60)
+    .leaf)) (7, 7, 1, 6, 2) (.node (.node (.node .leaf (9, 3, 2, 8, 6) .leaf) (13, 13, 1, 7, 7)
+    (.node .leaf (19, 19, 1, 2, 18) .leaf)) (1331, 11, 3, 385, 880) (.node (.node .leaf (1331, 11,
+    3, 264, 616) .leaf) (11, 11, 1, 9, 6) .leaf))) (11, 11, 1, 2, 9) (.node (.node (.node (.node
+    .leaf (81, 3, 4, 15, 33) .leaf) (27, 3, 3, 12, 15) (.node .leaf (19, 19, 1, 14, 12) .leaf))
+    (25, 5, 2, 8, 10) (.node (.node .leaf (16, 2, 4, 6, 2) .leaf) (343, 7, 3, 56, 266) .leaf))
+    (169, 13, 2, 40, 26) (.node (.node (.node .leaf (16, 2, 4, 10, 14) .leaf) (81, 3, 4, 51, 6)
+    (.node .leaf (361, 19, 2, 230, 209) .leaf)) (19, 19, 1, 1, 8) (.node (.node .leaf (13, 13, 1,
+    6, 6) .leaf) (169, 13, 2, 61, 52) .leaf)))))) (13, 13, 1, 1, 8) (.node (.node (.node (.node
+    (.node (.node (.node .leaf (169, 13, 2, 21, 39) .leaf) (7, 7, 1, 3, 1) (.node .leaf (11, 11, 1,
+    8, 4) .leaf)) (7, 7, 1, 4, 5) (.node (.node .leaf (16, 2, 4, 14, 14) .leaf) (32, 2, 5, 23, 5)
+    .leaf)) (169, 13, 2, 19, 52) (.node (.node (.node .leaf (169, 13, 2, 62, 78) .leaf) (361, 19,
+    2, 39, 266) (.node .leaf (169, 13, 2, 65, 11) .leaf)) (13, 13, 1, 7, 8) (.node (.node .leaf
+    (13, 13, 1, 6, 8) .leaf) (13, 13, 1, 9, 6) .leaf))) (7, 7, 1, 2, 6) (.node (.node (.node (.node
+    .leaf (343, 7, 3, 273, 238) .leaf) (81, 3, 4, 39, 30) (.node .leaf (81, 3, 4, 66, 39) .leaf))
+    (11, 11, 1, 2, 4) (.node (.node .leaf (1331, 11, 3, 286, 1034) .leaf) (19, 19, 1, 2, 3) .leaf))
+    (7, 7, 1, 3, 4) (.node (.node (.node .leaf (8, 2, 3, 2, 5) .leaf) (7, 7, 1, 5, 2) (.node .leaf
+    (81, 3, 4, 66, 75) .leaf)) (343, 7, 3, 154, 238) (.node (.node .leaf (16, 2, 4, 14, 15) .leaf)
+    (11, 11, 1, 9, 10) .leaf)))) (13, 13, 1, 1, 6) (.node (.node (.node (.node (.node .leaf (13,
+    13, 1, 10, 8) .leaf) (11, 11, 1, 6, 1) (.node .leaf (19, 19, 1, 9, 18) .leaf)) (11, 11, 1, 3,
+    6) (.node (.node .leaf (16, 2, 4, 6, 14) .leaf) (81, 3, 4, 24, 33) .leaf)) (19, 19, 1, 11, 2)
+    (.node (.node (.node .leaf (9, 3, 2, 2, 3) .leaf) (9, 3, 2, 6, 2) (.node .leaf (13, 13, 1, 7,
+    2) .leaf)) (32, 2, 5, 11, 13) (.node (.node .leaf (169, 13, 2, 14, 26) .leaf) (361, 19, 2, 21,
+    133) .leaf))) (5, 5, 1, 2, 1) (.node (.node (.node (.node .leaf (19, 19, 1, 3, 15) .leaf) (81,
+    3, 4, 12, 48) (.node .leaf (11, 11, 1, 7, 9) .leaf)) (32, 2, 5, 27, 21) (.node (.node .leaf
+    (16, 2, 4, 6, 10) .leaf) (27, 3, 3, 21, 15) .leaf)) (7, 7, 1, 4, 6) (.node (.node (.node .leaf
+    (8, 2, 3, 2, 7) .leaf) (19, 19, 1, 11, 18) (.node .leaf (81, 3, 4, 12, 75) .leaf)) (361, 19, 2,
+    279, 285) (.node (.node .leaf (81, 3, 4, 6, 24) .leaf) (27, 3, 3, 21, 24) .leaf))))) (7, 7, 1,
+    5, 4) (.node (.node (.node (.node (.node (.node .leaf (27, 3, 3, 15, 12) .leaf) (25, 5, 2, 7,
+    10) (.node .leaf (81, 3, 4, 33, 60) .leaf)) (13, 13, 1, 3, 7) (.node (.node .leaf (16, 2, 4,
+    14, 6) .leaf) (81, 3, 4, 51, 33) .leaf)) (32, 2, 5, 19, 21) (.node (.node (.node .leaf (9, 3,
+    2, 1, 3) .leaf) (19, 19, 1, 3, 13) (.node .leaf (81, 3, 4, 60, 69) .leaf)) (351649, 593, 2,
+    1001, 120379) (.node (.node .leaf (16, 2, 4, 6, 15) .leaf) (13, 13, 1, 8, 6) .leaf))) (25, 5,
+    2, 22, 5) (.node (.node (.node (.node .leaf (361, 19, 2, 231, 285) .leaf) (27, 3, 3, 12, 6)
+    (.node .leaf (169, 13, 2, 66, 65) .leaf)) (343, 7, 3, 14, 238) (.node (.node .leaf (361, 19, 2,
+    19, 306) .leaf) (11, 11, 1, 10, 5) .leaf)) (25, 5, 2, 17, 10) (.node (.node (.node .leaf (13,
+    13, 1, 12, 11) .leaf) (19, 19, 1, 11, 14) (.node .leaf (81, 3, 4, 66, 57) .leaf)) (343, 7, 3,
+    315, 105) (.node (.node .leaf (169, 13, 2, 53, 65) .leaf) (11, 11, 1, 9, 7) .leaf)))) (5, 5, 1,
+    3, 3) (.node (.node (.node (.node (.node .leaf (32, 2, 5, 5, 13) .leaf) (9, 3, 2, 3, 2) (.node
+    .leaf (81, 3, 4, 39, 48) .leaf)) (19, 19, 1, 15, 12) (.node (.node .leaf (19, 19, 1, 3, 2)
+    .leaf) (169, 13, 2, 91, 60) .leaf)) (32, 2, 5, 11, 5) (.node (.node (.node .leaf (9, 3, 2, 7,
+    3) .leaf) (13, 13, 1, 3, 6) (.node .leaf (81, 3, 4, 12, 57) .leaf)) (361, 19, 2, 247, 89)
+    (.node (.node .leaf (13, 13, 1, 11, 6) .leaf) (11, 11, 1, 9, 8) .leaf))) (25, 5, 2, 13, 10)
+    (.node (.node (.node (.node .leaf (169, 13, 2, 164, 13) .leaf) (3041, 3041, 1, 741, 1495)
+    (.node .leaf (81, 3, 4, 60, 51) .leaf)) (25, 5, 2, 2, 5) (.node (.node .leaf (13, 13, 1, 1, 5)
+    .leaf) (11, 11, 1, 3, 8) .leaf)) (169, 13, 2, 40, 156) (.node (.node (.node .leaf (16, 2, 4,
+    10, 2) .leaf) (27, 3, 3, 24, 3) (.node .leaf (19, 19, 1, 6, 14) .leaf)) (25, 5, 2, 13, 15)
+    (.node (.node .leaf (13, 13, 1, 10, 7) .leaf) (169, 13, 2, 61, 26) .leaf))))))))
 
 theorem keys_thirtynine_thirtyeight_ok :
     keys_thirtynine_thirtyeight.all (keyOK 5929 8785296) = true := by

@@ -1060,9 +1060,14 @@ theorem classKill_sound {p q D lam c1 c2 c3 c4 σ : ℕ} (hk : ClassKill p q D l
       field_simp)
   have hrs : IsCoprime r (s : ℤ) :=
     Int.isCoprime_iff_gcd_eq_one.mpr (by simpa [r, s, Int.gcd] using u.reduced)
-  exact classCheck_sound (a := a0) (b := b0) (c := a0 * b0) (P := p ^ 2) (Q := q ^ 2)
-    (W1 := W1) (W2 := W2) hl hN hk hc hrs (by push_cast at hW1 ⊢; linear_combination hW1)
-    (by push_cast at hW2 ⊢; linear_combination hW2)
+  rw [Bool.or_eq_true] at hc
+  rcases hc with hc | hc
+  · exact classCheck_sound (a := a0) (b := b0) (c := a0 * b0) (P := p ^ 2) (Q := q ^ 2)
+      (W1 := W1) (W2 := W2) hl hN hk hc hrs (by push_cast at hW1 ⊢; linear_combination hW1)
+      (by push_cast at hW2 ⊢; linear_combination hW2)
+  · exact classCheckE_sound (a := a0) (b := b0) (c := a0 * b0) (P := p ^ 2) (Q := q ^ 2)
+      (W1 := W1) (W2 := W2) hl hN hk hc hrs (by push_cast at hW1 ⊢; linear_combination hW1)
+      (by push_cast at hW2 ⊢; linear_combination hW2)
 
 /-! ### The descent -/
 

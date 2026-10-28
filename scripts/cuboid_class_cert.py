@@ -308,7 +308,9 @@ def certify(p, q, D, Ps, max_class=10 ** 6, max_modulus=211, lims=(65536, 1 << 2
     for l in Ps:
         N, k = l, 1
         while N <= max_class:
-            mods.append((N, l, k))
+            # above `10⁵` the kernel uses Euler's criterion (`classCheckE`), for `N = l` or `l²`
+            if N <= 100000 or k <= 2:
+                mods.append((N, l, k))
             N, k = N * l, k + 1
     mods.sort()
     tmods = C.prime_powers(max_modulus)
