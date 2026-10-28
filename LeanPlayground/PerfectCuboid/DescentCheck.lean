@@ -530,27 +530,40 @@ theorem smallCheck_iff {q lam c1 c2 c3 c4 σ Bβ Bγ : ℕ} :
   · intro h i hi j hj
     exact h (i + 1) (by omega) (by omega) (j + 1) (by omega) (by omega)
 
-/-- `(|γ|, |δ|) = (g, d)` extends to a solution with `k₁² ≠ k₂²`: `q c₃² g² − σ d² = λ c₁² b²`
-for some `b`, and `smallBad` holds at `(b, g)`. -/
-def hypBadGD (q lam c1 c2 c3 c4 σ g d : ℕ) : Bool :=
+/-- `p (K₁² − K₂²)² = 4q (K₁K₂)²`, the point `(k₁, k₂)` with `|k₁| = K₁`, `|k₂| = K₂` belongs to
+`±T₄` (one of the two truncated differences is `0`). -/
+def t4B (p q K1 K2 : ℕ) : Bool :=
+  p * (K1 ^ 2 - K2 ^ 2) ^ 2 + p * (K2 ^ 2 - K1 ^ 2) ^ 2 == 4 * q * (K1 * K2) ^ 2
+
+/-- `smallBad`, and the solution is not `±T₄` for the pair `(p, q)`. With `p = 0` this is
+`smallBad`, since `k₁k₂ ≠ 0`. -/
+def smallBadT (p q lam c1 c2 c3 c4 σ b g : ℕ) : Bool :=
+  smallBad q lam c1 c2 c3 c4 σ b g &&
+    !t4B p q (c1 * Nat.sqrt ((q * c4 ^ 2 * b ^ 2 - lam * c2 ^ 2 * g ^ 2) / σ) * b)
+      (c2 * g * Nat.sqrt ((q * c3 ^ 2 * g ^ 2 - lam * c1 ^ 2 * b ^ 2) / σ))
+
+/-- `(|γ|, |δ|) = (g, d)` extends to a solution with `k₁² ≠ k₂²` that is not `±T₄`:
+`q c₃² g² − σ d² = λ c₁² b²` for some `b`, and `smallBadT` holds at `(b, g)`. -/
+def hypBadGD (p q lam c1 c2 c3 c4 σ g d : ℕ) : Bool :=
   withNat (q * c3 ^ 2 * g ^ 2) fun y ↦ withNat (σ * d ^ 2) fun z ↦
     decide (z < y) && (y - z) % (lam * c1 ^ 2) == 0 && isSqF ((y - z) / (lam * c1 ^ 2)) &&
-      smallBad q lam c1 c2 c3 c4 σ (Nat.sqrt ((y - z) / (lam * c1 ^ 2))) g
+      smallBadT p q lam c1 c2 c3 c4 σ (Nat.sqrt ((y - z) / (lam * c1 ^ 2))) g
 
-/-- `(|α|, |β|) = (a, b)` extends to a solution with `k₁² ≠ k₂²`: `q c₄² b² − σ a² = λ c₂² g²`
-for some `g`, and `smallBad` holds at `(b, g)`. -/
-def hypBadAB (q lam c1 c2 c3 c4 σ a b : ℕ) : Bool :=
+/-- `(|α|, |β|) = (a, b)` extends to a solution with `k₁² ≠ k₂²` that is not `±T₄`:
+`q c₄² b² − σ a² = λ c₂² g²` for some `g`, and `smallBadT` holds at `(b, g)`. -/
+def hypBadAB (p q lam c1 c2 c3 c4 σ a b : ℕ) : Bool :=
   withNat (q * c4 ^ 2 * b ^ 2) fun y ↦ withNat (σ * a ^ 2) fun z ↦
     decide (z < y) && (y - z) % (lam * c2 ^ 2) == 0 && isSqF ((y - z) / (lam * c2 ^ 2)) &&
-      smallBad q lam c1 c2 c3 c4 σ b (Nat.sqrt ((y - z) / (lam * c2 ^ 2)))
+      smallBadT p q lam c1 c2 c3 c4 σ b (Nat.sqrt ((y - z) / (lam * c2 ^ 2)))
 
-/-- No solution with `k₁² ≠ k₂²` has `|γδ| ≤ X` or `|αβ| ≤ Y`: the pairs under the two
-hyperbolas, `O(X log X + Y log Y)` of them instead of the box of `smallCheck`. -/
-def hypCheck (q lam c1 c2 c3 c4 σ X Y : ℕ) : Bool :=
+/-- No solution with `k₁² ≠ k₂²` that is not `±T₄` (for the pair `(p, q)`; for `p = 0`, no
+solution with `k₁² ≠ k₂²`) has `|γδ| ≤ X` or `|αβ| ≤ Y`: the pairs under the two hyperbolas,
+`O(X log X + Y log Y)` of them instead of the box of `smallCheck`. -/
+def hypCheck (p q lam c1 c2 c3 c4 σ X Y : ℕ) : Bool :=
   (allBelow X fun i ↦ allBelow (X / (i + 1)) fun j ↦
-    !hypBadGD q lam c1 c2 c3 c4 σ (i + 1) (j + 1)) &&
+    !hypBadGD p q lam c1 c2 c3 c4 σ (i + 1) (j + 1)) &&
   (allBelow Y fun i ↦ allBelow (Y / (i + 1)) fun j ↦
-    !hypBadAB q lam c1 c2 c3 c4 σ (i + 1) (j + 1))
+    !hypBadAB p q lam c1 c2 c3 c4 σ (i + 1) (j + 1))
 
 /-- Family QK, for `c₁c₂ = w_d²`, `c₃c₄ = w_n²` and `σ (q − p) = h²`: with `F = gcd(q, w_n)`,
 the new solution is `M' = (q/F) w_d (j₁ + j₂)`, `e' = (w_n/F)(k₁ − k₂)`. Either one of the three
@@ -567,7 +580,7 @@ def quadKOKL (lim p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
     withNat (2 * Nat.sqrt (c3 * c4) * c2 / Nat.gcd q (Nat.sqrt (c3 * c4))) fun Y ↦
     withNat (quadKBoxβ q lam c1 c2 c3 c4 * quadKBoxγ q lam c1 c2 c3 c4) fun B ↦
       (decide (X + Y ≤ lim) && (decide (lim < B) || decide (12 * (X + Y) ≤ B)) &&
-        hypCheck q lam c1 c2 c3 c4 σ X Y) ||
+        hypCheck 0 q lam c1 c2 c3 c4 σ X Y) ||
       (decide (B ≤ lim) &&
         smallCheck q lam c1 c2 c3 c4 σ (quadKBoxβ q lam c1 c2 c3 c4)
           (quadKBoxγ q lam c1 c2 c3 c4)))
@@ -650,16 +663,55 @@ theorem natAbs_E {q lam c1 c2 c3 c4 σ : ℕ} {α β γ δ : ℤ}
       linear_combination E2
     exact_mod_cast this
 
+/-- A solution of `E₁`, `E₂` with `k₁² ≠ k₂²` that is not `±T₄` makes `smallBadT` true at
+`(|β|, |γ|)`. -/
+theorem smallBadT_of_sol {p q lam c1 c2 c3 c4 σ : ℕ} (hσ : 0 < σ) {α β γ δ : ℤ}
+    (E1 : (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
+    (E2 : (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2)
+    (hne : ((c1 : ℤ) * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2)
+    (hT : (p : ℤ) * ((c1 * (α * β)) ^ 2 - (c2 * (γ * δ)) ^ 2) ^ 2 ≠
+      4 * q * (c1 * (α * β) * (c2 * (γ * δ))) ^ 2)
+    (hα : α ≠ 0) (hδ : δ ≠ 0) :
+    smallBadT p q lam c1 c2 c3 c4 σ β.natAbs γ.natAbs = true := by
+  obtain ⟨e1, e2⟩ := natAbs_E E1 E2
+  have hd : 0 < σ * δ.natAbs ^ 2 := Nat.mul_pos hσ (pow_pos (Int.natAbs_pos.mpr hδ) 2)
+  have ha : 0 < σ * α.natAbs ^ 2 := Nat.mul_pos hσ (pow_pos (Int.natAbs_pos.mpr hα) 2)
+  have hD : q * c3 ^ 2 * γ.natAbs ^ 2 - lam * c1 ^ 2 * β.natAbs ^ 2 = σ * δ.natAbs ^ 2 := by
+    omega
+  have hA : q * c4 ^ 2 * β.natAbs ^ 2 - lam * c2 ^ 2 * γ.natAbs ^ 2 = σ * α.natAbs ^ 2 := by
+    omega
+  rw [smallBadT, smallBad_of_sol hσ E1 E2 hne hα hδ, hD, hA, Nat.mul_div_cancel_left _ hσ,
+    Nat.mul_div_cancel_left _ hσ, Nat.sqrt_eq', Nat.sqrt_eq', Bool.true_and, Bool.not_eq_true',
+    t4B, beq_eq_false_iff_ne]
+  intro h0
+  apply hT
+  have key : ∀ x y : ℕ, ((p * (x - y) ^ 2 + p * (y - x) ^ 2 : ℕ) : ℤ) = p * ((x : ℤ) - y) ^ 2 := by
+    intro x y
+    rcases le_total x y with hxy | hxy
+    · rw [Nat.sub_eq_zero_of_le hxy]
+      push_cast [Nat.cast_sub hxy]
+      ring
+    · rw [Nat.sub_eq_zero_of_le hxy]
+      push_cast [Nat.cast_sub hxy]
+      ring
+  have h1 := congrArg (fun n : ℕ ↦ (n : ℤ)) h0
+  simp only [key] at h1
+  push_cast at h1
+  simp only [mul_pow, sq_abs] at h1
+  linear_combination h1
+
 /-- **Soundness of `hypCheck`.** -/
-theorem hypCheck_sound {q lam c1 c2 c3 c4 σ X Y : ℕ}
-    (h : hypCheck q lam c1 c2 c3 c4 σ X Y = true) (hσ : 0 < σ) (hlam : 0 < lam) (hc1 : 0 < c1)
+theorem hypCheck_sound {p q lam c1 c2 c3 c4 σ X Y : ℕ}
+    (h : hypCheck p q lam c1 c2 c3 c4 σ X Y = true) (hσ : 0 < σ) (hlam : 0 < lam) (hc1 : 0 < c1)
     (hc2 : 0 < c2) {α β γ δ : ℤ}
     (E1 : (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
     (E2 : (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2)
     (hne : ((c1 : ℤ) * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2)
+    (hT : (p : ℤ) * ((c1 * (α * β)) ^ 2 - (c2 * (γ * δ)) ^ 2) ^ 2 ≠
+      4 * q * (c1 * (α * β) * (c2 * (γ * δ))) ^ 2)
     (hα : α ≠ 0) (hβ : β ≠ 0) (hγ : γ ≠ 0) (hδ : δ ≠ 0)
     (hs : (γ * δ).natAbs ≤ X ∨ (α * β).natAbs ≤ Y) : False := by
-  have hbad := smallBad_of_sol hσ E1 E2 hne hα hδ
+  have hbad := smallBadT_of_sol hσ E1 E2 hne hT hα hδ
   obtain ⟨e1, e2⟩ := natAbs_E E1 E2
   simp only [hypCheck, Bool.and_eq_true, allBelow_iff, Bool.not_eq_eq_eq_not,
     Bool.not_true] at h
