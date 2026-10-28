@@ -92,6 +92,23 @@ it by `θ`. So a complex derivative is a local rotation and scaling.
 | `sub_rotation_isLittleO_of_hasDerivAt`, `conformalAt_of_hasDerivAt` | Near `a`, `f` is that rotation and scaling up to `o(h)`; conformal when `f'(a) ≠ 0` |
 | `hasDerivAt_exp_I_mul`, `exp_I_mul_z₀`, `deriv_z₀`, `exp_I_mul_local_scale_rotate` | The worked example: `f(z) = e^{iz}` at `z₀ = −π/4 − i ln 2` has `f(z₀) = 2e^{−iπ/4}`, `f'(z₀) = 2e^{iπ/4}`, so near `z₀` it scales by 2 and rotates by 45° |
 
+### The friendship paradox — `LeanPlayground/FriendshipParadox/`
+
+Scott L. Feld, *Why your friends have more friends than you do*, Amer. J. Sociology 96 (1991).
+For a finite simple graph with degrees `d v` on `n` vertices, and `friendDegreeSum v = ∑_{u ~ v} d u`:
+
+| Statement | Lean |
+|---|---|
+| A random friend has on average `∑ d² / ∑ d ≥ ∑ d / n` friends | `SimpleGraph.friendship_paradox` |
+| … with equality iff all degrees are equal | `SimpleGraph.friendship_paradox_eq_iff` |
+| Per person: `∑_v d v ≤ ∑_v friendDegreeSum v / d v` | `SimpleGraph.friendship_paradox_local` |
+| … with equality iff `d` is constant on each connected component | `SimpleGraph.friendship_paradox_local_eq_iff_reachable` |
+
+Mathlib has the degree-sum formula but not the friendship paradox (nor should it be confused with
+the friendship *theorem* of Erdős–Rényi–Sós). Both inequalities are sums of squares:
+`∑_u ∑_v (d u − d v)² = 2 (n ∑ d² − (∑ d)²)`, and pairing each friendship with its reverse,
+`2 (∑_v friendDegreeSum v / d v − ∑ d) = ∑_{u ~ v} (d u − d v)² / (d u d v)`.
+
 ### The productegral — `LeanPlayground/Productegral/`
 
 Claims from Sohil Rathi, [*The Missing Calculus Operation*](https://youtu.be/QN680Is4euw)

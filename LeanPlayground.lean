@@ -107,3 +107,4 @@ import LeanPlayground.CoverFree.Stehlik
 import LeanPlayground.CoverFree.Main
 import LeanPlayground.CoverFree.AffinePlane
 import LeanPlayground.PerfectCuboid.CongruentNumber
+import LeanPlayground.FriendshipParadox.Basic
