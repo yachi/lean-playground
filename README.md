@@ -286,6 +286,21 @@ formalized). It never excludes a configuration on its own.
 | A perfect cuboid exists iff some `E_N` has a positive configuration with `−X₁X₂X₃ = □` (and the same for each `k`) | `exists_isPerfectCuboid_iff'`, `exists_config_iff_exists_twistedCuboid'` |
 | In cuboid coordinates: `2(kde + bc)(kdf + ac)(kef + ab) = kg²(af + be + cd)²`, so Prop 1's configuration has `k·(−X₁X₂X₃) = (2N²s/(af + be + cd))²` | `IsTwistedCuboid.twist_identity`, `IsRatCuboid.twist_identity`, `twist_class_of_twistedCuboid` |
 
+`GaussianQuartic.lean` and `BeauvilleLambda.lean` rule out one square class of perfect cuboids.
+In `ℤ[i]` put `p = a + g` and `q = b − ic`. Then `pq(p⁴ − q⁴) · 8(a+g)(f+b)(e+a)(g+e)(d+a)(g+d)`
+is a square, so `p/q` is a point on a quadratic twist of the genus-two curve `y² = x⁵ − x`. When
+that twist is trivial (up to `2`), an elementary `ℤ[i]` descent (Hilbert, *Zahlbericht*, Satz 169:
+`x⁴ ± y⁴ = z²` has only trivial solutions in `ℤ[i]`) shows `p/q` would have to be a Weierstrass
+point, which is impossible for a cuboid.
+
+| Result | Lean |
+|---|---|
+| `x⁴ ± y⁴ = z²`, `x⁴ − y⁴ = iz²` have only trivial solutions in `ℤ[i]` | `GaussianQuartic.quartic_one`, `GaussianQuartic.quartic_i`, `GaussianQuartic.quartic` |
+| `pq(p⁴ − q⁴) = uV²` (`u` a unit) forces `p = 0`, `q = 0` or `p⁴ = q⁴` | `GaussianQuartic.genus_two` |
+| `pq(p⁴ − q⁴) · 8(a+g)(f+b)(e+a)(g+e)(d+a)(g+d) = W²` | `cuboid_identity` |
+| For a perfect cuboid, `(a+g)(f+b)(e+a)(g+e)(d+a)(g+d)` is never `2^k m²` | `IsPerfectCuboid.diag_prod_ne_two_pow_mul_sq` |
+| No perfect cuboid has Beauville invariant `λ = 1`: the product of the six triple gcds `(a,b)(a,c)(b,c)(a,f)(b,e)(c,d)` is never `2^k m²` | `IsPerfectCuboid.gcd_prod_ne_two_pow_mul_sq` |
+
 `CongruentNumber.lean` states the correspondence in the language of congruent numbers: `N` is
 *congruent* if it is the area of a right triangle with rational sides.
 
