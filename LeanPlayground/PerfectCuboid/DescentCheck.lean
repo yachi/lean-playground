@@ -469,38 +469,122 @@ def smallBad (q lam c1 c2 c3 c4 σ b g : ℕ) : Bool :=
   c1 * Nat.sqrt ((q * c4 ^ 2 * b ^ 2 - lam * c2 ^ 2 * g ^ 2) / σ) * b !=
     c2 * g * Nat.sqrt ((q * c3 ^ 2 * g ^ 2 - lam * c1 ^ 2 * b ^ 2) / σ)
 
+/-- A necessary condition for `n` to be a square: `n` is a square modulo `64`, `63`, `65` and
+`11`. -/
+def sqFilter (n : ℕ) : Bool :=
+  Nat.testBit 144680414395695635 (n % 64) && Nat.testBit 288872697407275667 (n % 63) &&
+    Nat.testBit 20863489977805260307 (n % 65) && Nat.testBit 571 (n % 11)
+
+/-- `isSq` after the cheap test `sqFilter`, which rules out most non-squares without
+`Nat.sqrt`. -/
+def isSqF (n : ℕ) : Bool := sqFilter n && isSq n
+
+theorem isSqF_eq (n : ℕ) : isSqF n = isSq n := by
+  rw [isSqF]
+  cases h : isSq n
+  · simp
+  · rw [Bool.and_true]
+    have hn := eq_sq_of_isSq h
+    set r := Nat.sqrt n
+    have h64 : ∀ x < 64, Nat.testBit 144680414395695635 (x ^ 2 % 64) = true := by decide
+    have h63 : ∀ x < 63, Nat.testBit 288872697407275667 (x ^ 2 % 63) = true := by decide
+    have h65 : ∀ x < 65, Nat.testBit 20863489977805260307 (x ^ 2 % 65) = true := by decide
+    have h11 : ∀ x < 11, Nat.testBit 571 (x ^ 2 % 11) = true := by decide
+    rw [hn, sqFilter, Nat.pow_mod r 2 64, Nat.pow_mod r 2 63, Nat.pow_mod r 2 65,
+      Nat.pow_mod r 2 11, h64 _ (Nat.mod_lt _ (by norm_num)), h63 _ (Nat.mod_lt _ (by norm_num)),
+      h65 _ (Nat.mod_lt _ (by norm_num)), h11 _ (Nat.mod_lt _ (by norm_num))]
+    rfl
+
+/-- `smallBad` with the coefficients `λc₁²`, `qc₃²`, `λc₂²`, `qc₄²` and the squares `b²`, `g²`
+given as numerals (see `withNat`). -/
+def smallBadN (L1 Q3 L2 Q4 c1 c2 σ b g bb gg : ℕ) : Bool :=
+  withNat (L1 * bb) fun x1 ↦ withNat (Q3 * gg) fun y1 ↦
+  withNat (L2 * gg) fun x2 ↦ withNat (Q4 * bb) fun y2 ↦
+  decide (x1 < y1) && decide (x2 < y2) &&
+    withNat (y1 - x1) fun d ↦ withNat (y2 - x2) fun a ↦
+    d % σ == 0 && a % σ == 0 && isSqF (d / σ) && isSqF (a / σ) &&
+      c1 * Nat.sqrt (a / σ) * b != c2 * g * Nat.sqrt (d / σ)
+
 /-- No `(β, γ)` with `1 ≤ |β| ≤ B_β` and `1 ≤ |γ| ≤ B_γ` extends to a solution of `E₁`, `E₂`
-with `k₁² ≠ k₂²`. -/
+with `k₁² ≠ k₂²`. The loops are `allBelow` and the coefficients are computed once. -/
 def smallCheck (q lam c1 c2 c3 c4 σ Bβ Bγ : ℕ) : Bool :=
-  (List.range' 1 Bβ).all fun b ↦ (List.range' 1 Bγ).all fun g ↦ !smallBad q lam c1 c2 c3 c4 σ b g
+  withNat (lam * c1 ^ 2) fun L1 ↦ withNat (q * c3 ^ 2) fun Q3 ↦
+  withNat (lam * c2 ^ 2) fun L2 ↦ withNat (q * c4 ^ 2) fun Q4 ↦
+  allBelow Bβ fun i ↦ withNat ((i + 1) ^ 2) fun bb ↦ allBelow Bγ fun j ↦
+    withNat ((j + 1) ^ 2) fun gg ↦ !smallBadN L1 Q3 L2 Q4 c1 c2 σ (i + 1) (j + 1) bb gg
+
+theorem smallCheck_iff {q lam c1 c2 c3 c4 σ Bβ Bγ : ℕ} :
+    smallCheck q lam c1 c2 c3 c4 σ Bβ Bγ = true ↔
+      ∀ b, 1 ≤ b → b ≤ Bβ → ∀ g, 1 ≤ g → g ≤ Bγ → smallBad q lam c1 c2 c3 c4 σ b g = false := by
+  simp only [smallCheck, withNat_eq, allBelow_iff, Bool.not_eq_eq_eq_not, Bool.not_true]
+  have key : ∀ b g, smallBadN (lam * c1 ^ 2) (q * c3 ^ 2) (lam * c2 ^ 2) (q * c4 ^ 2) c1 c2 σ b g
+      (b ^ 2) (g ^ 2) = smallBad q lam c1 c2 c3 c4 σ b g := by
+    intro b g
+    simp only [smallBadN, withNat_eq, smallBad, Bool.and_assoc, isSqF_eq]
+  simp only [key]
+  constructor
+  · intro h b hb1 hb2 g hg1 hg2
+    obtain ⟨i, rfl⟩ : ∃ i, b = i + 1 := ⟨b - 1, by omega⟩
+    obtain ⟨j, rfl⟩ : ∃ j, g = j + 1 := ⟨g - 1, by omega⟩
+    exact h i (by omega) j (by omega)
+  · intro h i hi j hj
+    exact h (i + 1) (by omega) (by omega) (j + 1) (by omega) (by omega)
+
+/-- `(|γ|, |δ|) = (g, d)` extends to a solution with `k₁² ≠ k₂²`: `q c₃² g² − σ d² = λ c₁² b²`
+for some `b`, and `smallBad` holds at `(b, g)`. -/
+def hypBadGD (q lam c1 c2 c3 c4 σ g d : ℕ) : Bool :=
+  withNat (q * c3 ^ 2 * g ^ 2) fun y ↦ withNat (σ * d ^ 2) fun z ↦
+    decide (z < y) && (y - z) % (lam * c1 ^ 2) == 0 && isSqF ((y - z) / (lam * c1 ^ 2)) &&
+      smallBad q lam c1 c2 c3 c4 σ (Nat.sqrt ((y - z) / (lam * c1 ^ 2))) g
+
+/-- `(|α|, |β|) = (a, b)` extends to a solution with `k₁² ≠ k₂²`: `q c₄² b² − σ a² = λ c₂² g²`
+for some `g`, and `smallBad` holds at `(b, g)`. -/
+def hypBadAB (q lam c1 c2 c3 c4 σ a b : ℕ) : Bool :=
+  withNat (q * c4 ^ 2 * b ^ 2) fun y ↦ withNat (σ * a ^ 2) fun z ↦
+    decide (z < y) && (y - z) % (lam * c2 ^ 2) == 0 && isSqF ((y - z) / (lam * c2 ^ 2)) &&
+      smallBad q lam c1 c2 c3 c4 σ b (Nat.sqrt ((y - z) / (lam * c2 ^ 2)))
+
+/-- No solution with `k₁² ≠ k₂²` has `|γδ| ≤ X` or `|αβ| ≤ Y`: the pairs under the two
+hyperbolas, `O(X log X + Y log Y)` of them instead of the box of `smallCheck`. -/
+def hypCheck (q lam c1 c2 c3 c4 σ X Y : ℕ) : Bool :=
+  (allBelow X fun i ↦ allBelow (X / (i + 1)) fun j ↦
+    !hypBadGD q lam c1 c2 c3 c4 σ (i + 1) (j + 1)) &&
+  (allBelow Y fun i ↦ allBelow (Y / (i + 1)) fun j ↦
+    !hypBadAB q lam c1 c2 c3 c4 σ (i + 1) (j + 1))
 
 /-- Family QK, for `c₁c₂ = w_d²`, `c₃c₄ = w_n²` and `σ (q − p) = h²`: with `F = gcd(q, w_n)`,
 the new solution is `M' = (q/F) w_d (j₁ + j₂)`, `e' = (w_n/F)(k₁ − k₂)`. Either one of the three
 bounds of `boundOK` makes it smaller, or `F² e'² ≤ 2 w_n² (k₁² + k₂²) < F² (αβγδ)²` as soon as
 `F |γδ| > 2 w_n c₁` and `F |αβ| > 2 w_n c₂`; the remaining `(β, γ)` lie in a box that `smallCheck`
-searches (at most `65536` pairs). -/
-def quadKOK (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
+searches (at most `lim` pairs; `quadKOK` takes `lim = 65536`). Instead of the box, `hypCheck`
+may search only `|γδ| ≤ X`, `|αβ| ≤ Y` (`X + Y ≤ lim`); it does so when the box is too large or
+when `12 (X + Y)`, which bounds the `X H_X + Y H_Y` pairs of `hypCheck`, is at most the box. -/
+def quadKOKL (lim p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
   isSq (c1 * c2) && isSq (c3 * c4) && isSq (σ * (q - p)) &&
     (boundOK true p q (c1 * c2) (c3 * c4) (Nat.gcd q (Nat.sqrt (c3 * c4)) ^ 2)
       (Nat.sqrt (c3 * c4) ^ 2 * (c1 * c2) ^ 2) ||
-    (decide (quadKBoxβ q lam c1 c2 c3 c4 * quadKBoxγ q lam c1 c2 c3 c4 ≤ 65536) &&
-      smallCheck q lam c1 c2 c3 c4 σ (quadKBoxβ q lam c1 c2 c3 c4) (quadKBoxγ q lam c1 c2 c3 c4)))
+    withNat (2 * Nat.sqrt (c3 * c4) * c1 / Nat.gcd q (Nat.sqrt (c3 * c4))) fun X ↦
+    withNat (2 * Nat.sqrt (c3 * c4) * c2 / Nat.gcd q (Nat.sqrt (c3 * c4))) fun Y ↦
+    withNat (quadKBoxβ q lam c1 c2 c3 c4 * quadKBoxγ q lam c1 c2 c3 c4) fun B ↦
+      (decide (X + Y ≤ lim) && (decide (lim < B) || decide (12 * (X + Y) ≤ B)) &&
+        hypCheck q lam c1 c2 c3 c4 σ X Y) ||
+      (decide (B ≤ lim) &&
+        smallCheck q lam c1 c2 c3 c4 σ (quadKBoxβ q lam c1 c2 c3 c4)
+          (quadKBoxγ q lam c1 c2 c3 c4)))
+
+/-- `quadKOKL` with a box of at most `65536` pairs. -/
+def quadKOK (p q lam c1 c2 c3 c4 σ : ℕ) : Bool := quadKOKL 65536 p q lam c1 c2 c3 c4 σ
 
 theorem isSq_sq (n : ℕ) : isSq (n ^ 2) = true := by
   simp [isSq, sq]
 
-/-- **Soundness of `smallCheck`.** -/
-theorem smallCheck_sound {q lam c1 c2 c3 c4 σ Bβ Bγ : ℕ}
-    (h : smallCheck q lam c1 c2 c3 c4 σ Bβ Bγ = true) (hσ : 0 < σ) {α β γ δ : ℤ}
+/-- A solution of `E₁`, `E₂` with `k₁² ≠ k₂²` makes `smallBad` true at `(|β|, |γ|)`. -/
+theorem smallBad_of_sol {q lam c1 c2 c3 c4 σ : ℕ} (hσ : 0 < σ) {α β γ δ : ℤ}
     (E1 : (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
     (E2 : (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2)
     (hne : ((c1 : ℤ) * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2)
-    (hα : α ≠ 0) (hβ : β ≠ 0) (hγ : γ ≠ 0) (hδ : δ ≠ 0)
-    (hB : β.natAbs ≤ Bβ) (hG : γ.natAbs ≤ Bγ) : False := by
-  simp only [smallCheck, List.all_eq_true, List.mem_range'_1, Bool.not_eq_eq_eq_not,
-    Bool.not_true] at h
-  have hb := h β.natAbs ⟨Int.natAbs_pos.mpr hβ, by omega⟩ γ.natAbs
-    ⟨Int.natAbs_pos.mpr hγ, by omega⟩
+    (hα : α ≠ 0) (hδ : δ ≠ 0) :
+    smallBad q lam c1 c2 c3 c4 σ β.natAbs γ.natAbs = true := by
   have e1 : q * c3 ^ 2 * γ.natAbs ^ 2 = lam * c1 ^ 2 * β.natAbs ^ 2 + σ * δ.natAbs ^ 2 := by
     have : ((q * c3 ^ 2 * γ.natAbs ^ 2 : ℕ) : ℤ) =
         ((lam * c1 ^ 2 * β.natAbs ^ 2 + σ * δ.natAbs ^ 2 : ℕ) : ℤ) := by
@@ -530,18 +614,109 @@ theorem smallCheck_sound {q lam c1 c2 c3 c4 σ Bβ Bγ : ℕ}
     simp only [Int.natAbs_mul, Int.natAbs_natCast]
     rw [← mul_assoc, ← mul_assoc]
     exact h0
-  rw [smallBad, hD, hA] at hb
-  simp [hlt1, hlt2, Nat.mul_div_cancel_left _ hσ, Nat.mul_mod_right, isSq_sq, Nat.sqrt_eq',
-    hne'] at hb
+  rw [smallBad, hD, hA]
+  simp [hlt1, hlt2, Nat.mul_div_cancel_left _ hσ, Nat.mul_mod_right, isSq_sq, Nat.sqrt_eq', hne']
+
+/-- **Soundness of `smallCheck`.** -/
+theorem smallCheck_sound {q lam c1 c2 c3 c4 σ Bβ Bγ : ℕ}
+    (h : smallCheck q lam c1 c2 c3 c4 σ Bβ Bγ = true) (hσ : 0 < σ) {α β γ δ : ℤ}
+    (E1 : (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
+    (E2 : (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2)
+    (hne : ((c1 : ℤ) * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2)
+    (hα : α ≠ 0) (hβ : β ≠ 0) (hγ : γ ≠ 0) (hδ : δ ≠ 0)
+    (hB : β.natAbs ≤ Bβ) (hG : γ.natAbs ≤ Bγ) : False := by
+  have hb := smallCheck_iff.mp h β.natAbs (Int.natAbs_pos.mpr hβ) hB γ.natAbs
+    (Int.natAbs_pos.mpr hγ) hG
+  rw [smallBad_of_sol hσ E1 E2 hne hα hδ] at hb
+  exact Bool.noConfusion hb
+
+/-- The natural-number forms of `E₁` and `E₂`. -/
+theorem natAbs_E {q lam c1 c2 c3 c4 σ : ℕ} {α β γ δ : ℤ}
+    (E1 : (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
+    (E2 : (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2) :
+    q * c3 ^ 2 * γ.natAbs ^ 2 = lam * c1 ^ 2 * β.natAbs ^ 2 + σ * δ.natAbs ^ 2 ∧
+      q * c4 ^ 2 * β.natAbs ^ 2 = lam * c2 ^ 2 * γ.natAbs ^ 2 + σ * α.natAbs ^ 2 := by
+  constructor
+  · have : ((q * c3 ^ 2 * γ.natAbs ^ 2 : ℕ) : ℤ) =
+        ((lam * c1 ^ 2 * β.natAbs ^ 2 + σ * δ.natAbs ^ 2 : ℕ) : ℤ) := by
+      push_cast
+      simp only [sq_abs]
+      linear_combination E1
+    exact_mod_cast this
+  · have : ((q * c4 ^ 2 * β.natAbs ^ 2 : ℕ) : ℤ) =
+        ((lam * c2 ^ 2 * γ.natAbs ^ 2 + σ * α.natAbs ^ 2 : ℕ) : ℤ) := by
+      push_cast
+      simp only [sq_abs]
+      linear_combination E2
+    exact_mod_cast this
+
+/-- **Soundness of `hypCheck`.** -/
+theorem hypCheck_sound {q lam c1 c2 c3 c4 σ X Y : ℕ}
+    (h : hypCheck q lam c1 c2 c3 c4 σ X Y = true) (hσ : 0 < σ) (hlam : 0 < lam) (hc1 : 0 < c1)
+    (hc2 : 0 < c2) {α β γ δ : ℤ}
+    (E1 : (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
+    (E2 : (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2)
+    (hne : ((c1 : ℤ) * (α * β)) ^ 2 ≠ (c2 * (γ * δ)) ^ 2)
+    (hα : α ≠ 0) (hβ : β ≠ 0) (hγ : γ ≠ 0) (hδ : δ ≠ 0)
+    (hs : (γ * δ).natAbs ≤ X ∨ (α * β).natAbs ≤ Y) : False := by
+  have hbad := smallBad_of_sol hσ E1 E2 hne hα hδ
+  obtain ⟨e1, e2⟩ := natAbs_E E1 E2
+  simp only [hypCheck, Bool.and_eq_true, allBelow_iff, Bool.not_eq_eq_eq_not,
+    Bool.not_true] at h
+  have hb0 := Int.natAbs_pos.mpr hβ
+  have hg0 := Int.natAbs_pos.mpr hγ
+  have ha0 := Int.natAbs_pos.mpr hα
+  have hd0 := Int.natAbs_pos.mpr hδ
+  rcases hs with hs | hs
+  · rw [Int.natAbs_mul] at hs
+    have hle := Nat.le_mul_of_pos_right γ.natAbs hd0
+    have := h.1 (γ.natAbs - 1) (by omega) (δ.natAbs - 1) (by
+      rw [Nat.sub_add_cancel hg0, Nat.lt_iff_add_one_le, Nat.sub_add_cancel hd0,
+        Nat.le_div_iff_mul_le hg0, Nat.mul_comm]
+      exact hs)
+    rw [Nat.sub_add_cancel hg0, Nat.sub_add_cancel hd0] at this
+    have hL : 0 < lam * c1 ^ 2 := Nat.mul_pos hlam (pow_pos hc1 2)
+    rw [hypBadGD, withNat_eq, withNat_eq, e1, Nat.add_sub_cancel,
+      show lam * c1 ^ 2 * β.natAbs ^ 2 = β.natAbs ^ 2 * (lam * c1 ^ 2) by ring,
+      Nat.mul_div_cancel _ hL, Nat.mul_mod_left, isSqF_eq, isSq_sq, Nat.sqrt_eq', hbad] at this
+    simp only [lt_add_iff_pos_left, CanonicallyOrderedAdd.mul_pos, Bool.decide_and, BEq.rfl,
+      Bool.and_true, Bool.and_eq_false_imp, decide_eq_true_eq, decide_eq_false_iff_not, not_lt,
+      nonpos_iff_eq_zero, Nat.pow_eq_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+      and_true] at this
+    exact hc1.ne' (this (pow_pos hb0 2) hlam)
+  · rw [Int.natAbs_mul] at hs
+    have hle := Nat.le_mul_of_pos_right α.natAbs hb0
+    have := h.2 (α.natAbs - 1) (by omega) (β.natAbs - 1) (by
+      rw [Nat.sub_add_cancel ha0, Nat.lt_iff_add_one_le, Nat.sub_add_cancel hb0,
+        Nat.le_div_iff_mul_le ha0, Nat.mul_comm]
+      exact hs)
+    rw [Nat.sub_add_cancel ha0, Nat.sub_add_cancel hb0] at this
+    have hL : 0 < lam * c2 ^ 2 := Nat.mul_pos hlam (pow_pos hc2 2)
+    rw [hypBadAB, withNat_eq, withNat_eq, e2, Nat.add_sub_cancel,
+      show lam * c2 ^ 2 * γ.natAbs ^ 2 = γ.natAbs ^ 2 * (lam * c2 ^ 2) by ring,
+      Nat.mul_div_cancel _ hL, Nat.mul_mod_left, isSqF_eq, isSq_sq, Nat.sqrt_eq', hbad] at this
+    simp only [lt_add_iff_pos_left, CanonicallyOrderedAdd.mul_pos, Bool.decide_and, BEq.rfl,
+      Bool.and_true, Bool.and_eq_false_imp, decide_eq_true_eq, decide_eq_false_iff_not, not_lt,
+      nonpos_iff_eq_zero, Nat.pow_eq_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+      and_true] at this
+    exact hc2.ne' (this (pow_pos hg0 2) hlam)
+
+/-- One of the three families applies, with a box of at most `lim` pairs for QK. -/
+def torsionOK1L (lim p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
+  linOK p q lam c1 c2 c3 c4 σ || quadDOK p q lam c1 c2 c3 c4 σ ||
+    quadKOKL lim p q lam c1 c2 c3 c4 σ
 
 /-- One of the three families applies. -/
-def torsionOK1 (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
-  linOK p q lam c1 c2 c3 c4 σ || quadDOK p q lam c1 c2 c3 c4 σ || quadKOK p q lam c1 c2 c3 c4 σ
+def torsionOK1 (p q lam c1 c2 c3 c4 σ : ℕ) : Bool := torsionOK1L 65536 p q lam c1 c2 c3 c4 σ
 
 /-- One of the three families applies, possibly after the symmetry
-`(α, β, γ, δ, c₁, c₂, c₃, c₄) ↦ (δ, γ, β, α, c₂, c₁, c₄, c₃)`, which swaps the two equations. -/
-def torsionOK (p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
-  torsionOK1 p q lam c1 c2 c3 c4 σ || torsionOK1 p q lam c2 c1 c4 c3 σ
+`(α, β, γ, δ, c₁, c₂, c₃, c₄) ↦ (δ, γ, β, α, c₂, c₁, c₄, c₃)`, which swaps the two equations;
+the box of QK has at most `lim` pairs. -/
+def torsionOKL (lim p q lam c1 c2 c3 c4 σ : ℕ) : Bool :=
+  torsionOK1L lim p q lam c1 c2 c3 c4 σ || torsionOK1L lim p q lam c2 c1 c4 c3 σ
+
+/-- `torsionOKL` with a box of at most `65536` pairs. -/
+def torsionOK (p q lam c1 c2 c3 c4 σ : ℕ) : Bool := torsionOKL 65536 p q lam c1 c2 c3 c4 σ
 
 /-- The moduli are usable: `0 < N`, `2 ≤ l` and `l ∣ N`. -/
 def modsOK (mods : List (ℕ × ℕ)) : Bool :=
@@ -836,6 +1011,128 @@ theorem coveredOn_of_fiberCheckCert {p q a lo hi σlo σhi : ℕ} {cert : List C
     (mem_fiberCases hp hq ha h0 hd hlo hhi hσlo hσhi hc12 hc12' hc34 hc34' hσ)
   exact certStep_sound hc
 
+/-! ### The class check
+
+The half-point `Q` of a solution has `2`-descent image `(qλ, Dλσ)` modulo squares, and only the
+classes in the `2`-Selmer group can occur. For a curve whose `2`-Selmer group is small, almost all
+pairs `(λ, σ)` give a class outside it, and then the whole group of tuples `(c₁, c₂, c₃, c₄)` with
+these `λ`, `σ` (in fact with these `λ` and the square class of `σ`) is ruled out by one local test,
+`classCheck`, instead of one test per tuple.
+
+If `a₀ ≡ qλ` and `b₀ ≡ Dλσ` modulo squares, the point `Q` has `x = a₀ (r/s)²` with `r, s`
+coprime, and `b₀ (a₀ r² + p² s²)` and `a₀ b₀ (a₀ r² + q² s²)` are squares. `classCheck` tests
+modulo a prime power `N = l^k` that no `(r : s)` makes both residues squares: since `r, s` are
+coprime, one of them is a unit modulo `N`, and scaling by its inverse leaves `(ρ : 1)` with
+`ρ < N` or `(1 : l t)` with `t < N / l`. So the work is `O(N)`. The soundness theorem is
+`classCheck_sound`; the class lemma for a tuple (`classKill_sound`) is in
+`LeanPlayground.PerfectCuboid.Descent`. -/
+
+/-- `true` if no `(r : s)` modulo `N` with `r, s` not both divisible by `l` makes `b (a r² + P s²)`
+and `c (a r² + Q s²)` squares modulo `N`. The arguments are expected to be reduced modulo `N`. -/
+def classCheck (N l a b c P Q : ℕ) : Bool :=
+  withNat N fun N ↦ withNat l fun l ↦ withNat a fun a ↦ withNat b fun b ↦ withNat c fun c ↦
+  withNat P fun P ↦ withNat Q fun Q ↦ withNat (sqMask N 1 1 true) fun m ↦
+  allBelow N (fun r ↦ withNat (a * (r * r % N) % N) fun x ↦
+      !(m.testBit (b * ((x + P) % N) % N) && m.testBit (c * ((x + Q) % N) % N))) &&
+    allBelow (N / l) (fun t ↦ withNat (l * t * (l * t) % N) fun y ↦
+      !(m.testBit (b * ((a + P * y) % N) % N) && m.testBit (c * ((a + Q * y) % N) % N)))
+
+/-- A square modulo `N` is in the mask of squares. -/
+theorem testBit_of_sq {N : ℕ} [NeZero N] {X : ℕ} {w : ZMod N} (h : (X : ZMod N) = w ^ 2) :
+    (sqMask N 1 1 true).testBit (X % N) = true := by
+  have key := testBit_sqMask (N := N) (l := 1) (s := 1) (z := true) (ZMod.val_lt w)
+    (by simp [Nat.mod_one])
+  convert key using 2
+  rw [← ZMod.natCast_eq_natCast_iff']
+  push_cast [ZMod.natCast_val, ZMod.cast_id', id, h]
+  ring
+
+/-- An integer prime to the prime `l` has an inverse modulo `N = l^k`. -/
+theorem exists_inv_of_not_dvd {N l k : ℕ} (hl : l.Prime) (hN : N = l ^ k) {r : ℤ}
+    (hr : ¬ (l : ℤ) ∣ r) : ∃ ri : ZMod N, ri * r = 1 := by
+  have hc : IsCoprime r (N : ℤ) := by
+    rw [Int.isCoprime_iff_gcd_eq_one, Int.gcd, Int.natAbs_natCast, hN]
+    exact Nat.Coprime.pow_right _ ((Nat.coprime_comm).mp
+      ((hl.coprime_iff_not_dvd).mpr (Int.natCast_dvd.not.mp hr)))
+  obtain ⟨u, v, huv⟩ := hc
+  refine ⟨u, ?_⟩
+  have := congrArg (Int.cast : ℤ → ZMod N) huv
+  push_cast [ZMod.natCast_self] at this
+  linear_combination this
+
+/-- **Soundness of the class check.** If `r, s` are coprime and `b (a r² + P s²)` and
+`c (a r² + Q s²)` are squares, then `classCheck` fails modulo every prime power `N = l^k`. -/
+theorem classCheck_sound {N l k a b c P Q : ℕ} (hl : l.Prime) (hN : N = l ^ k) (hk : 0 < k)
+    (h : classCheck N l (a % N) (b % N) (c % N) (P % N) (Q % N) = true) {r s W1 W2 : ℤ}
+    (hrs : IsCoprime r s) (h1 : (b : ℤ) * (a * r ^ 2 + P * s ^ 2) = W1 ^ 2)
+    (h2 : (c : ℤ) * (a * r ^ 2 + Q * s ^ 2) = W2 ^ 2) : False := by
+  have hN0 : 0 < N := hN ▸ pow_pos hl.pos k
+  have : NeZero N := ⟨hN0.ne'⟩
+  simp only [classCheck, withNat_eq, allBelow_iff, Bool.and_eq_true] at h
+  obtain ⟨hr, ht⟩ := h
+  have H1 := congrArg (Int.cast : ℤ → ZMod N) h1
+  have H2 := congrArg (Int.cast : ℤ → ZMod N) h2
+  push_cast at H1 H2
+  by_cases hs : (l : ℤ) ∣ s
+  · -- `r` is a unit: the point `(1 : s/r)`, with `s/r = l t`
+    have hr' : ¬ (l : ℤ) ∣ r := fun h0 ↦ not_dvd_and_dvd hrs hl.two_le ⟨h0, hs⟩
+    obtain ⟨ri, hri⟩ := exists_inv_of_not_dvd hl hN hr'
+    obtain ⟨s', rfl⟩ := hs
+    push_cast at H1 H2
+    obtain ⟨M, hM⟩ : l ∣ N := hN ▸ dvd_pow_self l hk.ne'
+    have hM0 : 0 < M := Nat.pos_of_ne_zero fun h0 ↦ by simp [h0] at hM; omega
+    have hNM : N / l = M := by rw [hM, Nat.mul_div_cancel_left _ hl.pos]
+    set x := ((s' : ZMod N) * ri).val
+    set t := x % M with ht_def
+    have key : l * t = l * x % N := by rw [ht_def, hM, Nat.mul_mod_mul_left]
+    have htl : ((l * t : ℕ) : ZMod N) = l * s' * ri := by
+      rw [key, ZMod.natCast_mod]
+      push_cast [x, ZMod.natCast_val, ZMod.cast_id', id]
+      ring
+    have hy : ((l * t * (l * t) % N : ℕ) : ZMod N) = (l * s' * ri) ^ 2 := by
+      rw [ZMod.natCast_mod, Nat.cast_mul, htl]
+      ring
+    have T1 := testBit_of_sq (X := b % N * ((a % N + P % N * (l * t * (l * t) % N)) % N))
+      (N := N) (w := (W1 : ZMod N) * ri) (by
+        push_cast [ZMod.natCast_mod] at hy ⊢
+        rw [hy]
+        linear_combination ri ^ 2 * H1 - (b : ZMod N) * a * (1 + ri * r) * hri)
+    have T2 := testBit_of_sq (X := c % N * ((a % N + Q % N * (l * t * (l * t) % N)) % N))
+      (N := N) (w := (W2 : ZMod N) * ri) (by
+        push_cast [ZMod.natCast_mod] at hy ⊢
+        rw [hy]
+        linear_combination ri ^ 2 * H2 - (c : ZMod N) * a * (1 + ri * r) * hri)
+    have H := ht t (by rw [hNM]; exact Nat.mod_lt _ hM0)
+    rw [T1, T2] at H
+    exact absurd H (by decide)
+  · -- `s` is a unit: the point `(r/s : 1)`
+    obtain ⟨si, hsi⟩ := exists_inv_of_not_dvd hl hN hs
+    set ρ := ((r : ZMod N) * si).val
+    have hρ : ((ρ : ℕ) : ZMod N) = r * si := ZMod.natCast_zmod_val _
+    have T1 := testBit_of_sq (X := b % N * ((a % N * (ρ * ρ % N) % N + P % N) % N))
+      (N := N) (w := (W1 : ZMod N) * si) (by
+        push_cast [ZMod.natCast_mod, hρ]
+        linear_combination si ^ 2 * H1 - (b : ZMod N) * P * (1 + si * s) * hsi)
+    have T2 := testBit_of_sq (X := c % N * ((a % N * (ρ * ρ % N) % N + Q % N) % N))
+      (N := N) (w := (W2 : ZMod N) * si) (by
+        push_cast [ZMod.natCast_mod, hρ]
+        linear_combination si ^ 2 * H2 - (c : ZMod N) * Q * (1 + si * s) * hsi)
+    have H := hr ρ (ZMod.val_lt _)
+    rw [T1, T2] at H
+    exact absurd H (by decide)
+
+/-- The class test of a pair `(λ, σ)`: `a₀ ≡ qλ` and `b₀ ≡ Dλσ` modulo squares, and
+`classCheck` succeeds modulo `N` for the classes `a₀`, `b₀` and `a₀ b₀` of `x`, `x + p²`,
+`x + q²`. -/
+def classKillOK (p q D lam σ a0 b0 N l : ℕ) : Bool :=
+  decide (0 < a0) && decide (0 < b0) && isSq (q * lam * a0) && isSq (D * lam * σ * b0) &&
+    classCheck N l (a0 % N) (b0 % N) (a0 * b0 % N) (p ^ 2 % N) (q ^ 2 % N)
+
+/-- The pair `(λ, σ)` gives a class outside the `2`-Selmer group, as witnessed by `classKillOK`
+modulo a prime power. -/
+def ClassKill (p q D lam σ : ℕ) : Prop :=
+  ∃ a0 b0 N l k : ℕ, l.Prime ∧ N = l ^ k ∧ 0 < k ∧ classKillOK p q D lam σ a0 b0 N l = true
+
 /-! ### Pairs with `q² − p²` not a square
 
 For the pair `(p, q) = (U, V)` of a fiber the number `D = q² − p²` is not a square, and
@@ -844,19 +1141,30 @@ For the pair `(p, q) = (U, V)` of a fiber the number `D = q² − p²` is not a 
 `fiberCases` and `fiberCheckCert` with `a²` replaced by `D`. Both kinds of certificate give
 `CasesOK p q D`, the hypothesis of the descent. -/
 
-/-- Every case `(λ, c₁, c₂, c₃, c₄, σ)` with `σ ∣ λ'² D` is a torsion translate or is ruled out
-modulo some `(N, l)`. -/
+/-- One case `(λ, c₁, c₂, c₃, c₄, σ)` is handled: it is a torsion translate (with any box for
+QK), or it is ruled out modulo some `(N, l)`, or its class `(qλ, Dλσ)` is not in the `2`-Selmer
+group. -/
+def CaseOK (p q D lam c1 c2 c3 c4 σ : ℕ) : Prop :=
+  (∃ lim, torsionOKL lim p q lam c1 c2 c3 c4 σ = true) ∨
+    (∃ N l : ℕ, 0 < N ∧ 2 ≤ l ∧ l ∣ N ∧ tupleOK [(N, l)] q lam c1 c2 c3 c4 σ = true) ∨
+    ClassKill p q D lam σ
+
+theorem caseOK_of_or {p q D lam c1 c2 c3 c4 σ : ℕ}
+    (h : torsionOK p q lam c1 c2 c3 c4 σ = true ∨
+      ∃ N l : ℕ, 0 < N ∧ 2 ≤ l ∧ l ∣ N ∧ tupleOK [(N, l)] q lam c1 c2 c3 c4 σ = true) :
+    CaseOK p q D lam c1 c2 c3 c4 σ :=
+  h.elim (fun h ↦ Or.inl ⟨65536, h⟩) fun h ↦ Or.inr (Or.inl h)
+
+/-- Every case `(λ, c₁, c₂, c₃, c₄, σ)` with `σ ∣ λ'² D` is handled (`CaseOK`). -/
 def CasesOK (p q D : ℕ) : Prop :=
   ∀ ⦃lam c1 c2 c3 c4 σ : ℕ⦄, 0 < lam → lam ∣ p * q → c1 * c2 = p / Nat.gcd p lam →
     Nat.Coprime c1 c2 → c3 * c4 = lam / Nat.gcd p lam → Nat.Coprime c3 c4 →
-    σ ∣ (lam / Nat.gcd p lam) ^ 2 * D →
-    torsionOK p q lam c1 c2 c3 c4 σ = true ∨
-      ∃ N l : ℕ, 0 < N ∧ 2 ≤ l ∧ l ∣ N ∧ tupleOK [(N, l)] q lam c1 c2 c3 c4 σ = true
+    σ ∣ (lam / Nat.gcd p lam) ^ 2 * D → CaseOK p q D lam c1 c2 c3 c4 σ
 
 theorem Covered.casesOK {p q a : ℕ} (h : Covered p q a) (hp : 0 < p) (hq : 0 < q) (ha : 0 < a) :
     CasesOK p q (a ^ 2) :=
   fun _ _ _ _ _ _ hlam hlpq hc12 hc12' hc34 hc34' hσd ↦
-    h.cases hp hq ha hlam hlpq hc12 hc12' hc34 hc34' hσd
+    caseOK_of_or (h.cases hp hq ha hlam hlpq hc12 hc12' hc34 hc34' hσd)
 
 /-- The divisors of `x y`, given the lists `Dx`, `Dy` of the divisors of `x` and `y`: each one is
 `u v` with `u = gcd(u v, x)`, `u ∣ x` and `v ∣ y`, in exactly one way. -/
@@ -924,8 +1232,8 @@ theorem CoveredD.casesOK {p q D : ℕ} (h : CoveredD p q D) (hp : 0 < p) (hq : 0
     have hl : lam / Nat.gcd p lam ≤ p * q := (Nat.div_le_self _ _).trans (Nat.le_of_dvd hpq hlpq)
     refine Nat.lt_succ_of_le ((Nat.le_of_dvd (Nat.mul_pos (pow_pos hl' 2) hD) hσd).trans ?_)
     exact Nat.mul_le_mul_right _ (Nat.pow_le_pow_left hl 2)
-  refine h hlam hlpq (Nat.zero_le _) ((caseKey_lt hc1 hc3).trans_le ?_) (Nat.zero_le _) hσ hc12
-    hc12' hc34 hc34' hσd
+  refine caseOK_of_or (h hlam hlpq (Nat.zero_le _) ((caseKey_lt hc1 hc3).trans_le ?_)
+    (Nat.zero_le _) hσ hc12 hc12' hc34 hc34' hσd)
   exact Nat.mul_le_mul_right _ (Nat.succ_le_succ (Nat.le_of_dvd hpq hlpq))
 
 /-- `lamCases` with the divisors `σ` of `λ'² D`, listed by `divsProd` from those of `λ'²`

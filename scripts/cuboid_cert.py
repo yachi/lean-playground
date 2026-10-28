@@ -235,14 +235,58 @@ def smallCheck(q, lam, c1, c2, c3, c4, s, Bb, Bg):
                for b in range(1, Bb + 1) for g in range(1, Bg + 1))
 
 
-def quadKOK(p, q, lam, c1, c2, c3, c4, s):
+def hypBadGD(q, lam, c1, c2, c3, c4, s, g, d):
+    y, z = q * c3 ** 2 * g ** 2, s * d ** 2
+    L = lam * c1 ** 2
+    return (z < y and nmod(y - z, L) == 0 and isSq(ndiv(y - z, L))
+            and smallBad(q, lam, c1, c2, c3, c4, s, nsqrt(ndiv(y - z, L)), g))
+
+
+def hypBadAB(q, lam, c1, c2, c3, c4, s, a, b):
+    y, z = q * c4 ** 2 * b ** 2, s * a ** 2
+    L = lam * c2 ** 2
+    return (z < y and nmod(y - z, L) == 0 and isSq(ndiv(y - z, L))
+            and smallBad(q, lam, c1, c2, c3, c4, s, b, nsqrt(ndiv(y - z, L))))
+
+
+def hypPairs(X, Y):
+    """The number of pairs that `hypCheck` searches."""
+    return sum(X // i for i in range(1, X + 1)) + sum(Y // i for i in range(1, Y + 1))
+
+
+def hypCheck(q, lam, c1, c2, c3, c4, s, X, Y):
+    return (all(not hypBadGD(q, lam, c1, c2, c3, c4, s, i, j)
+                for i in range(1, X + 1) for j in range(1, X // i + 1))
+            and all(not hypBadAB(q, lam, c1, c2, c3, c4, s, i, j)
+                    for i in range(1, Y + 1) for j in range(1, Y // i + 1)))
+
+
+def quadKXY(q, c1, c2, c3, c4):
+    """The hyperbola bounds `X = 2 w_n c₁ / F` and `Y = 2 w_n c₂ / F` of family QK."""
+    wn = nsqrt(c3 * c4)
+    F = math.gcd(q, wn)
+    return ndiv(2 * wn * c1, F), ndiv(2 * wn * c2, F)
+
+
+def quadKOKL(lim, p, q, lam, c1, c2, c3, c4, s):
+    """Mirrors `quadKOKL`. Returns `(ok, pairs)`, where `pairs` counts the small cases searched."""
     if not (isSq(c1 * c2) and isSq(c3 * c4) and isSq(s * nsub(q, p))):
-        return False
+        return False, 0
     if boundOK(True, p, q, c1 * c2, c3 * c4, math.gcd(q, nsqrt(c3 * c4)) ** 2,
                nsqrt(c3 * c4) ** 2 * (c1 * c2) ** 2):
-        return True
+        return True, 0
+    X, Y = quadKXY(q, c1, c2, c3, c4)
     Bb, Bg = quadKBoxB(q, lam, c1, c2, c3, c4), quadKBoxG(q, lam, c1, c2, c3, c4)
-    return Bb * Bg <= 65536 and smallCheck(q, lam, c1, c2, c3, c4, s, Bb, Bg)
+    B = Bb * Bg
+    hyp = X + Y <= lim and (lim < B or 12 * (X + Y) <= B)
+    if hyp and hypCheck(q, lam, c1, c2, c3, c4, s, X, Y):
+        return True, hypPairs(X, Y)
+    pairs = (hypPairs(X, Y) if hyp else 0) + B
+    return B <= lim and smallCheck(q, lam, c1, c2, c3, c4, s, Bb, Bg), pairs
+
+
+def quadKOK(p, q, lam, c1, c2, c3, c4, s):
+    return quadKOKL(65536, p, q, lam, c1, c2, c3, c4, s)[0]
 
 
 def torsionOK1(p, q, lam, c1, c2, c3, c4, s):

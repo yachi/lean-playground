@@ -71,7 +71,7 @@ This is the descent of `FiberTwoOne` with `4, 5` replaced by `p, q`.
 * `not_isSol_of_casesOK` — the descent, given `CasesOK p q D`.
 * `not_isSol` — the descent for `D = a²`, given a certificate `Covered p q a`.
 * `not_isSolD` — the descent for any `D`, given a certificate `CoveredD p q D`.
-* `torsionOK_sound` — the three torsion families give a smaller solution.
+* `torsionOKL_sound` — the three torsion families give a smaller solution.
 * `not_isSquare_sq_add_sq_and_sq_add_sq`, `not_isSquare_sq_add_sq_and_sq_add_sqD` — the same
   over `ℚ`.
 -/
@@ -664,9 +664,9 @@ theorem ne_zero_of_sq_eq {x y : ℤ} (h : x ^ 2 = y) (hy : 0 < y) : x ≠ 0 := b
   simp at h
   omega
 
-/-- **Soundness of `torsionOK1`.** Each of the three families gives a smaller solution. -/
-theorem torsionOK1_sound {p q lam c1 c2 c3 c4 σ : ℕ}
-    (h : torsionOK1 p q lam c1 c2 c3 c4 σ = true) (hp : 0 < p) (hpq : p < q) (hlam : 0 < lam)
+/-- **Soundness of `torsionOK1L`.** Each of the three families gives a smaller solution. -/
+theorem torsionOK1L_sound {lim p q lam c1 c2 c3 c4 σ : ℕ}
+    (h : torsionOK1L lim p q lam c1 c2 c3 c4 σ = true) (hp : 0 < p) (hpq : p < q) (hlam : 0 < lam)
     (hσ : 0 < σ) (hc1 : 0 < c1) (hc2 : 0 < c2) (hc3 : 0 < c3) (hc4 : 0 < c4) {α β γ δ e : ℤ}
     (hrel : (lam : ℤ) * (c1 * c2) = p * (c3 * c4))
     (E1 : (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
@@ -692,7 +692,7 @@ theorem torsionOK1_sound {p q lam c1 c2 c3 c4 σ : ℕ}
     fun hb hX hle hlt ↦ boundOK_sound hb hX (Nat.mul_pos hc1 hc2) (Nat.mul_pos hc3 hc4) he
       (by push_cast; exact le_of_eq_of_le (by ring) B1)
       (by push_cast; exact le_of_eq_of_le (by ring) B2) B3 hle hlt
-  simp only [torsionOK1, Bool.or_eq_true] at h
+  simp only [torsionOK1L, Bool.or_eq_true] at h
   rcases h with (h | h) | h
   · -- family L
     simp only [linOK, Bool.and_eq_true] at h
@@ -764,7 +764,7 @@ theorem torsionOK1_sound {p q lam c1 c2 c3 c4 σ : ℕ}
     · push_cast [Nat.cast_sub hpq.le]
       exact hlt
   · -- family QK
-    simp only [quadKOK, Bool.and_eq_true, Bool.or_eq_true] at h
+    simp only [quadKOKL, withNat_eq, Bool.and_eq_true, Bool.or_eq_true] at h
     obtain ⟨⟨⟨h1, h2⟩, h3⟩, hb⟩ := h
     have hwd := natCast_sqrt_sq h1
     have hwn := natCast_sqrt_sq h2
@@ -784,7 +784,6 @@ theorem torsionOK1_sound {p q lam c1 c2 c3 c4 σ : ℕ}
     · exact fin hb (pow_pos hF 2) (by push_cast; exact hlt.le) fun _ ↦ by push_cast; exact hlt
     -- the small box of QK
     simp only [decide_eq_true_eq] at hb
-    obtain ⟨-, hb⟩ := hb
     have hγδ : γ.natAbs ≤ (γ * δ).natAbs := by
       rw [Int.natAbs_mul]
       exact Nat.le_mul_of_pos_right _ (Int.natAbs_pos.mpr hδ)
@@ -834,6 +833,8 @@ theorem torsionOK1_sound {p q lam c1 c2 c3 c4 σ : ℕ}
       exfalso
       rw [not_and_or] at hbig
       simp only [not_lt] at hbig
+      rcases hb with ⟨⟨-, -⟩, hb⟩ | ⟨-, hb⟩
+      · exact hypCheck_sound hb hσ hlam hc1 hc2 E1 E2 hne hα hβ hγ hδ hbig
       rcases hbig with hg | ha
       · refine smallCheck_sound hb hσ E1 E2 hne hα hβ hγ hδ ?_ ?_
         · unfold quadKBoxβ
@@ -860,10 +861,10 @@ theorem torsionOK1_sound {p q lam c1 c2 c3 c4 σ : ℕ}
           calc γ.natAbs * γ.natAbs * (lam * c2 ^ 2) = lam * c2 ^ 2 * γ.natAbs ^ 2 := by ring
             _ ≤ _ := e2.le.trans this
 
-/-- **Soundness of `torsionOK`**: `torsionOK1_sound`, possibly after the symmetry
+/-- **Soundness of `torsionOKL`**: `torsionOK1L_sound`, possibly after the symmetry
 `(α, β, γ, δ, c₁, c₂, c₃, c₄) ↦ (δ, γ, β, α, c₂, c₁, c₄, c₃)`. -/
-theorem torsionOK_sound {p q lam c1 c2 c3 c4 σ : ℕ}
-    (h : torsionOK p q lam c1 c2 c3 c4 σ = true) (hp : 0 < p) (hpq : p < q) (hlam : 0 < lam)
+theorem torsionOKL_sound {lim p q lam c1 c2 c3 c4 σ : ℕ}
+    (h : torsionOKL lim p q lam c1 c2 c3 c4 σ = true) (hp : 0 < p) (hpq : p < q) (hlam : 0 < lam)
     (hσ : 0 < σ) (hc1 : 0 < c1) (hc2 : 0 < c2) (hc3 : 0 < c3) (hc4 : 0 < c4) {α β γ δ e : ℤ}
     (hrel : (lam : ℤ) * (c1 * c2) = p * (c3 * c4))
     (E1 : (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
@@ -875,12 +876,100 @@ theorem torsionOK_sound {p q lam c1 c2 c3 c4 σ : ℕ}
     (B3 : (α * β * (γ * δ)) ^ 2 ≤ e ^ 2) :
     ∃ M' e' r' s', IsSol p q M' e' r' s' ∧ e' ^ 2 < e ^ 2 := by
   rcases Bool.or_eq_true _ _ ▸ h with h | h
-  · exact torsionOK1_sound h hp hpq hlam hσ hc1 hc2 hc3 hc4 hrel E1 E2 hne hα hβ hγ hδ he
+  · exact torsionOK1L_sound h hp hpq hlam hσ hc1 hc2 hc3 hc4 hrel E1 E2 hne hα hβ hγ hδ he
       B1 B2 B3
-  · exact torsionOK1_sound (α := δ) (β := γ) (γ := β) (δ := α) h hp hpq hlam hσ hc2 hc1 hc4 hc3
+  · exact torsionOK1L_sound (α := δ) (β := γ) (γ := β) (δ := α) h hp hpq hlam hσ hc2 hc1 hc4 hc3
       (by linear_combination hrel) E2 E1 (fun h0 ↦ hne (by linear_combination -h0)) hδ hγ hβ
       hα he (le_of_eq_of_le (by ring) B1) (le_of_eq_of_le (by ring) B2)
       (le_of_eq_of_le (by ring) B3)
+
+/-! ### The class lemma -/
+
+/-- An integer that is the square of a rational is the square of an integer. -/
+theorem exists_sq_of_rat {z : ℤ} {w : ℚ} (h : (z : ℚ) = w ^ 2) : ∃ W : ℤ, z = W ^ 2 := by
+  obtain ⟨W, hW⟩ := Rat.isSquare_intCast_iff.mp ⟨w, by rw [h, sq]⟩
+  exact ⟨W, by rw [hW, sq]⟩
+
+/-- **The class lemma.** The half-point of a tuple has `x = qλ (c₁α / (c₄δ))²`,
+`x + p² = Dλσ (c₁β / (σδ))²` and `x + q² = Dqσ (c₃γ / (σδ))²`. If `a₀ qλ` and `b₀ Dλσ` are
+squares, then `x = a₀ (r/s)²` with `r, s` coprime, and `b₀ (a₀ r² + p² s²)` and
+`a₀ b₀ (a₀ r² + q² s²)` are squares, which `classCheck` rules out. -/
+theorem classKill_sound {p q D lam c1 c2 c3 c4 σ : ℕ} (hk : ClassKill p q D lam σ)
+    {α β γ δ : ℤ} (haZ : (q : ℤ) ^ 2 - p ^ 2 = D) (hrel : (lam : ℤ) * (c1 * c2) = p * (c3 * c4))
+    (E1 : (q : ℤ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2)
+    (E2 : (q : ℤ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2)
+    (hσ : 0 < σ) (hlam : 0 < lam) (hc4 : 0 < c4) (hδ : δ ≠ 0) : False := by
+  obtain ⟨a0, b0, N, l, k, hl, hN, hk, h⟩ := hk
+  simp only [classKillOK, Bool.and_eq_true, decide_eq_true_eq] at h
+  obtain ⟨⟨⟨⟨ha0, hb0⟩, hA⟩, hB⟩, hc⟩ := h
+  have hA' := natCast_sqrt_sq hA
+  have hB' := natCast_sqrt_sq hB
+  set A := Nat.sqrt (q * lam * a0)
+  set B := Nat.sqrt (D * lam * σ * b0)
+  push_cast at hA' hB'
+  have hA'' : (A : ℚ) ^ 2 = q * lam * a0 := by exact_mod_cast hA'
+  have hB'' : (B : ℚ) ^ 2 = D * lam * σ * b0 := by exact_mod_cast hB'
+  have hσQ : (σ : ℚ) ≠ 0 := by exact_mod_cast hσ.ne'
+  have hlQ : (lam : ℚ) ≠ 0 := by exact_mod_cast hlam.ne'
+  have ha0Q : (a0 : ℚ) ≠ 0 := by exact_mod_cast ha0.ne'
+  have hc4Q : (c4 : ℚ) ≠ 0 := by exact_mod_cast hc4.ne'
+  have hδQ : (δ : ℚ) ≠ 0 := by exact_mod_cast hδ
+  have E1' : (q : ℚ) * c3 ^ 2 * γ ^ 2 - lam * c1 ^ 2 * β ^ 2 = σ * δ ^ 2 := by exact_mod_cast E1
+  have E2' : (q : ℚ) * c4 ^ 2 * β ^ 2 - lam * c2 ^ 2 * γ ^ 2 = σ * α ^ 2 := by exact_mod_cast E2
+  have hrel' : (lam : ℚ) * (c1 * c2) = p * (c3 * c4) := by exact_mod_cast hrel
+  have haZ' : (q : ℚ) ^ 2 - p ^ 2 = D := by exact_mod_cast haZ
+  -- the point
+  set x : ℚ := q * lam * c1 ^ 2 * α ^ 2 / (c4 ^ 2 * δ ^ 2)
+  set u : ℚ := A * c1 * α / (a0 * c4 * δ)
+  have hx : x = a0 * u ^ 2 := by
+    simp only [x, u]
+    field_simp
+    rw [hA'']
+    ring
+  have P1 : (σ : ℚ) * (q * lam * c1 ^ 2 * α ^ 2 + p ^ 2 * c4 ^ 2 * δ ^ 2) =
+      D * lam * c1 ^ 2 * c4 ^ 2 * β ^ 2 := by
+    linear_combination (lam * c1 ^ 2 * c4 ^ 2 * β ^ 2 : ℚ) * haZ' -
+      (q * γ ^ 2 * (p * c3 * c4 + lam * c1 * c2) : ℚ) * hrel' - (q * lam * c1 ^ 2 : ℚ) * E2' -
+      (p ^ 2 * c4 ^ 2 : ℚ) * E1'
+  have P2 : (σ : ℚ) * (q * lam * c1 ^ 2 * α ^ 2 + q ^ 2 * c4 ^ 2 * δ ^ 2) =
+      D * q * c3 ^ 2 * c4 ^ 2 * γ ^ 2 := by
+    linear_combination (q * γ ^ 2 * c3 ^ 2 * c4 ^ 2 : ℚ) * haZ' -
+      (q * γ ^ 2 * (p * c3 * c4 + lam * c1 * c2) : ℚ) * hrel' - (q * lam * c1 ^ 2 : ℚ) * E2' -
+      (q ^ 2 * c4 ^ 2 : ℚ) * E1'
+  have hxp : x + p ^ 2 = D * lam * σ * (c1 * β / (σ * δ)) ^ 2 := by
+    simp only [x]
+    field_simp
+    linear_combination P1
+  have hxq : x + q ^ 2 = D * q * σ * (c3 * γ / (σ * δ)) ^ 2 := by
+    simp only [x]
+    field_simp
+    linear_combination P2
+  -- `x = a₀ (r/s)²` in lowest terms
+  set r := u.num
+  set s := u.den
+  have hs0 : (s : ℚ) ≠ 0 := by exact_mod_cast u.den_nz
+  have hxs : (a0 : ℚ) * (r : ℚ) ^ 2 = x * (s : ℚ) ^ 2 := by
+    rw [hx, ← Rat.num_div_den u]
+    field_simp
+    rfl
+  obtain ⟨W1, hW1⟩ := exists_sq_of_rat (z := b0 * (a0 * r ^ 2 + (p ^ 2 : ℕ) * s ^ 2))
+    (w := s * B * c1 * β / (σ * δ)) (by
+      push_cast
+      rw [hxs, show x * (s : ℚ) ^ 2 + p ^ 2 * s ^ 2 = s ^ 2 * (x + p ^ 2) by ring, hxp]
+      linear_combination (-(s : ℚ) ^ 2 * (c1 * β / (σ * δ)) ^ 2) * hB'')
+  obtain ⟨W2, hW2⟩ := exists_sq_of_rat (z := (a0 * b0 : ℕ) * (a0 * r ^ 2 + (q ^ 2 : ℕ) * s ^ 2))
+    (w := s * A * B * c3 * γ / (lam * σ * δ)) (by
+      have hw : ((s : ℚ) * A * B * c3 * γ / (lam * σ * δ)) ^ 2 =
+          (s : ℚ) ^ 2 * (A ^ 2 * B ^ 2) * c3 ^ 2 * γ ^ 2 / (lam * σ * δ) ^ 2 := by ring
+      push_cast
+      rw [hw, hA'', hB'', hxs, show x * (s : ℚ) ^ 2 + q ^ 2 * s ^ 2 = s ^ 2 * (x + q ^ 2) by ring,
+        hxq]
+      field_simp)
+  have hrs : IsCoprime r (s : ℤ) :=
+    Int.isCoprime_iff_gcd_eq_one.mpr (by simpa [r, s, Int.gcd] using u.reduced)
+  exact classCheck_sound (a := a0) (b := b0) (c := a0 * b0) (P := p ^ 2) (Q := q ^ 2)
+    (W1 := W1) (W2 := W2) hl hN hk hc hrs (by push_cast at hW1 ⊢; linear_combination hW1)
+    (by push_cast at hW2 ⊢; linear_combination hW2)
 
 /-! ### The descent -/
 
@@ -991,13 +1080,16 @@ theorem exists_smaller {p q D : ℕ} (hp : 0 < p) (hpq : p < q)
     exact Int.natAbs_le_iff_sq_le.mp (Int.natAbs_le_of_dvd_ne_zero hdiv h.2.1)
   have hLd' : L ∣ p * q := by exact_mod_cast hLd
   rcases hchk hL hLd' hc12 hc12' hc34 hc34' hσNd with
-    hT | ⟨N, l, hN, hl, hlN, hT⟩
-  · exact torsionOK_sound hT hp hpq hL hσN (Nat.pos_of_ne_zero (by exact_mod_cast hc1))
+    ⟨lim, hT⟩ | ⟨N, l, hN, hl, hlN, hT⟩ | hK
+  · exact torsionOKL_sound hT hp hpq hL hσN (Nat.pos_of_ne_zero (by exact_mod_cast hc1))
       (Nat.pos_of_ne_zero (by exact_mod_cast hc2)) (Nat.pos_of_ne_zero (by exact_mod_cast hc3))
       (Nat.pos_of_ne_zero (by exact_mod_cast hc4)) hrel2 E1 E2 hne' hα hβ hγ hδ h.2.1 B1
       hjbound B3
   · exact (tupleOK_sound (by simpa using ⟨hN, hl, hlN⟩) hT hσN hab hag had hbg hbd hgd h1g h1d
       h2a h2b h3b h3d h4a h4g E1 E2).elim
+  · exact (classKill_sound hK haZ hrel2 E1 E2 hσN (by exact_mod_cast hL)
+      (by have := Nat.pos_of_ne_zero (by exact_mod_cast hc4 : c4 ≠ 0); exact_mod_cast this)
+      hδ).elim
 
 /-- **The descent.** If every case is covered (`CasesOK p q D` with `D = q² − p²`), there are no
 integers `M, e ≠ 0` with `M² + p² e²` and `M² + q² e²` both squares. -/
