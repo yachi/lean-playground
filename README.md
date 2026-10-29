@@ -357,6 +357,25 @@ factors through the 24 octahedral Möbius maps, `j(ξ)` is real only on the hype
 | Fermat: `1` (and every `q²`) is not congruent, so every rational point of `E_1` (and `E_{q²}`) is `2`-torsion; `E_1(ℚ)` has no point of infinite order | `add_self_eq_zero_one`, `add_self_eq_zero_of_sq`, `not_nonTors_one` |
 | A perfect cuboid makes `abcg/2` and its squarefree part `N` congruent, and `E_N` has a point outside `E_N[2]`, hence of infinite order | `IsPerfectCuboid.isCongruent`, `IsPerfectCuboid.exists_nonTors` |
 
+`Genocchi.lean` proves Genocchi's theorems (1855) by Fermat's descent: a prime `p ≡ 3 (mod 8)` is
+not congruent, and neither is `2p` for a prime `p ≡ 5 (mod 8)`. A primitive triangle of area
+`p w²` gives `rs(r − s)(r + s) = p w²` with four pairwise coprime factors; `p` sits in one of them,
+three placements die because `−1`, `2` or `−2` is not a square mod `p` (or mod `8`), and the
+fourth halves to a smaller triangle. `CongruentCharacters.lean` turns every *body cuboid* (edge
+`x`, face diagonals `u, v` through `x`, space diagonal `g`) into a congruent number through the
+identity `(s − t)(g + v)(x + u) = y²(s + t)`, `s = g + u`, `t = x + v`. A perfect cuboid is a body
+cuboid in three ways, which gives three congruent numbers over `ℚ` (the `j = 1728` classes of
+`BeauvilleCharacters.lean`), and Genocchi excludes square classes of each.
+
+| Result | Lean |
+|---|---|
+| Genocchi: a prime `p ≡ 3 (mod 8)` is not congruent; `2p` is not congruent for a prime `p ≡ 5 (mod 8)` | `FermatTriangle.not_isCongruent_prime_three_mod_eight`, `FermatTriangle.not_isCongruent_two_mul_prime_five_mod_eight` |
+| A body cuboid makes `(x+u)(x+v)(g+u)(g+v)` congruent | `isCongruent_body` |
+| A perfect cuboid makes `(a+d)(a+e)(g+d)(g+e)`, `(b+d)(b+f)(g+d)(g+f)`, `(c+e)(c+f)(g+e)(g+f)` congruent | `IsPerfectCuboid.isCongruent_ed`, `_fd`, `_fe` |
+| None of these is `p m²` (`p ≡ 3 mod 8`) or `2p m²` (`p ≡ 5 mod 8`) | `IsPerfectCuboid.diag_prod_ed_ne_prime_mul_sq`, `…_ne_two_mul_prime_mul_sq` (and `fd`, `fe`) |
+| If `a` is odd, `(a,c)(b,e)(a,b)(c,d)` is never `p m²` with `p ≡ 3 (mod 8)` | `IsPerfectCuboid.gcd_prod_ed_ne_prime_mul_sq` |
+| The squarefree part `N` of `abcg/2` is neither such a `p` nor such a `2p` | `IsPerfectCuboid.squarefree_part_ne` |
+
 The one hypothesis left in `not_rankOne_of_primitiveDivisorStep` is Ingram's primitive-divisor
 theorem, which needs canonical heights; Mathlib does not have them yet.
 

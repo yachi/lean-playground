@@ -111,4 +111,6 @@ import LeanPlayground.CoverFree.Stehlik
 import LeanPlayground.CoverFree.Main
 import LeanPlayground.CoverFree.AffinePlane
 import LeanPlayground.PerfectCuboid.CongruentNumber
+import LeanPlayground.PerfectCuboid.Genocchi
+import LeanPlayground.PerfectCuboid.CongruentCharacters
 import LeanPlayground.FriendshipParadox.Basic
