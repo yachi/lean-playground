@@ -98,6 +98,7 @@ import LeanPlayground.PerfectCuboid.TwistedCuboid
 import LeanPlayground.PerfectCuboid.TwistClass
 import LeanPlayground.PerfectCuboid.GaussianQuartic
 import LeanPlayground.PerfectCuboid.BeauvilleLambda
+import LeanPlayground.PerfectCuboid.BeauvilleCharacters
 import LeanPlayground.PerfectCuboid.DivPolyScale
 import LeanPlayground.PerfectCuboid.RankOneReduction
 import LeanPlayground.PerfectCuboid.DivPolyFormula

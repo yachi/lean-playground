@@ -320,6 +320,22 @@ point, which is impossible for a cuboid.
 | For a perfect cuboid, `(a+g)(f+b)(e+a)(g+e)(d+a)(g+d)` is never `2^k m²` | `IsPerfectCuboid.diag_prod_ne_two_pow_mul_sq` |
 | No perfect cuboid has Beauville invariant `λ = 1`: the product of the six triple gcds `(a,b)(a,c)(b,c)(a,f)(b,e)(c,d)` is never `2^k m²` | `IsPerfectCuboid.gcd_prod_ne_two_pow_mul_sq` |
 
+`BeauvilleCharacters.lean` rules out three more square classes. The same identities give the
+square classes of `2ξ`, `ξ² − 1`, `ξ² + 1` (`ξ = p/q`), which twist the three `j = 1728` factors of
+the curve `X(8)` the cuboid lies on (Stoll–Testa §4). When one of those twists is trivial, the
+point lies on `y² = x³ − x` or `y² = x³ + x` over `ℚ(i)`, which have only torsion points. With
+`μ₁, μ₂, μ₃` the odd squarefree parts of the gcd products of the two triples through `f`, `e`, `d`,
+this says `μ₁, μ₂, μ₃` are pairwise distinct. The first is the global, fiber-free form of
+Cipollini's "infinity class" (arXiv:2609.14526 §2).
+
+| Result | Lean |
+|---|---|
+| `X⁴ + Y⁴ = uw²` (`u` a unit) forces `X = 0`, `Y = 0`, `w = 0` or `X⁴ = Y⁴` (`1 + 1 = i(1 − i)²`) | `GaussianQuartic.quartic_plus` |
+| `pq(p² − q²) = uV²` (`u` a unit) forces `p = 0`, `q = 0` or `p⁴ = q⁴` | `GaussianQuartic.cn_gauss` |
+| `μ₂ ≠ μ₃`: `(a,c)(b,e)(a,b)(c,d)` is never `2^k m²` | `IsPerfectCuboid.gcd_prod_ed_ne_two_pow_mul_sq` |
+| `μ₁ ≠ μ₂`: `(a,f)(b,c)(a,c)(b,e)` is never `2^k m²` | `IsPerfectCuboid.gcd_prod_fe_ne_two_pow_mul_sq` |
+| `μ₁ ≠ μ₃`: `(a,f)(b,c)(a,b)(c,d)` is never `2^k m²` | `IsPerfectCuboid.gcd_prod_fd_ne_two_pow_mul_sq` |
+
 `CongruentNumber.lean` states the correspondence in the language of congruent numbers: `N` is
 *congruent* if it is the area of a right triangle with rational sides.
 

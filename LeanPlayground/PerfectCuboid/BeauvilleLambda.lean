@@ -95,6 +95,25 @@ theorem sq_or_ι_sq {P W N : G} {n : ℕ} (hN : N ≠ 0) (h : P * (2 ^ n * N ^ 2
     refine ⟨V, Or.inr (mul_left_cancel₀ (pow_ne_zero 2 ω_ne_zero) ?_)⟩
     linear_combination P * ω_sq + ι * hV₀
 
+/-- The triple `(b, c, f)`: `q · 2(f+b) = (b + f − ic)²` with `q = b − ic`. -/
+theorem hypleg_f {b c f : G} (hf : f ^ 2 = b ^ 2 + c ^ 2) :
+    (b - ι * c) * (2 * (f + b)) = (b + f - ι * c) ^ 2 := by
+  linear_combination (-1) * hf + (-c ^ 2) * ι_sq
+
+/-- The triples `(a, c, e)` and `(b, e, g)`: `(p² − q²) · 2(e+a)(g+e)` is twice a square. -/
+theorem hypleg_e {a b c e g : G} (he : e ^ 2 = a ^ 2 + c ^ 2) (hg : g ^ 2 = a ^ 2 + b ^ 2 + c ^ 2) :
+    ((a + g) ^ 2 - (b - ι * c) ^ 2) * (2 * (e + a) * (g + e)) =
+      2 * (a ^ 2 + a * g + c ^ 2 + ι * b * c + (a + g) * e) ^ 2 := by
+  linear_combination (-2 * (b - c * ι) ^ 2) * he + (2 * (a + e) * (a + g)) * hg +
+    (-2 * c ^ 2 * (a ^ 2 + a * e + a * g + b ^ 2 + c ^ 2 + e * g)) * ι_sq
+
+/-- The triples `(a, b, d)` and `(c, d, g)`: `(p² + q²) · 2(d+a)(g+d)` is twice a square. -/
+theorem hypleg_d {a b c d g : G} (hd : d ^ 2 = a ^ 2 + b ^ 2) (hg : g ^ 2 = a ^ 2 + b ^ 2 + c ^ 2) :
+    ((a + g) ^ 2 + (b - ι * c) ^ 2) * (2 * (d + a) * (g + d)) =
+      2 * (a ^ 2 + a * g + b ^ 2 - ι * b * c + (a + g) * d) ^ 2 := by
+  linear_combination (2 * (b - c * ι) ^ 2) * hd + (2 * (a + d) * (a + g)) * hg +
+    (2 * c ^ 2 * (a + d) * (a + g)) * ι_sq
+
 /-- The key identity: with `p = a + g`, `q = b - i c`,
 `p q (p⁴ - q⁴) · 8 (g+a)(f+b)(e+a)(g+e)(d+a)(g+d)` is a square in `ℤ[i]`. -/
 theorem cuboid_identity {a b c d e f g : G} (hd : d ^ 2 = a ^ 2 + b ^ 2)
@@ -103,16 +122,9 @@ theorem cuboid_identity {a b c d e f g : G} (hd : d ^ 2 = a ^ 2 + b ^ 2)
         (8 * ((a + g) * (f + b) * (e + a) * (g + e) * (d + a) * (g + d))) =
       (2 * (a + g) * (b + f - ι * c) * (a ^ 2 + a * g + c ^ 2 + ι * b * c + (a + g) * e) *
         (a ^ 2 + a * g + b ^ 2 - ι * b * c + (a + g) * d)) ^ 2 := by
-  have J1 : (b - ι * c) * (2 * (f + b)) = (b + f - ι * c) ^ 2 := by
-    linear_combination (-1) * hf + (-c ^ 2) * ι_sq
-  have J2 : ((a + g) ^ 2 - (b - ι * c) ^ 2) * (2 * (e + a) * (g + e)) =
-      2 * (a ^ 2 + a * g + c ^ 2 + ι * b * c + (a + g) * e) ^ 2 := by
-    linear_combination (-2 * (b - c * ι) ^ 2) * he + (2 * (a + e) * (a + g)) * hg +
-      (-2 * c ^ 2 * (a ^ 2 + a * e + a * g + b ^ 2 + c ^ 2 + e * g)) * ι_sq
-  have J3 : ((a + g) ^ 2 + (b - ι * c) ^ 2) * (2 * (d + a) * (g + d)) =
-      2 * (a ^ 2 + a * g + b ^ 2 - ι * b * c + (a + g) * d) ^ 2 := by
-    linear_combination (2 * (b - c * ι) ^ 2) * hd + (2 * (a + d) * (a + g)) * hg +
-      (2 * c ^ 2 * (a + d) * (a + g)) * ι_sq
+  have J1 := hypleg_f (c := c) hf
+  have J2 := hypleg_e (b := b) he hg
+  have J3 := hypleg_d (c := c) hd hg
   calc _ = ((a + g) * (a + g)) * ((b - ι * c) * (2 * (f + b))) *
         ((((a + g) ^ 2 - (b - ι * c) ^ 2) * (2 * (e + a) * (g + e)))) *
         ((((a + g) ^ 2 + (b - ι * c) ^ 2) * (2 * (d + a) * (g + d)))) := by
