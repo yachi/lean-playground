@@ -336,6 +336,16 @@ Cipollini's "infinity class" (arXiv:2609.14526 §2).
 | `μ₁ ≠ μ₂`: `(a,f)(b,c)(a,c)(b,e)` is never `2^k m²` | `IsPerfectCuboid.gcd_prod_fe_ne_two_pow_mul_sq` |
 | `μ₁ ≠ μ₃`: `(a,f)(b,c)(a,b)(c,d)` is never `2^k m²` | `IsPerfectCuboid.gcd_prod_fd_ne_two_pow_mul_sq` |
 
+`OctahedralJ.lean` looks at the same point `ξ = (a+g)/(b − ic)` as a point of `X(4) = ℙ¹`, which
+carries a Legendre curve `E_ξ` with `j(ξ) = 16(ξ⁸ + 14ξ⁴ + 1)³/(ξ⁴(ξ⁴ − 1)⁴)`. Since `j(u) − j(v)`
+factors through the 24 octahedral Möbius maps, `j(ξ)` is real only on the hyperplanes `c = 0`,
+`b = 0`, `a = 0`, `a = b`, `b = c`, `a = c`, which carry only degenerate cuboids.
+
+| Result | Lean |
+|---|---|
+| `N(u)D(v) − N(v)D(u) = (u − v)·S(u + v, uv)`, `S` a product of 12 explicit factors | `octJ_identity`, `octS` |
+| For a perfect cuboid, `j((a+g)/(b − ic))` is not real (so `E_ξ` is not defined over `ℚ`) | `IsPerfectCuboid.octJ_im_ne_zero` |
+
 `CongruentNumber.lean` states the correspondence in the language of congruent numbers: `N` is
 *congruent* if it is the area of a right triangle with rational sides.
 
