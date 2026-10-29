@@ -130,7 +130,11 @@ theorem sq_ne_two_mul_sq {d a : ℕ} (ha : 0 < a) : d ^ 2 ≠ 2 * a ^ 2 := by
 
 /-- **The `j`-invariant of a perfect cuboid is not real.** With `ξ = (a + g)/(b − i c)`, the
 octahedral `j(ξ)` (the `j`-invariant of the Legendre curve attached to the cuboid by the
-Stoll–Testa isomorphism) has nonzero imaginary part. -/
+Stoll–Testa isomorphism) has nonzero imaginary part.
+
+Scope: the proof uses only positivity, `d, e, f ∈ ℕ` (to rule out `a = b`, `b = c`, `a = c` by
+irrationality of `√2`) and `g` as the real root, so it holds for every box with distinct positive
+edges, not only for perfect cuboids. -/
 theorem IsPerfectCuboid.octJ_im_ne_zero {a b c : ℕ} (h : IsPerfectCuboid a b c) {d e f g : ℕ}
     (hd : d ^ 2 = a ^ 2 + b ^ 2) (he : e ^ 2 = a ^ 2 + c ^ 2) (hf : f ^ 2 = b ^ 2 + c ^ 2)
     (hg : g ^ 2 = a ^ 2 + b ^ 2 + c ^ 2) :

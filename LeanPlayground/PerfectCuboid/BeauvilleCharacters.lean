@@ -22,8 +22,8 @@ degenerate cuboids.
   or `X⁴ = Y⁴`. The case `u = ±i` has the solution `(1, 1, 1 − i)`, so `X⁴ = Y⁴` cannot be
   dropped. Proof: `(X⁴ − Y⁴)⁴ − (2XYw)⁴ = (X⁸ + 6X⁴Y⁴ + Y⁸)²` reduces it to `quartic_one`.
 * `GaussianQuartic.cn_gauss`: `p q (p² − q²) = u V²` forces `p = 0`, `q = 0` or `p⁴ = q⁴`. That
-  is, `1` and `i` are not congruent numbers over `ℚ(i)`: `y² = x³ − x` and `y² = x³ − ix` have
-  only torsion points over `ℚ(i)`.
+  is, `1` and `i` are not congruent numbers over `ℚ(i)`: `y² = x³ − x` and its twist by `i`,
+  `y² = x³ + x`, have only torsion points over `ℚ(i)`.
 
 Writing `μ₁, μ₂, μ₃` for the odd squarefree parts of the gcd products of the two Pythagorean
 triples through `f`, `e`, `d`, the cuboid theorems say `μ₁, μ₂, μ₃` are pairwise distinct:
@@ -38,6 +38,12 @@ triples through `f`, `e`, `d`, the cuboid theorems say `μ₁, μ₂, μ₃` are
 
 Like `λ ≠ 1`, each removes one square class of perfect cuboids, not all of them. See
 `fable-new-frameworks-round6.md` (round 6, framework F2).
+
+Scope: each of the three proofs uses only positivity and three of the four diagonal equations
+(`identity_ed` needs `d, e, g`; `identity_fe` needs `e, f, g`; `identity_fd` needs `d, f, g`). So
+each inequality holds for every *body cuboid* with the corresponding two face diagonals and the
+space diagonal integral, and body cuboids exist in infinite families. The same holds for the
+congruent-number form in `CongruentCharacters.lean`.
 -/
 
 @[expose] public section
