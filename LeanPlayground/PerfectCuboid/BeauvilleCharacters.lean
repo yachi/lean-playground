@@ -89,7 +89,7 @@ theorem quartic_plus {u X Y w : G} (hu : IsUnit u) (h : X ^ 4 + Y ^ 4 = u * w ^ 
   · exact quartic_plus_i hX hY hιw hXY (by linear_combination h - ι * w ^ 2 * ι_sq)
 
 /-- `p q (p² − q²) = u V²` (`u` a unit) forces `p = 0`, `q = 0` or `p⁴ = q⁴`: the congruent-number
-curves `y² = x³ − x` and `y² = x³ − i x` have only their torsion points over `ℚ(i)`. -/
+curves `y² = x³ − x` and `y² = x³ + x` have only their torsion points over `ℚ(i)`. -/
 theorem cn_gauss {u p q V : G} (hu : IsUnit u) (h : p * q * (p ^ 2 - q ^ 2) = u * V ^ 2) :
     p = 0 ∨ q = 0 ∨ p ^ 4 = q ^ 4 := by
   by_cases hq : q = 0
@@ -278,7 +278,8 @@ theorem core_fd {a b c d f g : ℕ} (ha : 0 < a) (hb : 0 < b) (hd : d ^ 2 = a ^ 
 
 /-- **`μ₂ ≠ μ₃`.** For a perfect cuboid, `(a,c)(b,e)(a,b)(c,d)` — the gcds of the triples
 `(a, c, e)`, `(b, e, g)`, `(a, b, d)`, `(c, d, g)` — is never `2^k m²`. This is the global form
-of Cipollini's infinity class: the point `ξ` would lie on `y² = x³ − x` over `ℚ(i)`. -/
+of Cipollini's infinity class: the point `ξ` would lie on `y² = x³ − x` over `ℚ(i)`.
+The proof uses only two face diagonals and `g`, so it holds for every body cuboid. -/
 theorem IsPerfectCuboid.gcd_prod_ed_ne_two_pow_mul_sq {a b c : ℕ} (h : IsPerfectCuboid a b c)
     {d e g : ℕ} (hd : d ^ 2 = a ^ 2 + b ^ 2) (he : e ^ 2 = a ^ 2 + c ^ 2)
     (hg : g ^ 2 = a ^ 2 + b ^ 2 + c ^ 2) (k m : ℕ) :
@@ -310,7 +311,8 @@ theorem IsPerfectCuboid.gcd_prod_ed_ne_two_pow_mul_sq {a b c : ℕ} (h : IsPerfe
     _ = _ := by rw [h₃, h₄, h₅, h₆]; ring
 
 /-- **`μ₁ ≠ μ₂`.** For a perfect cuboid, `(a,f)(b,c)(a,c)(b,e)` — the gcds of the triples
-`(a, f, g)`, `(b, c, f)`, `(a, c, e)`, `(b, e, g)` — is never `2^k m²`. -/
+`(a, f, g)`, `(b, c, f)`, `(a, c, e)`, `(b, e, g)` — is never `2^k m²`.
+The proof uses only two face diagonals and `g`, so it holds for every body cuboid. -/
 theorem IsPerfectCuboid.gcd_prod_fe_ne_two_pow_mul_sq {a b c : ℕ} (h : IsPerfectCuboid a b c)
     {e f g : ℕ} (he : e ^ 2 = a ^ 2 + c ^ 2) (hf : f ^ 2 = b ^ 2 + c ^ 2)
     (hg : g ^ 2 = a ^ 2 + b ^ 2 + c ^ 2) (k m : ℕ) :
@@ -342,7 +344,8 @@ theorem IsPerfectCuboid.gcd_prod_fe_ne_two_pow_mul_sq {a b c : ℕ} (h : IsPerfe
     _ = _ := by rw [h₁, h₂, h₃, h₄]; ring
 
 /-- **`μ₁ ≠ μ₃`.** For a perfect cuboid, `(a,f)(b,c)(a,b)(c,d)` — the gcds of the triples
-`(a, f, g)`, `(b, c, f)`, `(a, b, d)`, `(c, d, g)` — is never `2^k m²`. -/
+`(a, f, g)`, `(b, c, f)`, `(a, b, d)`, `(c, d, g)` — is never `2^k m²`.
+The proof uses only two face diagonals and `g`, so it holds for every body cuboid. -/
 theorem IsPerfectCuboid.gcd_prod_fd_ne_two_pow_mul_sq {a b c : ℕ} (h : IsPerfectCuboid a b c)
     {d f g : ℕ} (hd : d ^ 2 = a ^ 2 + b ^ 2) (hf : f ^ 2 = b ^ 2 + c ^ 2)
     (hg : g ^ 2 = a ^ 2 + b ^ 2 + c ^ 2) (k m : ℕ) :
