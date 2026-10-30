@@ -113,4 +113,6 @@ import LeanPlayground.CoverFree.AffinePlane
 import LeanPlayground.PerfectCuboid.CongruentNumber
 import LeanPlayground.PerfectCuboid.Genocchi
 import LeanPlayground.PerfectCuboid.CongruentCharacters
+import LeanPlayground.PerfectCuboid.Saunderson
+import LeanPlayground.PerfectCuboid.SqrtTwoJacobi
 import LeanPlayground.FriendshipParadox.Basic
