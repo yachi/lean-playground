@@ -28,6 +28,33 @@ lake build
 
 ## Formalizations
 
+### Sums of element orders — `LeanPlayground/SumElementOrders/`
+
+For a finite group `G`, `ψ(G)` is the sum of the orders of its elements, and `ψ(n) = ψ(Cₙ)`.
+This proves the theorem of Amiri, Jafarian Amiri and Isaacs (*Sums of element orders in finite
+groups*, Comm. Algebra 37 (2009)) and Lemmas 1–3 of Péter P. Pálfy and Alex D. Simonyi, [*Finite
+groups with large sum of element orders compared to cyclic
+groups*](https://arxiv.org/abs/2610.27846) (arXiv, 2026-10). The paper's classification of groups
+with `ψ(G) ≥ ψ(Cₙ)/3` is not formalized.
+
+| Statement | Lean |
+|---|---|
+| `ψ(Cₙ) = ∑_{d ∣ n} d φ(d)` | `SumElementOrders.psi_eq_psiNat` |
+| `ψ` is multiplicative; `(p + 1) ψ(pᵉ) = p^{2e+1} + 1` | `psiNat_mul`, `succ_mul_psiNat_prime_pow` |
+| Lemma 1 (both identities) | `lemma1_one`, `lemma1_two` |
+| Estimate (1): `ψ(n) > n² ∏_{p ∣ n} p/(p + 1)` | `sq_mul_prod_lt` |
+| Amiri–Jafarian Amiri–Isaacs: `ψ(G) ≤ ψ(\|G\|)` | `psi_le` |
+| … with equality only for cyclic `G` | `psi_lt`, `psi_eq_iff` |
+| Lemma 2: `ψ(C_{p^{k-1}} × C_p) / ψ(pᵏ)` | `psi_prod`, `lemma2` |
+| Lemma 3: if `ψ'(G) ≥ 1/3`, then `c < p` or one of ten exceptions | `lemma3` |
+
+The main theorem is proved by strong induction on `|G|`. Let `q` be the largest prime divisor of
+`n`. If every element has `q · o(g) ≤ n`, then `q ψ(G) ≤ n² < q ψ(n)`. Otherwise some `⟨g⟩` has
+index `c < q`, and the Sylow `q`-subgroup `Q` of `⟨g⟩` is normal in `G`: the number of Sylow
+`q`-subgroups is `≡ 1 mod q` and divides `c`. For a cyclic normal `Q` of order coprime to its index,
+each coset has a representative `b` with `b^{o(bQ)} = 1`. Then `(bz)^{o(bQ)} ∈ ⟨z⟩` for `z ∈ Q`,
+so `ψ(G) ≤ ψ(Q) ψ(G/Q)` (`psi_le_mul`), and induction on `G/Q` finishes the proof.
+
 ### The strong Erdős–Frankl–Füredi cover-free conjecture — `LeanPlayground/CoverFree/`
 
 Yanan Hu and Leilei Zhang, [*A proof of the strong Erdős–Frankl–Füredi cover-free
