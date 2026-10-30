@@ -395,6 +395,19 @@ argument in some expositions misses `4 ∣ y`). `SqrtTwoJacobi.lean` is the symb
 | `ℓ = c₀² − 2c₁²` prime, `ℓ ≡ 7 (mod 8)`: `(c₀/ℓ) = (2/c₀)`, so `(c₀/ℓ) = 1 ↔ ℓ ≡ 15 (mod 16)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq` |
 | Same, `ℓ ≡ 1 (mod 8)`: `(c₀/ℓ) = (−2/c₀)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq_one_mod_eight` |
 
+`EulerSecondFamily.lean` covers Euler's family `a = 2mn(3m² − n²)(3n² − m²)`, `b = 8mn(m⁴ − n⁴)`,
+`c = (m² − n²)(m² − 4mn + n²)(m² + 4mn + n²)` (as listed in Knill's 2009 notes). Its space
+diagonal squared is `(m² + n²)²(m⁸ + 68m⁶n² − 122m⁴n⁴ + 68m²n⁶ + n⁸)`, and the octic is
+Pocklington's quartic at `(x, y) = (m² − n², 2mn)`. Indeed the family is Saunderson's brick for
+Euclid's triple, up to signs and edge order, so it is never perfect.
+
+| Result | Lean |
+|---|---|
+| The family is Saunderson's for `(m² − n², 2mn, m² + n²)`; `(2, 1)` gives `(44, 240, 117)` | `euler_eq_saunderson`, `euler_two_one` |
+| For `mn(m² − n²) ≠ 0` it is an Euler brick | `euler_isEulerBrick` |
+| The octic is a square only if `mn(m² − n²) = 0` | `euler_octic_ne_sq` |
+| No brick of the family is perfect | `not_isPerfectCuboid_euler` |
+
 #### Vendored: the division-polynomial formula — `TauCeti/`
 
 Mathlib's division polynomials are not yet linked to the group law (its pull request #13782 was

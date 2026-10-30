@@ -116,3 +116,4 @@ import LeanPlayground.PerfectCuboid.CongruentCharacters
 import LeanPlayground.PerfectCuboid.Saunderson
 import LeanPlayground.PerfectCuboid.SqrtTwoJacobi
 import LeanPlayground.FriendshipParadox.Basic
+import LeanPlayground.PerfectCuboid.EulerSecondFamily
