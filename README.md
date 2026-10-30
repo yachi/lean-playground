@@ -386,8 +386,11 @@ never a nonzero square. The descent here handles every even `y` at once (the con
 argument in some expositions misses `4 ∣ y`). `SqrtTwoJacobi.lean` is the symbol lemma in the
 2-descent over `ℚ(√2)`: for `ℓ = c₀² − 2c₁²` prime, `(c₀/ℓ) = (2/c₀)` if `ℓ ≡ 7 (mod 8)` and
 `(−2/c₀)` if `ℓ ≡ 1 (mod 8)`. `LeonardWilliams.lean` shows that the Leonard–Williams symbol
-`(2u/v)`, the proposed Cassels–Tate sign for `ℓ ≡ 15 (mod 16)`, is unchanged when `u + v√2` is
-multiplied by the unit `(1 + √2)²`.
+`(2u/v)` is the same for every positive representation `ℓ = u² − 2v²`: it is unchanged when
+`u + v√2` is multiplied by `(1 + √2)²` and when it is replaced by `(1 + √2)²(u − v√2)`. For
+`ℓ ≡ 15 (mod 16)` this sign decides the Cassels–Tate pairing on `Sel₂(E₁^{(ℓ)}/ℚ(√2))`
+(theorem T1‴(a), proved on paper in the project notes: the pairing is the Frobenius of the prime
+over `ℓ` in the 8-class field of `ℚ(√−2ℓ)`).
 
 | Result | Lean |
 |---|---|
@@ -397,6 +400,9 @@ multiplied by the unit `(1 + √2)²`.
 | `ℓ = c₀² − 2c₁²` prime, `ℓ ≡ 7 (mod 8)`: `(c₀/ℓ) = (2/c₀)`, so `(c₀/ℓ) = 1 ↔ ℓ ≡ 15 (mod 16)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq` |
 | Same, `ℓ ≡ 1 (mod 8)`: `(c₀/ℓ) = (−2/c₀)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq_one_mod_eight` |
 | `u, v` odd: `(2(3u + 4v) / (2u + 3v)) = (2u/v)` (unit step of the Leonard–Williams symbol) | `LeonardWilliams.jacobiSym_LW_unit_step` |
+| `u, v` odd, `2u > 3v`: `(2(3u − 4v) / (2u − 3v)) = (2u/v)` (conjugate step) | `LeonardWilliams.jacobiSym_LW_conj_step` |
+| Iterated unit step `(1 + √2)^{2n}` | `LeonardWilliams.jacobiSym_LW_unit_step_iterate` |
+| Both steps keep `u² − 2v²` | `LeonardWilliams.norm_LW_unit_step`, `norm_LW_conj_step` |
 
 `DerivedCuboid.lean` formalizes the **Chein–Lagrange theorem** (1977/1979): the derived brick
 `(bc, ca, ab)` of a Saunderson brick `(a, b, c)` is an Euler brick but never perfect. Its space
