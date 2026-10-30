@@ -413,6 +413,19 @@ Leech used for the same result; it falls out the same way with `x = mp`, `y = nq
 | Collins: `m² + n² = p²` and `m² + 5n² = q²` force `mn = 0` | `collins` |
 | Chein–Lagrange: the derived brick of a Saunderson brick is never perfect | `not_isPerfectCuboid_derived_saunderson`, `not_isPerfectCuboid_derived_saunderson_int` |
 
+`EulerSecondFamily.lean` covers Euler's family `a = 2mn(3m² − n²)(3n² − m²)`, `b = 8mn(m⁴ − n⁴)`,
+`c = (m² − n²)(m² − 4mn + n²)(m² + 4mn + n²)` (as listed in Knill's 2009 notes). Its space
+diagonal squared is `(m² + n²)²(m⁸ + 68m⁶n² − 122m⁴n⁴ + 68m²n⁶ + n⁸)`, and the octic is
+Pocklington's quartic at `(x, y) = (m² − n², 2mn)`. Indeed the family is Saunderson's brick for
+Euclid's triple, up to signs and edge order, so it is never perfect.
+
+| Result | Lean |
+|---|---|
+| The family is Saunderson's for `(m² − n², 2mn, m² + n²)`; `(2, 1)` gives `(44, 240, 117)` | `euler_eq_saunderson`, `euler_two_one` |
+| For `mn(m² − n²) ≠ 0` it is an Euler brick | `euler_isEulerBrick` |
+| The octic is a square only if `mn(m² − n²) = 0` | `euler_octic_ne_sq` |
+| No brick of the family is perfect | `not_isPerfectCuboid_euler` |
+
 #### Vendored: the division-polynomial formula — `TauCeti/`
 
 Mathlib's division polynomials are not yet linked to the group law (its pull request #13782 was
