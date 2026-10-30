@@ -385,7 +385,9 @@ diagonal squared `w²(u⁴ + 18u²v² + v⁴)`, and Pocklington (1912) showed `x
 never a nonzero square. The descent here handles every even `y` at once (the congruence-only
 argument in some expositions misses `4 ∣ y`). `SqrtTwoJacobi.lean` is the symbol lemma in the
 2-descent over `ℚ(√2)`: for `ℓ = c₀² − 2c₁²` prime, `(c₀/ℓ) = (2/c₀)` if `ℓ ≡ 7 (mod 8)` and
-`(−2/c₀)` if `ℓ ≡ 1 (mod 8)`.
+`(−2/c₀)` if `ℓ ≡ 1 (mod 8)`. `LeonardWilliams.lean` shows that the Leonard–Williams symbol
+`(2u/v)`, the proposed Cassels–Tate sign for `ℓ ≡ 15 (mod 16)`, is unchanged when `u + v√2` is
+multiplied by the unit `(1 + √2)²`.
 
 | Result | Lean |
 |---|---|
@@ -394,6 +396,22 @@ argument in some expositions misses `4 ∣ y`). `SqrtTwoJacobi.lean` is the symb
 | The six gcds of a primitive Saunderson brick multiply to `2mn(m⁴ − n⁴)`, the value of the degenerate cuboid `(u, v, 0)` | `saunderson_gcd`, `saunderson_gcd_prod_mn` |
 | `ℓ = c₀² − 2c₁²` prime, `ℓ ≡ 7 (mod 8)`: `(c₀/ℓ) = (2/c₀)`, so `(c₀/ℓ) = 1 ↔ ℓ ≡ 15 (mod 16)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq` |
 | Same, `ℓ ≡ 1 (mod 8)`: `(c₀/ℓ) = (−2/c₀)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq_one_mod_eight` |
+| `u, v` odd: `(2(3u + 4v) / (2u + 3v)) = (2u/v)` (unit step of the Leonard–Williams symbol) | `LeonardWilliams.jacobiSym_LW_unit_step` |
+
+`DerivedCuboid.lean` formalizes the **Chein–Lagrange theorem** (1977/1979): the derived brick
+`(bc, ca, ab)` of a Saunderson brick `(a, b, c)` is an Euler brick but never perfect. Its space
+diagonal squared is `u²v²(t⁴ − 6s²t² + 25s⁴)` with `s = w²`, `t = 4uv`. No new descent is
+needed: the curve of that quartic maps to Pocklington's curve by a 4-isogeny, and in coordinates
+`x = r(5s² − t²)`, `y = 2st(t² + 5s²)` solves `x⁴ + 18x²y² + y⁴ = z²` whenever
+`t⁴ − 6s²t² + 25s⁴ = r²`. The middle curve of the isogeny carries Collins' theorem (1858), which
+Leech used for the same result; it falls out the same way with `x = mp`, `y = nq`.
+
+| Result | Lean |
+|---|---|
+| The derived brick `(bc, ca, ab)` of an Euler brick is an Euler brick | `IsEulerBrick.derived` |
+| `t⁴ − 6s²t² + 25s⁴ = r²` forces `st = 0` | `quartic_six_twentyfive` |
+| Collins: `m² + n² = p²` and `m² + 5n² = q²` force `mn = 0` | `collins` |
+| Chein–Lagrange: the derived brick of a Saunderson brick is never perfect | `not_isPerfectCuboid_derived_saunderson`, `not_isPerfectCuboid_derived_saunderson_int` |
 
 `EulerSecondFamily.lean` covers Euler's family `a = 2mn(3m² − n²)(3n² − m²)`, `b = 8mn(m⁴ − n⁴)`,
 `c = (m² − n²)(m² − 4mn + n²)(m² + 4mn + n²)` (as listed in Knill's 2009 notes). Its space
