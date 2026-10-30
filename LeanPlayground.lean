@@ -90,6 +90,7 @@ import LeanPlayground.PerfectCuboid.Fibers.F_259_709
 import LeanPlayground.PerfectCuboid.Fibers.F_775_793
 import LeanPlayground.PerfectCuboid.FiberList
 import LeanPlayground.PerfectCuboid.Kubert
+import LeanPlayground.PerfectCuboid.LeonardWilliams
 import LeanPlayground.PerfectCuboid.DescentClass
 import LeanPlayground.PerfectCuboid.DescentTR
 import LeanPlayground.PerfectCuboid.CongruentRank

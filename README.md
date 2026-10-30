@@ -385,7 +385,9 @@ diagonal squared `w²(u⁴ + 18u²v² + v⁴)`, and Pocklington (1912) showed `x
 never a nonzero square. The descent here handles every even `y` at once (the congruence-only
 argument in some expositions misses `4 ∣ y`). `SqrtTwoJacobi.lean` is the symbol lemma in the
 2-descent over `ℚ(√2)`: for `ℓ = c₀² − 2c₁²` prime, `(c₀/ℓ) = (2/c₀)` if `ℓ ≡ 7 (mod 8)` and
-`(−2/c₀)` if `ℓ ≡ 1 (mod 8)`.
+`(−2/c₀)` if `ℓ ≡ 1 (mod 8)`. `LeonardWilliams.lean` shows that the Leonard–Williams symbol
+`(2u/v)`, the proposed Cassels–Tate sign for `ℓ ≡ 15 (mod 16)`, is unchanged when `u + v√2` is
+multiplied by the unit `(1 + √2)²`.
 
 | Result | Lean |
 |---|---|
@@ -394,6 +396,7 @@ argument in some expositions misses `4 ∣ y`). `SqrtTwoJacobi.lean` is the symb
 | The six gcds of a primitive Saunderson brick multiply to `2mn(m⁴ − n⁴)`, the value of the degenerate cuboid `(u, v, 0)` | `saunderson_gcd`, `saunderson_gcd_prod_mn` |
 | `ℓ = c₀² − 2c₁²` prime, `ℓ ≡ 7 (mod 8)`: `(c₀/ℓ) = (2/c₀)`, so `(c₀/ℓ) = 1 ↔ ℓ ≡ 15 (mod 16)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq` |
 | Same, `ℓ ≡ 1 (mod 8)`: `(c₀/ℓ) = (−2/c₀)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq_one_mod_eight` |
+| `u, v` odd: `(2(3u + 4v) / (2u + 3v)) = (2u/v)` (unit step of the Leonard–Williams symbol) | `LeonardWilliams.jacobiSym_LW_unit_step` |
 
 #### Vendored: the division-polynomial formula — `TauCeti/`
 
