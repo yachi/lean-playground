@@ -379,6 +379,22 @@ cuboid in three ways, which gives three congruent numbers over `ℚ` (the `j = 1
 The one hypothesis left in `not_rankOne_of_primitiveDivisorStep` is Ingram's primitive-divisor
 theorem, which needs canonical heights; Mathlib does not have them yet.
 
+`Saunderson.lean` formalizes **Spohn's theorem** (1972): no Saunderson brick is a perfect
+cuboid. Saunderson's brick `(u|4v² − w²|, v|4u² − w²|, 4uvw)` from `u² + v² = w²` has space
+diagonal squared `w²(u⁴ + 18u²v² + v⁴)`, and Pocklington (1912) showed `x⁴ + 18x²y² + y⁴` is
+never a nonzero square. The descent here handles every even `y` at once (the congruence-only
+argument in some expositions misses `4 ∣ y`). `SqrtTwoJacobi.lean` is the symbol lemma in the
+2-descent over `ℚ(√2)`: for `ℓ = c₀² − 2c₁²` prime, `(c₀/ℓ) = (2/c₀)` if `ℓ ≡ 7 (mod 8)` and
+`(−2/c₀)` if `ℓ ≡ 1 (mod 8)`.
+
+| Result | Lean |
+|---|---|
+| Pocklington: `x⁴ + 18x²y² + y⁴ = z²` forces `x = 0` or `y = 0` | `pocklington_quartic` |
+| Spohn: no Saunderson brick is perfect | `not_isPerfectCuboid_saunderson`, `not_isPerfectCuboid_saunderson_int` |
+| The six gcds of a primitive Saunderson brick multiply to `2mn(m⁴ − n⁴)`, the value of the degenerate cuboid `(u, v, 0)` | `saunderson_gcd`, `saunderson_gcd_prod_mn` |
+| `ℓ = c₀² − 2c₁²` prime, `ℓ ≡ 7 (mod 8)`: `(c₀/ℓ) = (2/c₀)`, so `(c₀/ℓ) = 1 ↔ ℓ ≡ 15 (mod 16)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq` |
+| Same, `ℓ ≡ 1 (mod 8)`: `(c₀/ℓ) = (−2/c₀)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq_one_mod_eight` |
+
 #### Vendored: the division-polynomial formula — `TauCeti/`
 
 Mathlib's division polynomials are not yet linked to the group law (its pull request #13782 was
