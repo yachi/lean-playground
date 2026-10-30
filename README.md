@@ -398,6 +398,21 @@ multiplied by the unit `(1 + √2)²`.
 | Same, `ℓ ≡ 1 (mod 8)`: `(c₀/ℓ) = (−2/c₀)` | `SqrtTwoJacobi.jacobiSym_c0_of_sq_sub_two_sq_one_mod_eight` |
 | `u, v` odd: `(2(3u + 4v) / (2u + 3v)) = (2u/v)` (unit step of the Leonard–Williams symbol) | `LeonardWilliams.jacobiSym_LW_unit_step` |
 
+`DerivedCuboid.lean` formalizes the **Chein–Lagrange theorem** (1977/1979): the derived brick
+`(bc, ca, ab)` of a Saunderson brick `(a, b, c)` is an Euler brick but never perfect. Its space
+diagonal squared is `u²v²(t⁴ − 6s²t² + 25s⁴)` with `s = w²`, `t = 4uv`. No new descent is
+needed: the curve of that quartic maps to Pocklington's curve by a 4-isogeny, and in coordinates
+`x = r(5s² − t²)`, `y = 2st(t² + 5s²)` solves `x⁴ + 18x²y² + y⁴ = z²` whenever
+`t⁴ − 6s²t² + 25s⁴ = r²`. The middle curve of the isogeny carries Collins' theorem (1858), which
+Leech used for the same result; it falls out the same way with `x = mp`, `y = nq`.
+
+| Result | Lean |
+|---|---|
+| The derived brick `(bc, ca, ab)` of an Euler brick is an Euler brick | `IsEulerBrick.derived` |
+| `t⁴ − 6s²t² + 25s⁴ = r²` forces `st = 0` | `quartic_six_twentyfive` |
+| Collins: `m² + n² = p²` and `m² + 5n² = q²` force `mn = 0` | `collins` |
+| Chein–Lagrange: the derived brick of a Saunderson brick is never perfect | `not_isPerfectCuboid_derived_saunderson`, `not_isPerfectCuboid_derived_saunderson_int` |
+
 #### Vendored: the division-polynomial formula — `TauCeti/`
 
 Mathlib's division polynomials are not yet linked to the group law (its pull request #13782 was
