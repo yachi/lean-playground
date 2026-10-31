@@ -213,6 +213,149 @@ ratios `(|x| + √n)/(|x| - √n)` instead of with Rolle's theorem.
 A perfect cuboid has integer edges, face diagonals and space diagonal. Whether one exists is
 open. `Basic.lean` proves the classical partial results, not the problem itself.
 
+#### Summary of results
+
+The files below were added over many pull requests. This table lists every file in
+`LeanPlayground/PerfectCuboid/` with its main statement; the sections after it give the Lean
+names. **Status**: *theorem* = an unconditional main result; *partial* = a reduction, or some cases
+only; *example* = examples or sharpness checks; *data* = kernel-checked certificates;
+*infrastructure* = definitions or tools used elsewhere. **Attribution** says where the statement
+comes from; "new" means we found no earlier source, not a claim of priority.
+
+Highlights proved here with no earlier source we know of: no face diagonal of a perfect cuboid is
+a prime power, and every edge has at least three distinct prime factors (Korec's side conditions
+removed); a perfect cuboid exists if and only if some congruent-number curve `E_N` has a positive
+configuration, with no extra square condition (twist rigidity); every polynomial cuboid
+specializes to a perfect cuboid, and a polynomial cuboid with a monomial or single-root edge is
+proportional; prime-power results for face cuboids and edge cuboids; and 91 Peschmann fibers ruled
+out by descent.
+
+<details>
+<summary>Every file, by topic (click to expand)</summary>
+
+**Perfect cuboids: divisibility, primes, lengths**
+
+| File | Object | Headline statement(s) | Status | Attribution | PR |
+|---|---|---|---|---|---|
+| [`Basic.lean`](LeanPlayground/PerfectCuboid/Basic.lean) | perfect cuboid / brick | `IsEulerBrick`, `IsPerfectCuboid`; (44,117,240); Saunderson's parametrization; 3, 4, 9, 16, 5, 11 divide brick edges; 7, 19 divide an edge, and 13, 17, 29, 37 divide some length, of a perfect cuboid | theorem + infrastructure | Halcke 1719, Saunderson 1740; classical divisibility (Leech 1977 / Guy D18) | [#3](https://github.com/yachi/lean-playground/pull/3) |
+| [`Leech.lean`](LeanPlayground/PerfectCuboid/Leech.lean) | perfect cuboid | 2⁸·3⁴·5³·7·11·13·17·19·29·37 ∣ abcdefg | theorem | Leech (Guy, UPINT D18) | [#19](https://github.com/yachi/lean-playground/pull/19) |
+| [`SpaceDiagonal.lean`](LeanPlayground/PerfectCuboid/SpaceDiagonal.lean) | perfect cuboid | every prime factor of g is ≡ 1 (mod 4); g ≡ 1 (mod 4); `prime_dvd_both_of_dvd_sq_add_sq` | theorem | classical | [#5](https://github.com/yachi/lean-playground/pull/5) |
+| [`Korec.lean`](LeanPlayground/PerfectCuboid/Korec.lean) | perfect cuboid | g is neither a prime power nor a product of two primes | theorem | Korec 1992 (Math. Slovaca 42), Thm 5.1 | [#18](https://github.com/yachi/lean-playground/pull/18) |
+| [`EdgePrimePower.lean`](LeanPlayground/PerfectCuboid/EdgePrimePower.lean) | perfect cuboid | no edge is a prime power (every p, every edge, no primitivity) | theorem | Korec 1984 | [#43](https://github.com/yachi/lean-playground/pull/43) |
+| [`EdgeTwoPrimes.lean`](LeanPlayground/PerfectCuboid/EdgeTwoPrimes.lean) | perfect cuboid | no edge is p^k q^l; every edge has ≥ 3 distinct prime factors | theorem | Korec 1984 (with side conditions); side conditions removed: new | [#44](https://github.com/yachi/lean-playground/pull/44) |
+| [`DiagonalPrimePower.lean`](LeanPlayground/PerfectCuboid/DiagonalPrimePower.lean) | perfect cuboid | no face diagonal is a prime power | theorem | new | [#43](https://github.com/yachi/lean-playground/pull/43) |
+| [`DiagonalTwoPrimes.lean`](LeanPlayground/PerfectCuboid/DiagonalTwoPrimes.lean) | perfect cuboid | even face diagonal 2^s p^k: the family F1 is empty | partial | new | [#44](https://github.com/yachi/lean-playground/pull/44) |
+| [`FaceDiagonalF2.lean`](LeanPlayground/PerfectCuboid/FaceDiagonalF2.lean) | perfect cuboid | face diagonal 2^s p^k: the family F2 reduced to types II/III, and its structure | partial | new | [#45](https://github.com/yachi/lean-playground/pull/45) |
+| [`PrimeSupport.lean`](LeanPlayground/PerfectCuboid/PrimeSupport.lean) | perfect / face cuboid / brick | prime support: 17 shapes for every p, 7 for p ≡ 3 (mod 4), 3 for p = 2; 14 face-cuboid shapes (7 for p ≡ 3 mod 4); 17 brick shapes | theorem | new | [#46](https://github.com/yachi/lean-playground/pull/46) |
+| [`SquareLengths.lean`](LeanPlayground/PerfectCuboid/SquareLengths.lean) | perfect cuboid | xy, xz, 2xy are never squares in a right triangle; at most 3 of a..g are squares; abcg ≠ □, 2□ | theorem | Fermat quartics; packaging new | [#46](https://github.com/yachi/lean-playground/pull/46) |
+| [`SquareLengthsHyp.lean`](LeanPlayground/PerfectCuboid/SquareLengthsHyp.lean) | perfect cuboid | 2·leg·hyp is never a square (y⁴ + (2xz)² = (x²+z²)²); all 12 products for a perfect cuboid | theorem | new | [#47](https://github.com/yachi/lean-playground/pull/47) |
+| [`DivisorForm.lean`](LeanPlayground/PerfectCuboid/DivisorForm.lean) | perfect cuboid | a perfect cuboid exists ⟺ there are rationals r₁, r₂, r₃ > 1 with r₁² + r₁⁻² + r₂² + r₂⁻² − r₃² − r₃⁻² = 2 | theorem | Korec 1983 divisor framework (reformulation) | [#43](https://github.com/yachi/lean-playground/pull/43) |
+| [`Contradiction.lean`](LeanPlayground/PerfectCuboid/Contradiction.lean) | perfect cuboid | normal form (primitive, one odd edge, 12640320 ∣ abc, longest edge ≥ 233); `no_congruence_obstruction` | theorem | new (meta-result on congruences) | [#4](https://github.com/yachi/lean-playground/pull/4) |
+| [`BeauvilleLambda.lean`](LeanPlayground/PerfectCuboid/BeauvilleLambda.lean) | perfect cuboid | the Beauville invariant is never trivial (twist of y² = x⁵ − x) | theorem | Stoll–Testa setup; statement new | [#28](https://github.com/yachi/lean-playground/pull/28) |
+| [`BeauvilleCharacters.lean`](LeanPlayground/PerfectCuboid/BeauvilleCharacters.lean) | perfect cuboid | three more square classes (2ξ, ξ²∓1) are never trivial | theorem | Stoll–Testa (arXiv:1009.0388) setup; new | [#32](https://github.com/yachi/lean-playground/pull/32) |
+| [`OctahedralJ.lean`](LeanPlayground/PerfectCuboid/OctahedralJ.lean) | perfect cuboid | the Legendre curve E_ξ of a cuboid has non-real j-invariant | theorem | Stoll–Testa §4 coordinates; new | [#33](https://github.com/yachi/lean-playground/pull/33) |
+
+**Perfect cuboids: congruent-number / configuration framework**
+
+| File | Object | Headline statement(s) | Status | Attribution | PR |
+|---|---|---|---|---|---|
+| [`CongruentNumber.lean`](LeanPlayground/PerfectCuboid/CongruentNumber.lean) | E_N configuration | N congruent ⟺ E_N has a point with Y ≠ 0; 1 is not congruent; abcg/2 is congruent | theorem | Koblitz Ch. I; Conrad | [#22](https://github.com/yachi/lean-playground/pull/22) |
+| [`CongruentCharacters.lean`](LeanPlayground/PerfectCuboid/CongruentCharacters.lean) | perfect cuboid / body cuboid | three congruent numbers of a perfect cuboid (from body-cuboid identities) | theorem | new | [#34](https://github.com/yachi/lean-playground/pull/34) |
+| [`CongruentRank.lean`](LeanPlayground/PerfectCuboid/CongruentRank.lean) | E_N configuration | cuboid ⇒ positive configuration on E_N; rank ≥ 2 modulo `RankOneReduction` | theorem (with reduction) | Paulsen–West 2022; Asiryan (arXiv:2610.10643) | [#15](https://github.com/yachi/lean-playground/pull/15) |
+| [`RankOneReduction.lean`](LeanPlayground/PerfectCuboid/RankOneReduction.lean) | E_N configuration | Asiryan Lemmas 2–3: reduction of a rank-one configuration | theorem | Asiryan §5 | [#20](https://github.com/yachi/lean-playground/pull/20) |
+| [`DivPolyScale.lean`](LeanPlayground/PerfectCuboid/DivPolyScale.lean) | E_N configuration | weighted homogeneity of division polynomials of E_N (P_k, Q_k independent of N) | infrastructure | Asiryan §5 | [#20](https://github.com/yachi/lean-playground/pull/20) |
+| [`DivPolyFormula.lean`](LeanPlayground/PerfectCuboid/DivPolyFormula.lean) | tool | affine n•P formula from Tau Ceti's `zsmul_point_eq_smulEval` | infrastructure | Tau Ceti / AINTLIB (Xu, Angdinata) | [#20](https://github.com/yachi/lean-playground/pull/20) |
+| [`Torsion.lean`](LeanPlayground/PerfectCuboid/Torsion.lean) | E_N configuration | E_N(ℚ)_tors = {0, S, T, U} | theorem | Koblitz Ch. I §9 | [#23](https://github.com/yachi/lean-playground/pull/23) |
+| [`ConfigCuboid.lean`](LeanPlayground/PerfectCuboid/ConfigCuboid.lean) | E_N configuration | positive configuration → rational box; `exists_isPerfectCuboid_iff` | theorem | Paulsen–West Prop. 3.1; Asiryan Prop. 1 | [#19](https://github.com/yachi/lean-playground/pull/19) |
+| [`TwistedCuboid.lean`](LeanPlayground/PerfectCuboid/TwistedCuboid.lean) | E_N configuration | configurations are k-twisted perfect cuboids (`IsTwistedCuboid`) | theorem + infrastructure | new | [#21](https://github.com/yachi/lean-playground/pull/21) |
+| [`TwistClass.lean`](LeanPlayground/PerfectCuboid/TwistClass.lean) | E_N configuration | twist k ≡ −X₁X₂X₃ (mod ℚ*²) | theorem | new | [#26](https://github.com/yachi/lean-playground/pull/26) |
+| [`TwistRigidity.lean`](LeanPlayground/PerfectCuboid/TwistRigidity.lean) | twist framework | three of four sums in class k, fourth in 1 or k ⇒ k = 1; a cuboid exists ⟺ some E_N has a positive configuration | theorem | new | [#46](https://github.com/yachi/lean-playground/pull/46) |
+| [`TwistTwo.lean`](LeanPlayground/PerfectCuboid/TwistTwo.lean) | twist framework | three face twists equal ⇒ s ∈ {1, 2} (both occur: (1,1,1), (23,289,527)); n-dimensional rigidity | theorem | new | [#47](https://github.com/yachi/lean-playground/pull/47) |
+| [`ConjugateBox.lean`](LeanPlayground/PerfectCuboid/ConjugateBox.lean) | twist framework | conjugate boxes: prime factors of k are ≡ 1 (mod 8); half-twisted boxes: k ∣ c, odd primes ≡ 1 (mod 4) | partial | new | [#46](https://github.com/yachi/lean-playground/pull/46) |
+| [`NearMissTwist.lean`](LeanPlayground/PerfectCuboid/NearMissTwist.lean) | brick / face cuboid | brick space twist ≡ 1 (mod 24); face-cuboid twist ≡ 1, 2, 5 (mod 8); 313921 prime example | theorem + example | new | [#46](https://github.com/yachi/lean-playground/pull/46) |
+| [`Genocchi.lean`](LeanPlayground/PerfectCuboid/Genocchi.lean) | tool (congruent numbers) | p ≡ 3 (mod 8) and 2p (p ≡ 5 mod 8) are not congruent | theorem | Genocchi 1855 | [#34](https://github.com/yachi/lean-playground/pull/34) |
+| [`TwoPrimeCongruent.lean`](LeanPlayground/PerfectCuboid/TwoPrimeCongruent.lean) | tool (congruent numbers) | the seven two-prime non-congruent classes C1–C7 | theorem | Lagrange 1974/75 | [#43](https://github.com/yachi/lean-playground/pull/43) |
+| [`FermatTriangle.lean`](LeanPlayground/PerfectCuboid/FermatTriangle.lean) | tool | Fermat's right triangle theorem (1 is not congruent) | theorem | Fermat c. 1640 | [#5](https://github.com/yachi/lean-playground/pull/5) |
+| [`GaussianQuartic.lean`](LeanPlayground/PerfectCuboid/GaussianQuartic.lean) | tool | x⁴ ± y⁴ = z² over ℤ[i] (Hilbert Satz 169); y² = x⁵ − x over ℤ[i] | theorem | Hilbert Zahlbericht; Najman; Szabó | [#28](https://github.com/yachi/lean-playground/pull/28) |
+| [`SqrtTwoJacobi.lean`](LeanPlayground/PerfectCuboid/SqrtTwoJacobi.lean) | tool | Jacobi symbol (c₀/ℓ) for ℓ = c₀² − 2c₁² | theorem | Leonard–Williams background | [#35](https://github.com/yachi/lean-playground/pull/35) |
+| [`LeonardWilliams.lean`](LeanPlayground/PerfectCuboid/LeonardWilliams.lean) | tool | unit-step invariance of the Leonard–Williams symbol | theorem | Leonard–Williams | [#37](https://github.com/yachi/lean-playground/pull/37) |
+
+**Perfect cuboids: fibers and descent**
+
+| File | Object | Headline statement(s) | Status | Attribution | PR |
+|---|---|---|---|---|---|
+| [`MasterTuple.lean`](LeanPlayground/PerfectCuboid/MasterTuple.lean) | brick | every primitive Euler brick comes from a master tuple (a, b, m, n) | theorem | Peschmann (arXiv:2604.28072); Cipollini (arXiv:2609.14526) | [#5](https://github.com/yachi/lean-playground/pull/5) |
+| [`MasterTupleGcd.lean`](LeanPlayground/PerfectCuboid/MasterTupleGcd.lean) | brick | arithmetic of a master tuple (Peschmann §2) | theorem | Peschmann §2 | [#6](https://github.com/yachi/lean-playground/pull/6) |
+| [`Fiber.lean`](LeanPlayground/PerfectCuboid/Fiber.lean) | perfect cuboid | every perfect cuboid lies on a fiber (m, n); reduction on a fiber | theorem | Peschmann §§3–4 | [#6](https://github.com/yachi/lean-playground/pull/6) |
+| [`FiberPairs.lean`](LeanPlayground/PerfectCuboid/FiberPairs.lean) | perfect cuboid | three Pythagorean pair curves per fiber | infrastructure | Peschmann | [#24](https://github.com/yachi/lean-playground/pull/24) |
+| [`FiberTwoOne.lean`](LeanPlayground/PerfectCuboid/FiberTwoOne.lean) | perfect cuboid | no perfect cuboid has two edges in ratio 3 : 4 (hand descent) | theorem | new (Fermat-style descent) | [#6](https://github.com/yachi/lean-playground/pull/6) |
+| [`Descent.lean`](LeanPlayground/PerfectCuboid/Descent.lean) | perfect cuboid | generic descent for two right triangles with a common leg, given a finite check | theorem (conditional on a check) | new | [#7](https://github.com/yachi/lean-playground/pull/7) |
+| [`DescentCheck.lean`](LeanPlayground/PerfectCuboid/DescentCheck.lean) | tool | residue checker `check` + `check_sound` | infrastructure | new | [#7](https://github.com/yachi/lean-playground/pull/7) |
+| [`DescentClass.lean`](LeanPlayground/PerfectCuboid/DescentClass.lean) | tool | descent with the 2-Selmer class lemma | infrastructure | new | [#30](https://github.com/yachi/lean-playground/pull/30) |
+| [`DescentTR.lean`](LeanPlayground/PerfectCuboid/DescentTR.lean) | tool | descent with the ±T₄ exception (family TR) | infrastructure | new | [#31](https://github.com/yachi/lean-playground/pull/31) |
+| [`FiberDescent.lean`](LeanPlayground/PerfectCuboid/FiberDescent.lean) | perfect cuboid | no cuboid with edge ratio 5:12, 8:15, 7:24, …, 13:84, 28:45 | theorem | new | [#7](https://github.com/yachi/lean-playground/pull/7) |
+| [`FiberDescentCert.lean`](LeanPlayground/PerfectCuboid/FiberDescentCert.lean) | perfect cuboid | certificates for the fiber descent | data | generated (`scripts/cuboid_cert.py`) | [#11](https://github.com/yachi/lean-playground/pull/11) |
+| [`Fibers/F_p_q.lean`](LeanPlayground/PerfectCuboid/Fibers/) (98 files) | perfect cuboid | one fiber each | data + theorem | generated | #7–#12, #24, #25, #30, #31 |
+| [`FiberList.lean`](LeanPlayground/PerfectCuboid/FiberList.lean) | perfect cuboid | 91 fibers ruled out; every cuboid lies on a fiber outside the list | theorem | new; fibers after Peschmann | [#12](https://github.com/yachi/lean-playground/pull/12) |
+| [`Kubert.lean`](LeanPlayground/PerfectCuboid/Kubert.lean) | perfect cuboid | the curve E″ of a fiber (Kubert's ℤ/2×ℤ/8 curve); uniform facts | partial | Cipollini; Kubert | [#27](https://github.com/yachi/lean-playground/pull/27) |
+
+**Euler bricks and parametric families (never perfect)**
+
+| File | Object | Headline statement(s) | Status | Attribution | PR |
+|---|---|---|---|---|---|
+| [`Saunderson.lean`](LeanPlayground/PerfectCuboid/Saunderson.lean) | family | Saunderson bricks are never perfect (x⁴ + 18x²y² + y⁴ ≠ □) | theorem | Pocklington 1912, Spohn 1972 | [#35](https://github.com/yachi/lean-playground/pull/35) |
+| [`DerivedCuboid.lean`](LeanPlayground/PerfectCuboid/DerivedCuboid.lean) | family | the derived brick (bc, ca, ab) of a Saunderson brick is never perfect | theorem | Chein 1977, Lagrange 1979, Leech 1981, Collins 1858 | [#39](https://github.com/yachi/lean-playground/pull/39) |
+| [`EulerSecondFamily.lean`](LeanPlayground/PerfectCuboid/EulerSecondFamily.lean) | family | Euler's two-parameter family is never perfect (Pocklington's quartic) | theorem | Euler; Knill's notes | [#38](https://github.com/yachi/lean-playground/pull/38) |
+| [`ColmanBrick.lean`](LeanPlayground/PerfectCuboid/ColmanBrick.lean) | family | Colman's degree-14 family is never perfect | theorem | Colman 1988 (Fib. Quart. 26) | [#43](https://github.com/yachi/lean-playground/pull/43) |
+| [`BrickPrimePower.lean`](LeanPlayground/PerfectCuboid/BrickPrimePower.lean) | brick | prime-power edge of a brick: reduction to one equation, and an exponent gap | partial | new; question = Conjecture E (open) | [#44](https://github.com/yachi/lean-playground/pull/44) |
+| [`BrickSupport.lean`](LeanPlayground/PerfectCuboid/BrickSupport.lean) | brick | prime support for p ≡ 3 (mod 4): 7 shapes; all 7 occur at (44,117,240) | theorem + example | new | [#47](https://github.com/yachi/lean-playground/pull/47) |
+
+**Face cuboids**
+
+| File | Object | Headline statement(s) | Status | Attribution | PR |
+|---|---|---|---|---|---|
+| [`FaceCuboid.lean`](LeanPlayground/PerfectCuboid/FaceCuboid.lean) | face cuboid | `IsFaceCuboid`; Theorem P′; edges a, b next to the irrational face are not prime powers; (153, 672, 104) | theorem | new | [#44](https://github.com/yachi/lean-playground/pull/44) |
+| [`FaceCuboidThirdEdge.lean`](LeanPlayground/PerfectCuboid/FaceCuboidThirdEdge.lean) | face cuboid | third edge c is not a prime power (Theorem Q: (p^{2A}+1)(p^{2B}+1) ≠ □) | theorem | new | [#45](https://github.com/yachi/lean-playground/pull/45) |
+| [`FaceCuboidLeech.lean`](LeanPlayground/PerfectCuboid/FaceCuboidLeech.lean) | face cuboid | 2⁴·3²·5²·7·13·17 ∣ abcefg (sharp); 2-adic shape | theorem | new (Leech-type table) | [#45](https://github.com/yachi/lean-playground/pull/45) |
+| [`FaceCuboidDiagonal.lean`](LeanPlayground/PerfectCuboid/FaceCuboidDiagonal.lean) | face cuboid | prime-power space diagonal: structure (p ≡ 1 mod 4, p divides exactly one of a, b) | partial | new; uses Korec's uniqueness | [#45](https://github.com/yachi/lean-playground/pull/45) |
+| [`PellLeg.lean`](LeanPlayground/PerfectCuboid/PellLeg.lean) | tool | (x^{2m} − 1)(x^{2n} − 1) is never a square (Theorem P) | theorem | new | [#44](https://github.com/yachi/lean-playground/pull/44) |
+
+**Edge cuboids**
+
+| File | Object | Headline statement(s) | Status | Attribution | PR |
+|---|---|---|---|---|---|
+| [`EdgeCuboid.lean`](LeanPlayground/PerfectCuboid/EdgeCuboid.lean) | edge cuboid | `IsEdgeCuboid`; N is not a prime power; a Leech table; (520, 576, 618849) | theorem | Leech 1977 (example); new | [#44](https://github.com/yachi/lean-playground/pull/44) |
+| [`EdgeCuboidTwoPrimes.lean`](LeanPlayground/PerfectCuboid/EdgeCuboidTwoPrimes.lean) | edge cuboid | N ≠ p^K q^L; N has ≥ 3 prime factors | theorem | new | [#45](https://github.com/yachi/lean-playground/pull/45) |
+| [`LeechEdge.lean`](LeanPlayground/PerfectCuboid/LeechEdge.lean) | family | Leech's edge cuboids never have an integral third edge; `fermat_sub` | theorem | Leech 1977 (Amer. Math. Monthly 84) | [#43](https://github.com/yachi/lean-playground/pull/43) |
+| [`ColmanEdge.lean`](LeanPlayground/PerfectCuboid/ColmanEdge.lean) | family | Bromhead–Colman edge cuboids: c is never a square (2-adic proof) | theorem | Bromhead 1960, Colman 1988 | [#43](https://github.com/yachi/lean-playground/pull/43) |
+
+**Polynomial cuboids and bricks**
+
+| File | Object | Headline statement(s) | Status | Attribution | PR |
+|---|---|---|---|---|---|
+| [`PolynomialCuboid.lean`](LeanPlayground/PerfectCuboid/PolynomialCuboid.lean) | polynomial | `IsPolyCuboid`; no constant edge; Mason–Stothers bound; coprime monomial edge impossible; linear edge ⇒ proportional | partial | new; Stoll–Testa context | [#46](https://github.com/yachi/lean-playground/pull/46) |
+| [`PolyMonomialEdge.lean`](LeanPlayground/PerfectCuboid/PolyMonomialEdge.lean) | polynomial | monomial edge αX^k of any degree (no coprimality) ⇒ proportional; same for α(X − r)^k, so such a polynomial cuboid exists ⟺ an integer perfect cuboid exists | theorem | new | [#47](https://github.com/yachi/lean-playground/pull/47) |
+| [`PolyBrick.lean`](LeanPlayground/PerfectCuboid/PolyBrick.lean) | polynomial | `IsPolyBrick`; Saunderson polynomial brick (6, 5, 5) is not proportional; linear edge αX and edge αX² ⇒ proportional; Mason–Stothers radical bound; every polynomial brick specializes to an integer Euler brick | partial | new | [#47](https://github.com/yachi/lean-playground/pull/47) |
+| [`PolySpecialize.lean`](LeanPlayground/PerfectCuboid/PolySpecialize.lean) | polynomial | any polynomial cuboid specializes to an integer perfect cuboid, so polynomial cuboids exist ⟺ perfect cuboids exist | theorem | new | [#47](https://github.com/yachi/lean-playground/pull/47) |
+
+</details>
+
+#### What is still open
+
+
+1. **Two-twist rigidity**: conjugate boxes (k d² = a²+b², k e² = a²+c², f, g integral) and half-twisted boxes (k d² = a²+b², k g² = a²+b²+c², e, f integral). Do nontrivial k occur? None with f ≤ 10⁷, resp. c ≤ 3·10⁶. The fibers have genus 3, so this is Faltings-level.
+2. **Half-twisted k = 2** (pattern (2,1,1,2)): even the single value k = 2 is open. The degenerate box (a, a, 0) blocks congruence arguments.
+3. **Non-proportional polynomial cuboids**: is every polynomial cuboid proportional? Monomial and single-root edges are done (`PolyMonomialEdge.lean`). The general case is open, and so is whether Stoll–Testa's conics in G are degenerate.
+4. **d·e = □** (the product of two face diagonals): there is no one-triangle method, since (de)² = (ag)² + (bc)² mixes triangles.
+5. **Face-cuboid g = p^k leftovers**: `FaceCuboidDiagonal.lean` gives the structure only. The case where p divides exactly one of a, b is not excluded.
+6. **Face-diagonal 2^s p^k, family F2 types II/III** (`FaceDiagonalF2.lean`): partial.
+7. **Conjecture E** (an Euler brick with a prime-power edge does not exist): only the reduction and the exponent gap are proved; likely out of reach of these methods.
+8. **T3.3** (g = p^k q^l for a perfect cuboid): open; likely out of reach of these methods.
+9. **Rank ≥ 2 beyond Asiryan**: no route from "E_N has rank ≥ 2" to a contradiction is known.
+10. **The fibers**: 91 fibers are ruled out, and every perfect cuboid lies on one of the infinitely many fibers that remain.
+
+#### Details by file
+
 | Result | Lean |
 |---|---|
 | (44, 117, 240) is an Euler brick, but its space diagonal √73225 is not an integer | `eulerBrick_44_117_240`, `not_perfectCuboid_44_117_240` |
