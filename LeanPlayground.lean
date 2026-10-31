@@ -119,3 +119,10 @@ import LeanPlayground.PerfectCuboid.DerivedCuboid
 import LeanPlayground.PerfectCuboid.SqrtTwoJacobi
 import LeanPlayground.FriendshipParadox.Basic
 import LeanPlayground.PerfectCuboid.EulerSecondFamily
+import LeanPlayground.PerfectCuboid.ColmanBrick
+import LeanPlayground.PerfectCuboid.ColmanEdge
+import LeanPlayground.PerfectCuboid.LeechEdge
+import LeanPlayground.PerfectCuboid.EdgePrimePower
+import LeanPlayground.PerfectCuboid.DiagonalPrimePower
+import LeanPlayground.PerfectCuboid.DivisorForm
+import LeanPlayground.PerfectCuboid.TwoPrimeCongruent
