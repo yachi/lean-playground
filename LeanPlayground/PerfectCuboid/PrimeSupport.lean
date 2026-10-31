@@ -34,7 +34,10 @@ This file classifies the supports that survive these rules.
   cuboid is `≡ 1 (mod 4)`; `IsFaceCuboid.dvd_space_diagonal_dvd_c`.
 * Euler bricks (lengths `a, …, f`): `IsEulerBrick.support_shape` (17 shapes,
   `Support.BrickShape`, among them `{a,f}` and `{d,e,f}`); the brick `(19175, 293832, 112320)`
-  realizes `{d,f}` with `p = 17` and `(44, 117, 240)` realizes `{c,d}` with `p = 5`.
+  realizes `{d,f}` with `p = 17` and `(44, 117, 240)` realizes `{c,d}` with `p = 5`. For
+  `p ≡ 3 (mod 4)` a primitive Euler brick has only the 7 shapes
+  `∅, {a}, {b}, {c}, {a,b,d}, {a,c,e}, {b,c,f}`, all realized by `(44, 117, 240)`:
+  `IsEulerBrick.support_shape_three_mod_four` in `BrickSupport.lean`.
 * Valuations: `Support.padicValNat_hyp_ge` (`v_p(z) ≥ min(v_p(x), v_p(y))` for `x² + y² = z²`),
   `Support.padicValNat_hyp_eq` (equality when `v_p(x) ≠ v_p(y)`) and
   `Support.padicValNat_sub_add` (`v_p(z − y) + v_p(z + y) = 2 v_p(x)`).

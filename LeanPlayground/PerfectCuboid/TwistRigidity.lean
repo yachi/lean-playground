@@ -15,7 +15,9 @@ the two shapes `{S₁, S₂, S₃}` and `{S₁, S₂, S₄}` are `squarefree_eq_
 `squarefree_eq_one_of_two_faces_space`, `isSquare_of_three_faces`,
 `isSquare_of_two_faces_space`.) For the shapes containing `S₄` the fourth sum plays no role at all
 in the argument; for `{S₁, S₂, S₃}` some condition on `S₄` is needed, since `(1, 1, 1)` has
-`S₁ = S₂ = S₃ = 2`, `S₄ = 3`.
+`S₁ = S₂ = S₃ = 2`, `S₄ = 3`. Without any condition on `S₄`, three equal face twists force only
+`k ∈ {1, 2}`, and both values occur: see `TwistTwo.three_twists` (and `TwistTwo.rigidity_fin` for
+the `n`-dimensional version with all sub-sums twisted).
 
 *Proof idea.* Scale to natural numbers and take `k = s` squarefree. If a prime `p ∣ s` then
 `p ∣ A, B, C`: for odd `p` because `S₁ + S₂ − S₃ = 2A²` (resp. `S₄ − S₁ = C²`); for `p = 2`

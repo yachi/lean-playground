@@ -10,8 +10,11 @@ A **polynomial cuboid** (`IsPolyCuboid a b c`) is a triple of nonzero polynomial
 `a, b, c ∈ ℚ[X]`, not all constant, such that `a² + b²`, `a² + c²`, `b² + c²` and
 `a² + b² + c²` are squares in `ℚ[X]`: a `ℚ`-rational curve on the cuboid surface. None is known.
 An integer perfect cuboid `(p, q, r)` gives the polynomial cuboid `(pX, qX, rX)`
-(`IsPerfectCuboid.isPolyCuboid`), so the question contains the perfect cuboid problem; the
-interesting polynomial cuboids are the non-proportional ones.
+(`IsPerfectCuboid.isPolyCuboid`), and conversely every polynomial cuboid specializes at a
+non-root to an integer perfect cuboid (`IsPolyCuboid.exists_isPerfectCuboid`,
+`PolySpecialize.lean`), so polynomial cuboids exist iff perfect cuboids do; the interesting
+polynomial cuboids are the non-proportional ones, and every theorem about them has the form
+"… ⇒ the edges are proportional".
 
 ## Main results
 
@@ -34,14 +37,23 @@ interesting polynomial cuboids are the non-proportional ones.
 * `IsPolyCuboid.swap_ab`, `swap_bc`, `swap_ac`, `IsPolyCuboid.comp_X_add_C`: symmetries and
   translations.
 
-Without coprimality the monomial statement is as hard as the perfect cuboid problem itself,
-because `(αX^k, βX^k, γX^k)` is a polynomial cuboid whenever `(α, β, γ)` is a rational one.
-Open (not proved here): a monomial edge `α X^k`, `k ≥ 2`, **not** coprime to the other edges
-forces proportionality (done only for `k = 1`, `proportional_of_linear_edge`); edges with two
-distinct roots; any non-proportional polynomial cuboid. Stoll–Testa (arXiv:1009.0388v3) classify
-integral curves of degree ≤ 6 on the cuboid surface; whether this excludes every non-proportional
-polynomial cuboid of reduced degree ≤ 7 depends on the list of `ℚ`-rational conics, which we did
-not verify.
+Without coprimality the monomial statement cannot be a contradiction, because
+`(αX^k, βX^k, γX^k)` is a polynomial cuboid whenever `(α, β, γ)` is a rational one. Monomial
+edges of every degree are settled in `PolyMonomialEdge.lean`: a polynomial cuboid with an edge
+`α X^k` (or `α (X − r)^k`), coprime or not, has proportional edges
+(`IsPolyCuboid.proportional_of_monomial_edge`, `IsPolyCuboid.proportional_of_single_root_edge`,
+via the four-term square lemma `not_isSquare_four_term`), so a polynomial cuboid with an edge
+having a single root exists iff an integer perfect cuboid exists
+(`exists_isPolyCuboid_single_root_iff`). Polynomial Euler bricks (three square faces only),
+which do exist, are in `PolyBrick.lean`.
+
+Open (not proved here): edges with two distinct roots; any non-proportional polynomial cuboid.
+By Stoll–Testa (arXiv:1009.0388v3, Thm. 7.1–7.3, Cor. 7.4: no curves of odd degree, every conic
+lies in `a₁a₂a₃c = 0`, no rational quartics, no curves of degree 6), every rational curve of
+degree ≤ 7 on the cuboid surface lies in a hyperplane `a_j = 0` or `c = 0`; since a polynomial
+cuboid has `a b c ≠ 0` and `g ≠ 0`, every polynomial cuboid whose seven coordinates, after
+removing their common factor, have degree ≤ 7 is proportional (paper argument from the quoted
+statements, not formalized).
 -/
 @[expose] public section
 
