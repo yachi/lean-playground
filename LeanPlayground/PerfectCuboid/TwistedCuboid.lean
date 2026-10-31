@@ -8,8 +8,9 @@ public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 # Cuboid configurations are twisted perfect cuboids
 
 `ConfigCuboid.lean` shows that a positive cuboid configuration on `E_N : Y² = X³ − N²X` gives a
-rational perfect cuboid exactly when its legs satisfy `U₁² + U₂² = □`, and leaves open whether
-this square condition is automatic. This file names what a configuration is without it.
+rational perfect cuboid exactly when its legs satisfy `U₁² + U₂² = □`. This file names what a
+configuration is without that condition; `TwistRigidity.lean` then shows the condition is automatic
+(`IsConfigPts.isSquare_twist`).
 
 A **`k`-twisted perfect cuboid** (`IsTwistedCuboid k a b c d e f g`) is a box with positive
 rational edges `a, b, c` and rational space diagonal `g`, whose three face diagonals are rational
@@ -29,20 +30,25 @@ perfect cuboid (`isTwistedCuboid_one_iff`).
 * `exists_config_iff`: a positive configuration exists if and only if a `k`-twisted perfect cuboid
   exists for some `k`.
 * `exists_isPerfectCuboid_iff_twisted`: a perfect cuboid exists if and only if a `1`-twisted one
-  does. So the extra condition `U₁² + U₂² = □` of `exists_isPerfectCuboid_iff` is exactly `k = 1`,
-  and it follows from the definition of a configuration only if no `k`-twisted perfect cuboid
-  with `k ∉ ℚ*²` exists. That question is open, just like the perfect cuboid problem itself.
+  does. So the extra condition `U₁² + U₂² = □` of `exists_isPerfectCuboid_iff` is exactly `k = 1`.
+  By twist rigidity (`TwistRigidity.lean`: `IsTwistedCuboid.isSquare_twist`,
+  `not_exists_isTwistedCuboid_of_not_isSquare`) no `k`-twisted perfect cuboid with `k ∉ ℚ*²`
+  exists, so the condition is automatic and `exists_isPerfectCuboid_iff_exists_isConfigPts` holds
+  without it.
 * `IsTwistedCuboid.even_padicValRat`: every prime `q ≡ 3 (mod 4)` divides `k` to an even power,
   because `k = (a/d)² + (b/d)²` is a sum of two squares. So the squarefree part of `k` is a product
   of `2` and primes `≡ 1 (mod 4)`.
 
 A computer search over all boxes with integer edges up to `6000` found no twisted perfect cuboid
-with `k ≠ 1` (and, as expected, no perfect cuboid).
+with `k ≠ 1`; this is now a theorem (`TwistRigidity.twist_rigidity`: three equal twists force
+`k = 1`).
 
 Literature note. Asiryan (arXiv:2610.10643, Definition 1) defines a configuration with no square
 condition, and Corollary 1 credits the configuration-to-cuboid direction to Paulsen–West
-(Houston J. Math. 48 (2022), Proposition 3.1). By the results here, that direction needs `k = 1`:
-without it, a configuration only gives a twisted cuboid.
+(Houston J. Math. 48 (2022), Proposition 3.1). By the results here a configuration gives a
+`k`-twisted cuboid with `k = U₁² + U₂²`, and `TwistRigidity.lean` shows `k` is always a square,
+so the Paulsen–West direction holds unconditionally by an elementary argument (we did not check
+whether their Proposition 3.1 proves the square condition).
 -/
 
 @[expose] public section

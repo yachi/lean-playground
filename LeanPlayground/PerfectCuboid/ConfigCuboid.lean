@@ -21,8 +21,10 @@ configuration recovers the shape of the cuboid. In general:
   `(U₂² + U₃²) H₁² = (U₁² + U₂²) H₃²`, so if one face diagonal is rational, all three are.
 
 So a configuration gives a rational perfect cuboid **exactly when `U₁² + U₂²` is a square**
-(`IsConfigPts.isRatCuboid_iff`). This extra square condition does not follow from the definition
-of a configuration by these identities alone. With it, the correspondence is an equivalence:
+(`IsConfigPts.isRatCuboid_iff`). This square condition does not follow from these identities
+alone, but it always holds: `TwistRigidity.lean` proves `IsConfigPts.isSquare_twist`, hence
+`IsConfigPts.exists_isRatCuboid` and `exists_isPerfectCuboid_iff_exists_isConfigPts` (no square
+condition). With the condition stated explicitly, the correspondence reads:
 
 * `exists_isPerfectCuboid_iff`: a perfect cuboid exists if and only if, for some `N > 0`, `E_N`
   has a positive cuboid configuration with `U₁² + U₂²` a square.
@@ -341,7 +343,8 @@ end Cuboid
 
 /-- **The cuboid correspondence as an equivalence.** A perfect cuboid exists if and only if, for
 some `N > 0`, the curve `E_N` has a positive cuboid configuration whose legs satisfy
-`U₁² + U₂² = □`. -/
+`U₁² + U₂² = □`. The square condition is automatic (`CongruentRank.IsConfigPts.isSquare_twist`
+in `TwistRigidity.lean`), see `exists_isPerfectCuboid_iff_exists_isConfigPts`. -/
 theorem exists_isPerfectCuboid_iff :
     (∃ a b c : ℕ, IsPerfectCuboid a b c) ↔
       ∃ N x₁ x₂ x₃ y₁ y₂ y₃ : ℚ, IsConfigPts N x₁ x₂ x₃ y₁ y₂ y₃ ∧

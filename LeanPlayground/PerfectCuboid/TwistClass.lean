@@ -40,7 +40,9 @@ at `T₀ = (0, 0)`) is the connecting map of the `2`-isogeny descent, a homomorp
 `k ≡ α(Q₁ + Q₂ + Q₃ + T₀)`, and a configuration is a perfect cuboid exactly when
 `Q₁ + Q₂ + Q₃ + T₀ ∈ φ̂(E'_N(ℚ))`: a single `𝔽₂`-linear condition on Mordell–Weil coordinates.
 It never excludes a configuration on its own; it says which twist class each configuration lands
-in.
+in. By twist rigidity (`TwistRigidity.lean`, `IsConfigPts.isSquare_neg_prod`) every positive
+configuration lands in the trivial class, so `Q₁ + Q₂ + Q₃ + T₀ ∈ φ̂(E'_N(ℚ))` is a consequence of
+the configuration equations, not an extra constraint.
 -/
 
 @[expose] public section
@@ -146,7 +148,7 @@ theorem exists_isPerfectCuboid_iff' :
 
 /-- **Configurations with a given twist, by `−X₁X₂X₃`.** For every `k > 0`: some `E_N` has a
 positive cuboid configuration with `k · (−X₁X₂X₃)` a square if and only if a `k`-twisted perfect
-cuboid exists. -/
+cuboid exists. For `k ∉ ℚ*²` both sides are false (`TwistRigidity.lean`). -/
 theorem exists_config_iff_exists_twistedCuboid' {k : ℚ} (hk : 0 < k) :
     (∃ N x₁ x₂ x₃ y₁ y₂ y₃ : ℚ, IsConfigPts N x₁ x₂ x₃ y₁ y₂ y₃ ∧
         IsSquare (k * -(x₁ * x₂ * x₃))) ↔
