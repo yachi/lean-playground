@@ -432,6 +432,42 @@ Euclid's triple, up to signs and edge order, so it is never perfect.
 | The octic is a square only if `mn(m² − n²) = 0` | `euler_octic_ne_sq` |
 | No brick of the family is perfect | `not_isPerfectCuboid_euler` |
 
+Round 10 looks at the prime factorizations of the seven lengths. An edge `x` is a leg of three
+right triangles, so `x² = (d − b)(d + b) = (e − c)(e + c) = (g − f)(g + f)`.
+`DivisorForm.lean` turns this into one equation in three rationals `rᵢ = (hypotenuse + leg)/x`.
+`EdgePrimePower.lean` proves Korec's 1984 theorem that no edge is a prime power. It covers
+every edge and `p = 2`, and does not assume primitivity. `DiagonalPrimePower.lean` proves the
+same for the face diagonals; we found no earlier statement of that. Its proof rests on two
+inequalities, `(g − x)² > 2(g + x)` and `p^m ∣ x², p ∤ 2y ⇒ p^m < x + 2y`.
+
+| Result | Lean |
+|---|---|
+| A perfect cuboid exists iff `r₁² + r₁⁻² + r₂² + r₂⁻² − r₃² − r₃⁻² = 2` has a rational solution with all `rᵢ > 1` | `exists_isPerfectCuboid_iff_divisor_form` |
+| No edge is a prime power `p^k` | `IsPerfectCuboid.ne_prime_pow`, `ne_prime_pow_b`, `ne_prime_pow_c` |
+| Divisor inequality `t₁²t₂² < t₃²(t₁² + t₂²)` | `inv_sq_add_inv_sq_gt` |
+| No face diagonal is a prime power `p^k` | `IsPerfectCuboid.face_diagonal_ne_prime_pow` |
+
+`TwoPrimeCongruent.lean` proves seven classes of numbers `pq` and `2pq` non-congruent. They are
+exactly the two-prime classes in which every member has 2-Selmer rank 0. The descents are by
+Genocchi (1855) and Lagrange (1974/75); for the class `2pq` with `p ≡ q ≡ 3 (mod 8)` we found no
+source. Each case of the descent fails mod 8, or because `−1`, `2` or `−2` is not a square
+mod `p`, or because `p` is not a square mod `q`. Consequently the three congruent numbers
+`(a + d)(a + e)(g + d)(g + e)`, … of a perfect cuboid avoid all seven classes.
+
+| Result | Lean |
+|---|---|
+| `pq` is not congruent: `p ≡ q ≡ 3`; `p ≡ 1, q ≡ 3`; `p ≡ 5, q ≡ 7` (mod 8), the last two with `(p/q) = −1` | `not_isCongruent_pq_three_three`, `not_isCongruent_pq_one_three`, `not_isCongruent_pq_five_seven` |
+| `2pq` is not congruent: `p ≡ q ≡ 5`; `p ≡ q ≡ 3`; `p ≡ 1, q ≡ 5`; `p ≡ 3, q ≡ 7` (mod 8), the last two with `(p/q) = −1` | `not_isCongruent_two_pq_five_five`, `…_three_three`, `…_one_five`, `…_three_seven` |
+| The diagonal products and `sf(abcg/2)` avoid all seven classes | `IsPerfectCuboid.diag_prod_{ed,fd,fe}_twoPrimeAvoid`, `squarefree_part_twoPrimeAvoid` |
+
+Three published parametric families of almost-perfect boxes are never perfect:
+
+| Family | Why it is never perfect | Lean |
+|---|---|---|
+| Colman's degree-14 Euler bricks (Fibonacci Quart. 1988, (4.8)); we found no earlier proof | `g² = (m² + n²)²·O·P` with `O` Euler's octic and `P = O² + (16mnR)²`. `O` and `P` share only the prime 2, so `O` must be a square, which Pocklington rules out | `not_isPerfectCuboid_colman` |
+| Bromhead–Colman edge cuboids (Colman 1988, (4.12)) | `c = 2E·(4pq(p⁴ − q⁴))²`, and `2E ≡ 2 (mod 4)` or `≡ 32 (mod 64)` | `not_isPerfectCuboid_colmanEdge` |
+| Leech's edge cuboids (1977), with no Pythagorean hypothesis needed | `T(ζ⁴ + ξ²η²)² = (ζ⁴ − ξ²η²)⁴ − (2ξηζ²)⁴`, and Fermat: `x⁴ − y⁴ ≠ z²` | `not_isPerfectCuboid_leechEdge`, `quartic_neg_six` |
+
 #### Vendored: the division-polynomial formula — `TauCeti/`
 
 Mathlib's division polynomials are not yet linked to the group law (its pull request #13782 was
