@@ -468,6 +468,31 @@ Three published parametric families of almost-perfect boxes are never perfect:
 | Bromhead–Colman edge cuboids (Colman 1988, (4.12)) | `c = 2E·(4pq(p⁴ − q⁴))²`, and `2E ≡ 2 (mod 4)` or `≡ 32 (mod 64)` | `not_isPerfectCuboid_colmanEdge` |
 | Leech's edge cuboids (1977), with no Pythagorean hypothesis needed | `T(ζ⁴ + ξ²η²)² = (ζ⁴ − ξ²η²)⁴ − (2ξηζ²)⁴`, and Fermat: `x⁴ − y⁴ ≠ z²` | `not_isPerfectCuboid_leechEdge`, `quartic_neg_six` |
 
+Round 11 pushes the prime-factor line further. `EdgeTwoPrimes.lean` proves that no edge of a
+perfect cuboid is `p^k q^l`, so **every edge has at least three distinct prime factors**. Korec
+(1984) had the two-prime case only under side conditions. The proof needs no primitivity: at each
+of the two primes the smallest exponent among the three legs must occur twice, and together with
+the divisor inequality this leaves eight shapes, all reducing to one equation
+`(XVY − U)² + (UV − XY)² = (UVY − X)²` in prime powers. That equation is ruled out by reducing it
+modulo `X` and `U` and then using it as an inequality.
+
+| Result | Lean |
+|---|---|
+| No edge is `p^k q^l` (`p ≠ q` prime) | `IsPerfectCuboid.edge_ne_two_prime_pow` (`_b`, `_c`) |
+| Every edge has `≥ 3` prime factors; `≥ 2` odd ones; an odd edge has `≥ 3` odd ones | `IsPerfectCuboid.three_le_primeFactors_card`, `two_le_oddPrimeFactors_card`, `three_le_oddPrimeFactors_card_of_odd` |
+| The residual equation has no solution in prime powers | `res_no_solution` |
+
+The same divisor method applies to boxes that are almost perfect.
+
+| Result | Lean |
+|---|---|
+| `(x^{2m} − 1)(x^{2n} − 1)` is never a square for `m ≠ n` (known: Hajdu–Szalay 2000, Cohn 2002); here an elementary proof via the Pell equation and lifting the exponent | `PellLeg.pow_sub_one_mul_pow_sub_one_not_square` (`PellLeg.lean`) |
+| Face cuboid (all integral except one face diagonal): neither edge next to the irrational diagonal is a prime power; `(153, 672, 104)` shows two primes can occur | `IsFaceCuboid.edge_ne_prime_pow_a`, `_b` (`FaceCuboid.lean`) |
+| Edge cuboid (all integral except one edge `√N`): `N` is not a prime power | `IsEdgeCuboid.N_ne_prime_pow` (`EdgeCuboid.lean`) |
+| Edge cuboid: `2⁸·3⁴·5⁴·7·11·13 ∣ a·b·N·d·e·f·g`, attained, and no prime `≥ 17` is forced; 2-adic shape | `IsEdgeCuboid.leech_dvd`, `edge_two_adic` |
+| Euler brick with an edge `p^k`: reduced to `(PQ − 1)² + P(Q − 1)² = F²` with `P, Q` even powers of `p`, which forces `k ≥ 4` (`k ≥ 5` for `p = 2`) | `exists_isEulerBrick_prime_pow_iff`, `IsEulerBrick.prime_pow_exponent_ge` (`BrickPrimePower.lean`) |
+| If no odd prime divides all edges, `g − x` is not `p^i` or `2p^i` dividing the opposite face diagonal; so a face diagonal `2^s p^k` cannot have `g − a = 2p^i` | `DiagonalTwoPrimes.g_sub_ne_prime_pow`, `face_diagonal_ne_two_pow_mul_prime_pow_of_F1` |
+
 #### Vendored: the division-polynomial formula — `TauCeti/`
 
 Mathlib's division polynomials are not yet linked to the group law (its pull request #13782 was
