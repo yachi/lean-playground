@@ -146,3 +146,9 @@ import LeanPlayground.PerfectCuboid.ConjugateBox
 import LeanPlayground.PerfectCuboid.NearMissTwist
 import LeanPlayground.PerfectCuboid.SquareLengths
 import LeanPlayground.PerfectCuboid.PolynomialCuboid
+import LeanPlayground.PerfectCuboid.PolyMonomialEdge
+import LeanPlayground.PerfectCuboid.PolySpecialize
+import LeanPlayground.PerfectCuboid.PolyBrick
+import LeanPlayground.PerfectCuboid.TwistTwo
+import LeanPlayground.PerfectCuboid.SquareLengthsHyp
+import LeanPlayground.PerfectCuboid.BrickSupport

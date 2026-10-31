@@ -23,6 +23,9 @@ positive legs, Fermat's quartics give:
   the even leg alike; no parametrization of the triangle is needed.
 * `not_isSquare_two_mul_legs`: `2 x y` is not a square (Fermat's right triangle theorem,
   `FermatTriangle.not_isSqAreaTriangle`).
+* 2·leg·hyp: see `SquareLengthsHyp.lean` (`SquareLengthsHyp.not_isSquare_two_mul_leg_hyp`, via
+  `y⁴ + (2xz)² = (x² + z²)²` and `not_fermat_42`; `IsPerfectCuboid.two_mul_leg_hyp_ne_sq` for all
+  twelve products).
 * Consequently (`not_isSquare_legs`, `not_isSquare_leg_hyp`) two lengths of one triangle are
   never both squares.
 * `not_isCongruent_two`: `2` is not a congruent number (`a b = 4`, `a² + b² = c²` gives
