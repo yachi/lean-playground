@@ -11,8 +11,8 @@ edge, every prime `p` (including `p = 2`) and every exponent, without assuming p
 
 ## Main results
 
-* `IsPerfectCuboid.ne_prime_pow`: `a ≠ p ^ k` for every prime `p` and every `k`; by symmetry
-  the same holds for `b` and `c` (`IsPerfectCuboid.ne_prime_pow_b`, `..._c`).
+* `IsPerfectCuboid.edge_ne_prime_pow`: `a ≠ p ^ k` for every prime `p` and every `k`; by symmetry
+  the same holds for `b` and `c` (`IsPerfectCuboid.edge_ne_prime_pow_b`, `..._c`).
 * `inv_sq_add_inv_sq_gt`: the *divisor inequality* `t₁²t₂² < t₃²(t₁² + t₂²)` for the three
   divisors `tₘ = (diagonal) − (leg)` of `a²`; it generalises the inequality `(v² − 1)(w² − 1) < 1`
   for `tᵢ = t₃ v, t₃ w`.
@@ -118,7 +118,7 @@ theorem exp_eq_of_sq_add_sq {p i j l B C F : ℕ} (hp : p.Prime) (hB : ¬ p ∣ 
 
 /-- **Korec (1984).** The first edge of a perfect cuboid is not a prime power. No primitivity or
 parity assumption is needed, and `p = 2` is allowed. -/
-theorem IsPerfectCuboid.ne_prime_pow {a b c : ℕ} (h : IsPerfectCuboid a b c) {p k : ℕ}
+theorem IsPerfectCuboid.edge_ne_prime_pow {a b c : ℕ} (h : IsPerfectCuboid a b c) {p k : ℕ}
     (hp : p.Prime) : a ≠ p ^ k := by
   rintro rfl
   obtain ⟨d, hd⟩ := h.sq_ab
@@ -169,16 +169,16 @@ theorem IsPerfectCuboid.ne_prime_pow {a b c : ℕ} (h : IsPerfectCuboid a b c) {
     exact hb0.ne' (pow_eq_zero_iff two_ne_zero |>.1 (Nat.add_left_cancel h3))
 
 /-- The second edge of a perfect cuboid is not a prime power. -/
-theorem IsPerfectCuboid.ne_prime_pow_b {a b c : ℕ} (h : IsPerfectCuboid a b c) {p k : ℕ}
+theorem IsPerfectCuboid.edge_ne_prime_pow_b {a b c : ℕ} (h : IsPerfectCuboid a b c) {p k : ℕ}
     (hp : p.Prime) : b ≠ p ^ k :=
-  IsPerfectCuboid.ne_prime_pow (a := b) (b := c) (c := a)
+  IsPerfectCuboid.edge_ne_prime_pow (a := b) (b := c) (c := a)
     ⟨h.toIsEulerBrick.rotate, by have := h.sq_abc; rwa [show b ^ 2 + c ^ 2 + a ^ 2 =
       a ^ 2 + b ^ 2 + c ^ 2 by ring]⟩ hp
 
 /-- The third edge of a perfect cuboid is not a prime power. -/
-theorem IsPerfectCuboid.ne_prime_pow_c {a b c : ℕ} (h : IsPerfectCuboid a b c) {p k : ℕ}
+theorem IsPerfectCuboid.edge_ne_prime_pow_c {a b c : ℕ} (h : IsPerfectCuboid a b c) {p k : ℕ}
     (hp : p.Prime) : c ≠ p ^ k :=
-  IsPerfectCuboid.ne_prime_pow (a := c) (b := a) (c := b)
+  IsPerfectCuboid.edge_ne_prime_pow (a := c) (b := a) (c := b)
     ⟨h.toIsEulerBrick.rotate.rotate, by have := h.sq_abc; rwa [show c ^ 2 + a ^ 2 + b ^ 2 =
       a ^ 2 + b ^ 2 + c ^ 2 by ring]⟩ hp
 

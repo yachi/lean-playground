@@ -443,7 +443,7 @@ inequalities, `(g − x)² > 2(g + x)` and `p^m ∣ x², p ∤ 2y ⇒ p^m < x + 
 | Result | Lean |
 |---|---|
 | A perfect cuboid exists iff `r₁² + r₁⁻² + r₂² + r₂⁻² − r₃² − r₃⁻² = 2` has a rational solution with all `rᵢ > 1` | `exists_isPerfectCuboid_iff_divisor_form` |
-| No edge is a prime power `p^k` | `IsPerfectCuboid.ne_prime_pow`, `ne_prime_pow_b`, `ne_prime_pow_c` |
+| No edge is a prime power `p^k` | `IsPerfectCuboid.edge_ne_prime_pow`, `edge_ne_prime_pow_b`, `edge_ne_prime_pow_c` |
 | Divisor inequality `t₁²t₂² < t₃²(t₁² + t₂²)` | `inv_sq_add_inv_sq_gt` |
 | No face diagonal is a prime power `p^k` | `IsPerfectCuboid.face_diagonal_ne_prime_pow` |
 
