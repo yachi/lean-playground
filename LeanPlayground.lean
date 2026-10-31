@@ -140,3 +140,9 @@ import LeanPlayground.PerfectCuboid.FaceCuboidThirdEdge
 import LeanPlayground.PerfectCuboid.FaceCuboidLeech
 import LeanPlayground.PerfectCuboid.FaceCuboidDiagonal
 import LeanPlayground.PerfectCuboid.FaceDiagonalF2
+import LeanPlayground.PerfectCuboid.TwistRigidity
+import LeanPlayground.PerfectCuboid.PrimeSupport
+import LeanPlayground.PerfectCuboid.ConjugateBox
+import LeanPlayground.PerfectCuboid.NearMissTwist
+import LeanPlayground.PerfectCuboid.SquareLengths
+import LeanPlayground.PerfectCuboid.PolynomialCuboid
