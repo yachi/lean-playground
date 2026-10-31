@@ -126,3 +126,9 @@ import LeanPlayground.PerfectCuboid.EdgePrimePower
 import LeanPlayground.PerfectCuboid.DiagonalPrimePower
 import LeanPlayground.PerfectCuboid.DivisorForm
 import LeanPlayground.PerfectCuboid.TwoPrimeCongruent
+import LeanPlayground.PerfectCuboid.EdgeTwoPrimes
+import LeanPlayground.PerfectCuboid.PellLeg
+import LeanPlayground.PerfectCuboid.FaceCuboid
+import LeanPlayground.PerfectCuboid.DiagonalTwoPrimes
+import LeanPlayground.PerfectCuboid.EdgeCuboid
+import LeanPlayground.PerfectCuboid.BrickPrimePower
