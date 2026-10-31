@@ -135,3 +135,8 @@ import LeanPlayground.PerfectCuboid.FaceCuboid
 import LeanPlayground.PerfectCuboid.DiagonalTwoPrimes
 import LeanPlayground.PerfectCuboid.EdgeCuboid
 import LeanPlayground.PerfectCuboid.BrickPrimePower
+import LeanPlayground.PerfectCuboid.EdgeCuboidTwoPrimes
+import LeanPlayground.PerfectCuboid.FaceCuboidThirdEdge
+import LeanPlayground.PerfectCuboid.FaceCuboidLeech
+import LeanPlayground.PerfectCuboid.FaceCuboidDiagonal
+import LeanPlayground.PerfectCuboid.FaceDiagonalF2

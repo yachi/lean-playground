@@ -202,25 +202,13 @@ theorem IsPerfectCuboid.edge_ne_prime_pow_of_three_factorizations {a b c : ℕ}
     (by rw [← he]; ring) (by rw [← hg, ← hf]; ring) hp ?_
   rw [← pow_mul, mul_comm]
 
-/-! ### Hook for two prime factors (depends on brief 1, round 11)
+/-! ### Two prime factors
 
-The analogue of the two-prime theorem for a general `N` would read
-
-```
-theorem three_factorizations_ne_two_prime_pow {N x y z X Y Z : ℕ} (hx0 : 0 < x) (hy0 : 0 < y)
-    (hxyz : x ^ 2 + y ^ 2 = z ^ 2) (hX : N + x ^ 2 = X ^ 2) (hY : N + y ^ 2 = Y ^ 2)
-    (hZ : N + z ^ 2 = Z ^ 2) {p q K L : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q) :
-    N ≠ p ^ K * q ^ L
-
-theorem IsEdgeCuboid.N_ne_two_prime_pow {a b N : ℕ} (h : IsEdgeCuboid a b N)
-    {p q K L : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q) : N ≠ p ^ K * q ^ L := by
-  obtain ⟨d, e, f, g, hd, he, hf, hg⟩ := h.diagonals
-  exact three_factorizations_ne_two_prime_pow h.pos_a h.pos_b hd (by rw [← he]; ring)
-    (by rw [← hf]; ring) (by rw [← hg, ← hd]; ring) hp hq hpq
-```
-
-and is left for the merge with the two-prime file (it is not proved here). It is consistent with
-the numerical search: no edge cuboid with `N ≤ 10⁹` has `N` with at most two prime factors. -/
+The two-prime analogue, `N ≠ p ^ K * q ^ L` for a general `N` with three factorizations, is
+proved in `LeanPlayground.PerfectCuboid.EdgeCuboidTwoPrimes`
+(`three_factorizations_ne_two_prime_pow`, `IsEdgeCuboid.N_ne_two_prime_pow`,
+`IsEdgeCuboid.three_le_primeFactors_card`). It is consistent with the numerical search: no edge
+cuboid with `N ≤ 10⁹` has `N` with at most two prime factors. -/
 
 /-! ### The divisor inequality for edge cuboids -/
 
