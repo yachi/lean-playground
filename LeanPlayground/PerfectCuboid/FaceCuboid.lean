@@ -39,6 +39,12 @@ For C1, `a` is the common leg of `(a, c, e)` and `(a, f, g)`, and `f² − c² =
 
 The face cuboid `(153, 672, 104)` has `a = 153 = 3²·17`: the bound "not a prime power" cannot be
 improved to "not a product of two prime powers" for face cuboids.
+
+Two decorated face-cuboid types, `Adjacency.IsTypeA` (`x² + y² + 2c² = □`) and
+`Adjacency.IsTypeB` (`r < u`, `u² − r² = □`), arise from the classification of a Pythagorean triple
+plus a number adjacent to all three sides (`Adjacency.classification`); neither can be a perfect
+cuboid (`IsTypeA.not_isSquare_face`, `IsTypeB.not_isSquare_face`). Their arithmetic is in
+`AdjacencyNearMiss.lean`.
 -/
 
 @[expose] public section
