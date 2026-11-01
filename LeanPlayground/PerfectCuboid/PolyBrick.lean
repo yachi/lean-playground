@@ -568,8 +568,11 @@ theorem natDegree_hyp_add_one_le_radical {x y z : ℚ[X]} (hx : x ≠ 0) (hy : y
 
 open UniqueFactorizationMonoid in
 /-- **Radical bound for pairwise coprime polynomial bricks.** Summing the radical Mason–Stothers
-inequality over the three faces. (No pairwise coprime polynomial brick is known; Saunderson's
-brick is not pairwise coprime.) -/
+inequality over the three faces. (No pairwise coprime polynomial brick over `ℚ[X]` is known;
+Saunderson's brick is not pairwise coprime. In other characteristics they exist: the degenerate
+cuboid `(2X, X² − 1, i(X² + 1))` of `PolyCharP.isCuboid_family` is pairwise coprime, and over
+`𝔽₅[X]` there is a nondegenerate pairwise coprime cuboid,
+`PolyPythagoras.isNondegCuboid_coprime_five`.) -/
 theorem IsPolyBrick.radical_sum_bound {a b c : ℚ[X]} (h : IsPolyBrick a b c)
     (hab : IsCoprime a b) (hac : IsCoprime a c) (hbc : IsCoprime b c) {d e f : ℚ[X]}
     (hd : a ^ 2 + b ^ 2 = d ^ 2) (he : a ^ 2 + c ^ 2 = e ^ 2) (hf : b ^ 2 + c ^ 2 = f ^ 2) :
