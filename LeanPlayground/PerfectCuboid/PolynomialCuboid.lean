@@ -54,6 +54,12 @@ degree ≤ 7 on the cuboid surface lies in a hyperplane `a_j = 0` or `c = 0`; si
 cuboid has `a b c ≠ 0` and `g ≠ 0`, every polynomial cuboid whose seven coordinates, after
 removing their common factor, have degree ≤ 7 is proportional (paper argument from the quoted
 statements, not formalized).
+
+Over a field of characteristic `p` see `PolyCharP.lean`: characteristic 2 is trivial, and for
+odd `p` with `√−1` in the field there are nondegenerate non-proportional cuboids, e.g. the
+Frobenius cuboid `(X − X^p, i (X + X^p), X^(p+1) + 1)` over `𝔽_p[X]`, `p ≡ 1 (mod 4)`
+(`PolyCharP.isNondegCuboid_frobenius`); so every proportionality theorem over `ℚ[X]` must use
+characteristic `0`.
 -/
 @[expose] public section
 

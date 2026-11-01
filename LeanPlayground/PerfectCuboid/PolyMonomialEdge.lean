@@ -31,6 +31,10 @@ The engine is a lemma on sparse squares:
   `u u' v' v ≠ 0`, `0 < m < n`, is never a square in `K[X]` (`K` any ordered field).
 
 Lemmas S and F are stated over an arbitrary ordered field; the cuboid theorems are over `ℚ`.
+
+The ordered-field hypothesis is necessary at cuboid level: over `𝔽₅` the cuboid
+`(X, 1 + X², 2 + 3X²)` (zero space diagonal) has a monomial edge and is not proportional
+(`PolyCharP.isCuboid_five`, `PolyCharP.not_proportional_five`).
 -/
 @[expose] public section
 

@@ -32,6 +32,10 @@ impossible for a cuboid: the last one gives `(a + g)² = b² + c² < g²`.
 
 Leech's divisibility facts do not rule out `λ = 1` (see the round-5 report), so this is a genuine
 new restriction. It removes one square class of perfect cuboids, not all of them.
+
+Integer form of `ξ`: the Gaussian pair `u = c − b i`, `v = g − a` (`u / v = −i ξ`). A perfect cuboid
+exists iff some `u, v ∈ ℤ[i]` with `N u ≠ N v` and `u v̄` off the axes have `N(uv)`, `N(u² − v²)`,
+`N(u² + v²)` all squares (`Bridges.exists_isPerfectCuboid_iff_gaussian`).
 -/
 
 @[expose] public section

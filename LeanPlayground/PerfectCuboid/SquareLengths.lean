@@ -52,6 +52,10 @@ so they hold for Euler bricks too. Bricks can have one square length: the edge `
 `(429, 880, 2340)`. Hence "no square edge" or "no square face diagonal" cannot be proved for
 perfect cuboids by one-triangle arguments. Whether two face diagonals (`d e = □`, needs
 `(de)² = (ag)² + (bc)²`) can both be squares is open.
+
+See also `IsPerfectCuboid.face_diag_sq_add_ne_sq` (`Adjacency.lean`): none of `d² + e²`,
+`d² + f²`, `e² + f²` is a square, since `d² + e² = g² + a²` and `z² + x²` is never a square for a
+right triangle `x² + y² = z²` (`Adjacency.not_isSquare_hyp_sq_add_leg_sq`).
 -/
 
 @[expose] public section

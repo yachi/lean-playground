@@ -37,6 +37,10 @@ in coordinates:
   `x⁴ + 18 x² y² + y⁴ = (m⁴ + 10 m² n² + 5 n⁴)²`.
 
 Pocklington's theorem then gives `x y = 0`, and in both cases that forces the trivial solution.
+
+For a general Euler brick, the derived brick is perfect iff `σ₂ = a²b² + b²c² + c²a²` is a square,
+iff the face-diagonal triangle `(d, e, f)` is Heronian (`Bridges.isSquare_sigma2_iff_derived`,
+`Bridges.heron_iff_derived`).
 -/
 
 @[expose] public section
