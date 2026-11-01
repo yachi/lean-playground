@@ -500,6 +500,14 @@ is ruled out in three steps:
    divides the denominator of `x(mG)` for the largest index `m` and of no earlier one; reducing
    equation (24) modulo it forces `b = a + c` or `c = a + b`. Mathlib has neither Ingram's theorem
    (it needs canonical heights) nor the reduction map on points.
+   `KummerDescent.lean` (round 16) replaces this step by a square condition: in the pattern, `c`
+   even puts `cG + U` in `U + 2E_N(ℚ)`, so its abscissa `x` has `−Nx` and `−2N(x − N)` rational
+   squares (`pattern_quarter`); hence the Diophantine hypothesis `QuarterFree N` alone excludes
+   rank one (`not_inRankOne_of_quarterFree`). `KummerAddition.lean` proves, without Ingram, all
+   Kummer (2-descent) relations the pattern forces, `κ(Q₁)κ(Q₂) = κ(T)`, `κ(Q₃) = κ(U)`,
+   `κ(Q₁)κ(Q₂)κ(Q₃) = κ(S)` (`pattern_pair`, `pattern_single`, `pattern_sum`), and directly from
+   `InRankOne` the dichotomy `inRankOne_dichotomy`. Neither `PrimitiveDivisorStep` nor
+   `QuarterFree` is proved.
 3. **Positivity (§6.4).** Proved here: `not_pattern`.
 
 `not_rankOne` records this dependency: with steps 1 and 2 as hypotheses, no positive
