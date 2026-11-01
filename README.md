@@ -233,6 +233,14 @@ objects, and are perfect cuboids when `d < 0` or some `p ≡ 3 (mod 4)` divides 
 triple plus a number adjacent to all three sides is a perfect cuboid or one of two face-cuboid
 types that are never perfect; a polynomial family of Eisenstein bricks; and the Frobenius cuboid,
 a nondegenerate non-proportional polynomial cuboid over `𝔽_p[X]` for every `p ≡ 1 (mod 4)`.
+Round 16 adds a 2-descent on `E_N`: in Asiryan's rank-one pattern the third point lies in
+`U + 2E_N(ℚ)`, so a rank-one configuration forces a rational perfect cuboid whose derived
+triangle `(cg, ab, ef)` is a *quarter triangle* (generators `m`, `m ± n` all squares); this
+replaces Ingram's primitive-divisor theorem by the explicit square condition `QuarterFree N`
+(`KummerDescent.lean`), which remains unproved (open problem 14). Along the way: the Kummer
+relations of the pattern (`KummerAddition.lean`), the integer theory of quarter triangles
+(`QuarterTriangle.lean`), and a new square class for every box with integral `d, e, g`:
+`gcd(ag, bc)·(e+a)(g+e)(d+a)(g+d)` is a square or twice a square (`QuarterCharacters.lean`).
 
 <details>
 <summary>Every file, by topic (click to expand)</summary>
@@ -259,6 +267,7 @@ a nondegenerate non-proportional polynomial cuboid over `𝔽_p[X]` for every `p
 | [`Contradiction.lean`](LeanPlayground/PerfectCuboid/Contradiction.lean) | perfect cuboid | normal form (primitive, one odd edge, 12640320 ∣ abc, longest edge ≥ 233); `no_congruence_obstruction` | theorem | new (meta-result on congruences) | [#4](https://github.com/yachi/lean-playground/pull/4) |
 | [`BeauvilleLambda.lean`](LeanPlayground/PerfectCuboid/BeauvilleLambda.lean) | perfect cuboid | the Beauville invariant is never trivial (twist of y² = x⁵ − x) | theorem | Stoll–Testa setup; statement new | [#28](https://github.com/yachi/lean-playground/pull/28) |
 | [`BeauvilleCharacters.lean`](LeanPlayground/PerfectCuboid/BeauvilleCharacters.lean) | perfect cuboid | three more square classes (2ξ, ξ²∓1) are never trivial | theorem | Stoll–Testa (arXiv:1009.0388) setup; new | [#32](https://github.com/yachi/lean-playground/pull/32) |
+| [`QuarterCharacters.lean`](LeanPlayground/PerfectCuboid/QuarterCharacters.lean) | body cuboid / perfect cuboid | Gaussian identities (p²−q²)(p²+q̄²) = 4p²(ag+ιbc), (ag+ιbc)(bg+ιac)(cg+ιab) = ι(def)², and the key identity (ag+ιbc)·W·(2p)² = (β₂β̄₃)² with W = (e+a)(g+e)(d+a)(g+d); **gcd(ag, bc)·W is a square (ag/gcd odd) or twice a square (ag/gcd even)** for every box with integral d, e, g, hence for all three derived triangles of a perfect cuboid; the quarter condition as a factorisation β₂β̄₃ = ±(1+ι)·w·p·(σ² − ιδ²) in ℤ[i] (a restatement, not a kill: it holds for the degenerate box) | theorem | new | (round 16) |
 | [`OctahedralJ.lean`](LeanPlayground/PerfectCuboid/OctahedralJ.lean) | perfect cuboid | the Legendre curve E_ξ of a cuboid has non-real j-invariant | theorem | Stoll–Testa §4 coordinates; new | [#33](https://github.com/yachi/lean-playground/pull/33) |
 
 **Perfect cuboids: congruent-number / configuration framework**
@@ -272,6 +281,9 @@ a nondegenerate non-proportional polynomial cuboid over `𝔽_p[X]` for every `p
 | [`DivPolyScale.lean`](LeanPlayground/PerfectCuboid/DivPolyScale.lean) | E_N configuration | weighted homogeneity of division polynomials of E_N (P_k, Q_k independent of N) | infrastructure | Asiryan §5 | [#20](https://github.com/yachi/lean-playground/pull/20) |
 | [`DivPolyFormula.lean`](LeanPlayground/PerfectCuboid/DivPolyFormula.lean) | tool | affine n•P formula from Tau Ceti's `zsmul_point_eq_smulEval` | infrastructure | Tau Ceti / AINTLIB (Xu, Angdinata) | [#20](https://github.com/yachi/lean-playground/pull/20) |
 | [`Torsion.lean`](LeanPlayground/PerfectCuboid/Torsion.lean) | E_N configuration | E_N(ℚ)_tors = {0, S, T, U} | theorem | Koblitz Ch. I §9 | [#23](https://github.com/yachi/lean-playground/pull/23) |
+| [`KummerDescent.lean`](LeanPlayground/PerfectCuboid/KummerDescent.lean) | E_N configuration | 2-descent on E_N: Kummer classes (x, x−N, x+N) of the four cosets of 2E_N; in Asiryan's rank-one pattern the third point lies in U + 2E, so its abscissa is a *quarter point* (−Nx, −2N(x−N) ∈ ℚ²); `not_inRankOne_of_quarterFree` replaces Ingram's primitive-divisor step by the Diophantine hypothesis `QuarterFree N`, which `quarterFree_iff` shows is the same as: no rational perfect cuboid with abcg = 2Ns² has cg(ef+ab) and 2(ef+ab)(ef+ab+cg) both square (round trip configuration → cuboid → configuration) | theorem (reduction; `QuarterFree` itself unproved) | new (Asiryan arXiv:2610.10643 uses Ingram instead) | (round 16) |
+| [`KummerAddition.lean`](LeanPlayground/PerfectCuboid/KummerAddition.lean) | E_N configuration | the Kummer addition and doubling identities on E_N as polynomial identities; κ(P + 2R) = κ(P); in the rank-one pattern κ(Q₁)κ(Q₂) = κ(T), κ(Q₃) = κ(U), κ(Q₁)κ(Q₂)κ(Q₃) = κ(S); general dichotomy for a rank-one configuration (a point in E[2] + 2E or Q₁ − Q₂ ∈ E[2] + 2E) in explicit square form; the full rank-one square system (eq. 24 + Kummer) in Asiryan's variables t_a, t_b (a surface, not a curve); the pair relation in cuboid coordinates | theorem + infrastructure | Kummer map standard (Silverman AEC X.1.4); the pattern relations are new | (round 16) |
+| [`QuarterTriangle.lean`](LeanPlayground/PerfectCuboid/QuarterTriangle.lean) | Pythagorean triangles / E_N | the quarter condition (m, m−n, m+n squares) ⟺ the Kummer condition −Nx, −2N(x−N) ∈ ℚ² for x = −N·U/(H+V) (odd reduced leg), never for the even reduced leg, never for the odd-leg S-translate (mn = □ and 2m(m+n) = □ are incompatible; 2m(m+n) = □ alone occurs, (8, 1)); parametrisation σ² + δ² = 2τ², m odd, 4 ∣ n; x⁴ + y⁴ = 2z² ⇒ x² = y²; a quarter triangle has no square (reduced) hypotenuse; for a box with integral d, e, g and ag odd: the condition on x₁ ⟺ (ag, bc, de) is a quarter triangle, explicit system ag = k(σδ)², de ± bc = kσ⁴, kδ⁴; (49, 1200, 1201) is a quarter triangle | theorem | classical ingredients (Fermat: three squares in arithmetic progression, x⁴ + y⁴ = 2z²); the dictionary is new | (round 16) |
 | [`ConfigCuboid.lean`](LeanPlayground/PerfectCuboid/ConfigCuboid.lean) | E_N configuration | positive configuration → rational box; `exists_isPerfectCuboid_iff` | theorem | Paulsen–West Prop. 3.1; Asiryan Prop. 1 | [#19](https://github.com/yachi/lean-playground/pull/19) |
 | [`TwistedCuboid.lean`](LeanPlayground/PerfectCuboid/TwistedCuboid.lean) | E_N configuration | configurations are k-twisted perfect cuboids (`IsTwistedCuboid`) | theorem + infrastructure | new | [#21](https://github.com/yachi/lean-playground/pull/21) |
 | [`TwistClass.lean`](LeanPlayground/PerfectCuboid/TwistClass.lean) | E_N configuration | twist k ≡ −X₁X₂X₃ (mod ℚ*²) | theorem | new | [#26](https://github.com/yachi/lean-playground/pull/26) |
@@ -361,11 +373,12 @@ a nondegenerate non-proportional polynomial cuboid over `𝔽_p[X]` for every `p
 6. **Face-diagonal 2^s p^k, family F2 types II/III** (`FaceDiagonalF2.lean`): partial.
 7. **Conjecture E** (an Euler brick with a prime-power edge does not exist): only the reduction and the exponent gap are proved; likely out of reach of these methods.
 8. **T3.3** (g = p^k q^l for a perfect cuboid): open; likely out of reach of these methods.
-9. **Rank ≥ 2 beyond Asiryan**: no route from "E_N has rank ≥ 2" to a contradiction is known.
+9. **Rank ≥ 2 beyond Asiryan**: no route from "E_N has rank ≥ 2" to a contradiction is known. The rank-one case itself no longer needs Ingram if `QuarterFree N` holds (`KummerDescent.lean`, `not_inRankOne_of_quarterFree`): `QuarterFree N` is equivalent to "no rational perfect cuboid with abcg = 2Ns² has cg(ef+ab) and 2(ef+ab)(ef+ab+cg) both square" (`quarterFree_iff`), and it cannot be proved by congruences, because the degenerate box satisfies the two square conditions (see 14).
 10. **The fibers**: 91 fibers are ruled out, and every perfect cuboid lies on one of the infinitely many fibers that remain.
 11. **Type-A and type-B face cuboids** (`Adjacency.lean`, `AdjacencyNearMiss.lean`): do any exist? None has common edge ≤ 10⁷, and none is among the 126 known primitive face cuboids. Equivalently: is there a Pythagorean triple with a fourth number adjacent to all three sides, other than a perfect cuboid?
 12. **Cuboids over ℤ√d with irrational edges** (`QuadraticCuboid.lean`): rational-edged ones are classified; none with irrational edges was found for |d| ≤ 13, |x|, |y| ≤ 120, and none is excluded. For d = 2 the face cuboid with twist 2 and the half-twisted k = 2 box remain.
 13. **A₃ boxes and the Eisenstein family** (`LatticeBox.lean`): no perfect box in the 60° lattice with edges ≤ 10⁵; whether the family point has infinite order on the genus-one curve a²+ab+b² = □, a²+ac+c² = □ is open.
+14. **Theorem K / `QuarterFree`** (`KummerDescent.lean`, `QuarterTriangle.lean`, `QuarterCharacters.lean`): is a derived triangle of a box with integral d, e, g (relabelled: `(ag, bc, de)` with ag odd) ever a *quarter triangle*, i.e. `ag = k(σδ)²`, `de + bc = kσ⁴`, `de − bc = kδ⁴`, `σ² + δ² = 2τ²`, k = gcd(ag, bc)? Equivalently (Kummer): is the triangle point ever divisible by 4 on E_N? "Never" would make Asiryan's rank ≥ 2 unconditional in Lean (`not_inRankOne_of_quarterFree`), but only that: rank ≥ 2 does not exclude a cuboid. Known: none among the 126 face cuboids, none with de ≤ 10¹¹; the condition is satisfiable by Pythagorean triangles alone ((49, 1200, 1201)) and by the degenerate box, so a proof must use c > 0 globally. The rank-one system in Asiryan's variables is a surface (fibres of genus 49 over the u-line), so no curve-level descent applies.
 
 #### Details by file
 
@@ -560,7 +573,12 @@ cuboid in three ways, which gives three congruent numbers over `ℚ` (the `j = 1
 | The squarefree part `N` of `abcg/2` is neither such a `p` nor such a `2p` | `IsPerfectCuboid.squarefree_part_ne` |
 
 The one hypothesis left in `not_rankOne_of_primitiveDivisorStep` is Ingram's primitive-divisor
-theorem, which needs canonical heights; Mathlib does not have them yet.
+theorem, which needs canonical heights; Mathlib does not have them yet. `KummerDescent.lean`
+gives an alternative to it: `not_inRankOne_of_quarterFree` derives the same conclusion from the
+purely Diophantine hypothesis `QuarterFree N` (no positive configuration has a point with `−N·x`
+and `−2N·(x − N)` both rational squares), which is equivalent to a square condition on rational
+perfect cuboids (`quarterFree_iff`); `KummerAddition.lean` records all Kummer relations the
+pattern forces. Neither hypothesis is proved.
 
 `Saunderson.lean` formalizes **Spohn's theorem** (1972): no Saunderson brick is a perfect
 cuboid. Saunderson's brick `(u|4v² − w²|, v|4u² − w²|, 4uvw)` from `u² + v² = w²` has space

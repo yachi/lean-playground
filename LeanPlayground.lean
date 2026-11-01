@@ -158,3 +158,7 @@ import LeanPlayground.PerfectCuboid.AdjacencyNearMiss
 import LeanPlayground.PerfectCuboid.Bridges
 import LeanPlayground.PerfectCuboid.LatticeBox
 import LeanPlayground.PerfectCuboid.PolyCharP
+import LeanPlayground.PerfectCuboid.KummerDescent
+import LeanPlayground.PerfectCuboid.KummerAddition
+import LeanPlayground.PerfectCuboid.QuarterTriangle
+import LeanPlayground.PerfectCuboid.QuarterCharacters
