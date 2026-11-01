@@ -162,3 +162,7 @@ import LeanPlayground.PerfectCuboid.KummerDescent
 import LeanPlayground.PerfectCuboid.KummerAddition
 import LeanPlayground.PerfectCuboid.QuarterTriangle
 import LeanPlayground.PerfectCuboid.QuarterCharacters
+import LeanPlayground.PerfectCuboid.PolyFermat
+import LeanPlayground.PerfectCuboid.PolyGenusOne
+import LeanPlayground.PerfectCuboid.PolyNegOne
+import LeanPlayground.PerfectCuboid.PolyPythagoras
