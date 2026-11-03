@@ -166,3 +166,7 @@ import LeanPlayground.PerfectCuboid.PolyFermat
 import LeanPlayground.PerfectCuboid.PolyGenusOne
 import LeanPlayground.PerfectCuboid.PolyNegOne
 import LeanPlayground.PerfectCuboid.PolyPythagoras
+import LeanPlayground.PerfectCuboid.PolyEulerCoprime
+import LeanPlayground.PerfectCuboid.PolyLinearNondeg
+import LeanPlayground.PerfectCuboid.PolyQuadraticEdge
+import LeanPlayground.PerfectCuboid.PolyTwoRootEdge
