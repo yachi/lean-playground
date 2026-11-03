@@ -170,3 +170,6 @@ import LeanPlayground.PerfectCuboid.PolyEulerCoprime
 import LeanPlayground.PerfectCuboid.PolyLinearNondeg
 import LeanPlayground.PerfectCuboid.PolyQuadraticEdge
 import LeanPlayground.PerfectCuboid.PolyTwoRootEdge
+import LeanPlayground.PerfectCuboid.PolyPrimePowerEdge
+import LeanPlayground.PerfectCuboid.PolyTwoRootGeneral
+import LeanPlayground.PerfectCuboid.PolyFaceDiagonalRoot

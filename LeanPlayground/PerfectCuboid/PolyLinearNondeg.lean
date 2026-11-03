@@ -34,7 +34,9 @@ Stretch (`IsNondegCuboid.false_of_irreducible_pow_edge`, via `quad_disc_W`, the 
 lemma for `A W² + B W + D` with `W` nonconstant): over any field with `2 ≠ 0` there is no
 nondegenerate cuboid `(α π^k, b, c)` (`π` irreducible, `k ≥ 1`) whose edge `α π^k` is coprime to
 `b` and to `c`. (The `𝔽₅` pairwise-coprime cuboid `(X⁶ − 1, X + X⁵, 2(X⁶ + 1))` has no edge of
-the form `α π^k`; the degenerate `(2X, X² − 1, i(X² + 1))` is excluded by `g ≠ 0`.)
+the form `α π^k`; the degenerate `(2X, X² − 1, i(X² + 1))` is excluded by `g ≠ 0`.) Superseded in
+round 19 by `PolyPrimePowerEdge`: `IsNondegCuboid.proportional_of_irreducible_pow_edge` drops the
+coprimality and concludes `Proportional` (which with `k ≥ 1` and coprimality is absurd).
 
 Nondegeneracy is necessary: over any `K ∋ i`, `char K ≠ 2`, `(2X, X² − 1, i(X² + 1))` is a
 (degenerate, `g = 0`) cuboid with a linear edge that is not proportional

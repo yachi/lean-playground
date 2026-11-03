@@ -33,7 +33,10 @@ For a face `a² + x² = y²` put `p = y − x`, `q = y + x`: `p q = a²`, `2x = 
 `Σ_{b,c} ((2x)² + 2a²) − ((2f)² + 2a²) = 2a²`; a linear functional `ℓ` killing the three terms
 kills `a²` (`functional_key`). The divisor `p` of `a²` is a unit times a monomial in the prime
 factors of `a`; the middle divisor (`p ∼ a`) is exactly the case `x ∥ a`.
-* `a = α X²` (`double_parallel`): `ℓ` = coefficient of `X⁴`.
+* `a = α X²` (`double_parallel`): `ℓ` = coefficient of `X⁴`. (Round 19,
+  `PolyPrimePowerEdge.exists_parallel_of_irreducible_pow_edge`, generalises this and
+  `irr_parallel` to `a = α πⁿ` for every irreducible `π` and every `n`; `split_parallel` is
+  generalised to `κ Xʲ (X − 1)ᵏ` in characteristic `0` by `PolyTwoRootGeneral`.)
 * `a` irreducible (`irr_parallel`): `p ∈ {1, a, a²}`; `ℓ(P) = lc(a)⁴ P₄ − (a⁴)₄ P₈` kills `1`, `a⁴`.
 * `a = κ X (X − 1)` (`split_parallel`): `p ∼ Xⁱ (X − 1)ʲ`,
   `(2x)² + 2a² ∈ span(B i j, B (2−i) (2−j))`
