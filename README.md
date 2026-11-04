@@ -136,6 +136,23 @@ the friendship *theorem* of Erdős–Rényi–Sós). Both inequalities are sums 
 `∑_u ∑_v (d u − d v)² = 2 (n ∑ d² − (∑ d)²)`, and pairing each friendship with its reverse,
 `2 (∑_v friendDegreeSum v / d v − ∑ d) = ∑_{u ~ v} (d u − d v)² / (d u d v)`.
 
+### Continuity at an isolated point — `LeanPlayground/IsolatedPoint/`
+
+Claims from a Gemini conversation, *Continuity at an Isolated Point* (2026-11-04).
+
+| Statement | Lean |
+|---|---|
+| If no other point is within `δ₀ > 0` of `p`, every `f` is ε-δ continuous at `p` (with `δ = δ₀`) | `IsolatedPoint.epsilon_delta_of_isolated`, `continuousAt_of_isolated` |
+| …and then `B_{δ₀}(p) = {p}` | `IsolatedPoint.ball_eq_singleton_of_isolated` |
+| If `{p}` is open, every `f` is continuous at `p`; `{p}` open ⇔ `𝓝[≠] p = ⊥` | `IsolatedPoint.continuousAt_of_isOpen_singleton`, `isOpen_singleton_iff_nhdsNE_eq_bot` |
+| At an isolated point of a subset `A`, every `f` is continuous within `A` (and on the subspace `A`) | `IsolatedPoint.continuousWithinAt_of_isolated`, `continuousAt_subtype_of_isolated` |
+| No sequence of points `≠ p` converges to an isolated `p` | `IsolatedPoint.not_tendsto_of_isolated` |
+| Convergence: ε-balls ⇔ open sets; continuity: ε-δ ⇔ preimages of open sets ⇔ sequences (metric) | `tendsto_iff_eventually_ball`, `tendsto_iff_eventually_open`, `epsilon_delta_iff_preimage_open`, `continuous_iff_sequential` |
+| Preimages commute with `∪`, `∩`, complement | `IsolatedPoint.preimage_set_ops` |
+| Interior / accumulation / isolated / boundary points by neighbourhoods | `interior_point_iff`, `accPt_iff`, `isolated_iff`, `boundary_point_iff` |
+| Discrete: every `f` continuous; `xₙ → p` iff eventually `xₙ = p` | `continuous_discrete`, `tendsto_discrete_iff` |
+| Indiscrete: every sequence converges to every point; the space is connected | `tendsto_indiscrete`, `preconnectedSpace_indiscrete` |
+
 ### The productegral — `LeanPlayground/Productegral/`
 
 Claims from Sohil Rathi, [*The Missing Calculus Operation*](https://youtu.be/QN680Is4euw)
