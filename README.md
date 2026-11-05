@@ -55,6 +55,17 @@ index `c < q`, and the Sylow `q`-subgroup `Q` of `⟨g⟩` is normal in `G`: the
 each coset has a representative `b` with `b^{o(bQ)} = 1`. Then `(bz)^{o(bQ)} ∈ ⟨z⟩` for `z ∈ Q`,
 so `ψ(G) ≤ ψ(Q) ψ(G/Q)` (`psi_le_mul`), and induction on `G/Q` finishes the proof.
 
+**Amiri's Question 3.10 (2) is false** (`AmiriQuestion.lean`, new result). Call `G` an
+LCM-group if `o(xⁿy) ∣ lcm(o(xⁿ), o(y))` for all `x, y, n`. M. Amiri, [*On the sum of element
+orders in finite abelian groups*](https://arxiv.org/abs/2511.08320), asks whether a non-LCM group
+`H` with `|H| = |G|` and `exp(H) ∣ exp(G)` always has `ψ(H) < ψ(G)` when `G` is an LCM-group.
+It does not: `G = C₄ × C₂³` and `H = C₄ × D₈` both have order 32 and exponent 4, `H` is not an
+LCM-group, and `ψ(G) = 95 < 103 = ψ(H)` (`amiri_question_3_10_two_false`). A GAP search
+(`scripts/amiri-q310/search.g`) over all groups of order at most 255 shows 32 is the least order
+with `ψ(H) > ψ(G)` (the least odd example has order 3⁵ = 243). At order 16 the Pauli group `C₄ ∘ D₈` already ties with `C₄ × C₂²`
+(`ψ = 47`). The same search found no counterexample to part (1) of the question (equal `ψ` forces
+equal order types) for `|G| ≤ 255`.
+
 ### The strong Erdős–Frankl–Füredi cover-free conjecture — `LeanPlayground/CoverFree/`
 
 Yanan Hu and Leilei Zhang, [*A proof of the strong Erdős–Frankl–Füredi cover-free
