@@ -100,6 +100,9 @@ proportional in `j`; three such splittings put all five elements on a line `F s`
 | Polynomials, `SixTermRigid F k`, `F` algebraically closed: `\|A\| ≤ 4` outside the exceptional family (Tsang–Yip: `≤ 6`) | `card_le_four` |
 | Five elements of a `D_k(n)`-tuple lie on a line `F s`, `n ∈ F s²` (any field) | `exists_line_of_card_eq_five`, `exists_line_of_five_le_card` |
 | Six-term rigidity ⇒ each `aᵢ` is flat on `{b₁, b₂, b₃}` | `flat_of_config` |
+| Wronskian of linearly independent polynomials is nonzero (char 0) | `wronskianN_ne_zero_of_linearIndependent` |
+| Mason–Stothers for `m + 1` terms: `deg yₗ + m(m-1)/2 ≤ (m-1)·∑ ν(yⱼ)` | `natDegree_add_le_mul_card_roots` |
+| Vaserstein–Wheland / Tsang–Yip Cor. 4.2: `∑ cᵢ pᵢᵏ = 0` (`s` terms, `p_{i₀}` not proportional to another) ⇒ `k < s(s-2)` | `k_lt_of_relation` |
 
 The threshold `k ≥ 18` comes only from `SixTermRigid`; Tsang–Yip's Remark 4.6 (whether their
 Proposition 4.4 holds for `k ≥ 15`) would lower it here too.
