@@ -202,6 +202,23 @@ Claims from a Gemini conversation, *Continuity at an Isolated Point* (2026-11-04
 | Discrete: every `f` continuous; `xₙ → p` iff eventually `xₙ = p` | `continuous_discrete`, `tendsto_discrete_iff` |
 | Indiscrete: every sequence converges to every point; the space is connected | `tendsto_indiscrete`, `preconnectedSpace_indiscrete` |
 
+### Swapping 0 and 1 on the real line — `LeanPlayground/SwappedMetric/`
+
+Claims from a Gemini conversation, *Concrete Example: Redefining Points on the Real Line*
+(2026-11-06). `φ : ℝ → ℝ` swaps `0` and `1`, and `d₂(x, y) = |φ x − φ y|`.
+
+| Statement | Lean |
+|---|---|
+| `φ` is the transposition `Equiv.swap 0 1`, an involution and a bijection | `SwappedMetric.phi_eq_swap`, `phi_involutive`, `phi_bijective` |
+| `d₂` is a metric (on the type synonym `SwappedReal`) | `SwappedMetric.d₂_isMetric`, `dist_toSwapped` |
+| **Under `d₂`, `1/n → 1`** (also ε-N form) | `SwappedMetric.tendsto_one_div_nat_one`, `d₂_one_div_nat_one_lt` |
+| `1` is the only `d₂`-limit; `1/n` does not `d₂`-converge to `0` | `SwappedMetric.limit_eq_one`, `not_tendsto_one_div_nat_zero` |
+| `xₙ → L` under `d₂` ⇔ `\|φ xₙ − φ L\| → 0` ⇔ `φ xₙ → φ L` in the usual sense | `SwappedMetric.tendsto_toSwapped_iff_d₂`, `tendsto_toSwapped_iff` |
+| `φ : (ℝ, d₂) ≃ (ℝ, d₁)` is an isometric equivalence, yet `id : (ℝ, d₁) → (ℝ, d₂)` is not continuous | `SwappedMetric.phiIsometry`, `not_continuous_toSwapped` |
+
+Gemini later said the chart's shorthand "`φ(xₙ) → 0 = φ(1)`" is not rigorous. Because `φ` is an
+isometry, that statement is in fact equivalent to `xₙ → 1` under `d₂` (`tendsto_toSwapped_iff`).
+
 ### The productegral — `LeanPlayground/Productegral/`
 
 Claims from Sohil Rathi, [*The Missing Calculus Operation*](https://youtu.be/QN680Is4euw)
