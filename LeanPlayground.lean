@@ -185,6 +185,8 @@ import LeanPlayground.PerfectCuboid.PolyTwoRootGeneral
 import LeanPlayground.PerfectCuboid.PolyFaceDiagonalRoot
 import LeanPlayground.PerfectCuboid.ThirdConjecture
 import LeanPlayground.PerfectCuboid.ThirdConjectureTypeA
+import LeanPlayground.PerfectCuboid.ThirdConjecture1317
+import LeanPlayground.PerfectCuboid.ThirdConjectureModP
 import LeanPlayground.DujellaUnicity.Lattice
 import LeanPlayground.DujellaUnicity.SmallNorm
 import LeanPlayground.DujellaUnicity.PadicDirection
