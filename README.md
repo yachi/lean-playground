@@ -66,6 +66,16 @@ with `ψ(H) > ψ(G)` (the least odd example has order 3⁵ = 243). At order 16 t
 (`ψ = 47`). The same search found no counterexample to part (1) of the question (equal `ψ` forces
 equal order types) for `|G| ≤ 255`.
 
+**Amiri's Question 3.10 (1) is false too** (`AmiriQuestionOne.lean`, new result). Part (1) asks
+whether `ψ(G) = ψ(H)` forces `G` and `H` to have the same order type (the same number of elements
+of each order) when `G` is an LCM-group, `|H| = |G|` and `exp(H) ∣ exp(G)`. It does not:
+`G = C₈ × C₂⁷` and `H = Hol(C₈) × (C₄ ≀ C₂)` both have order 1024, exponent 8 and `ψ = 5631`,
+but `G` has 255 involutions and `H` only 127 (`amiri_question_3_10_one_false`). For a 2-group,
+`ψ` only sees the combination `∑ 2ⁱ cᵢ` of the counts `cᵢ = #{x : x^(2ⁱ) = 1}`, so two groups
+can trade involutions for elements of order 4. A GAP search over all 56092 groups of order 256
+(`scripts/amiri-q310/pgroups.g`) shows 256 is the least order: e.g. `C₄ × C₈ × Q₈` (an LCM-group)
+and `SmallGroup(256, 2761)` both have `ψ = 1519`, with 7 against 71 involutions.
+
 ### The strong Erdős–Frankl–Füredi cover-free conjecture — `LeanPlayground/CoverFree/`
 
 Yanan Hu and Leilei Zhang, [*A proof of the strong Erdős–Frankl–Füredi cover-free

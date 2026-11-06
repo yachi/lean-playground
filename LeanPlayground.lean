@@ -18,6 +18,7 @@ import LeanPlayground.SumElementOrders.PsiNat
 import LeanPlayground.SumElementOrders.Basic
 import LeanPlayground.SumElementOrders.PalfySimonyi
 import LeanPlayground.SumElementOrders.AmiriQuestion
+import LeanPlayground.SumElementOrders.AmiriQuestionOne
 import LeanPlayground.SimonMarais.Lucas
 import LeanPlayground.SimonMarais.OddSum
 import LeanPlayground.SimonMarais.Quad

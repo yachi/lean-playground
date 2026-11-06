@@ -1,5 +1,6 @@
 # Search for counterexamples to Amiri, arXiv:2511.08320, Question 3.10.
-# Q1-CE: G LCM, exp(H) | exp(G), psi(G) = psi(H) but different order types (none found, |G| <= 255).
+# Q1-CE: G LCM, exp(H) | exp(G), psi(G) = psi(H) but different order types (none for |G| <= 255;
+#   the least is order 256, see pgroups.g).
 # Q2-CE: G LCM, H not LCM, exp(H) | exp(G), psi(H) >= psi(G).
 # Run: gap -q -b search.g < /dev/null
 IsLCMp := function(P)
