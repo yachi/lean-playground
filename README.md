@@ -116,6 +116,32 @@ proportional in `j`; three such splittings put all five elements on a line `F s`
 Corollary 4.2 and Proposition 4.4). The threshold comes only from Proposition 4.4; Tsang–Yip's
 Remark 4.6 (whether it holds for `k ≥ 15`) would lower it here too.
 
+### Dujella's unicity conjecture — `LeanPlayground/DujellaUnicity/`
+
+A. Dujella, [*Open problems on Diophantine m-tuples and elliptic curves*](https://web.math.pmf.unizg.hr/~duje/pdf/open2.pdf),
+Problem 4.1: for `k ≥ 2`, does `x² − (k²+1) y² = k²` have at most one solution with `x > 0`,
+`0 < y < k − 1`? Known cases: `k = pᵐ, 2pᵐ` (Filipin–Fujita–Mignotte), odd `k = pᵐqⁿ`
+(Le–Srinivasan 2023), odd `k` with at most three prime factors (Swiers 2026); verified for
+`k ≤ 2⁵⁰`.
+
+**New result: the conjecture holds for `k = 2ᵃ pᵐ` with `p` an odd prime, `a ≥ 2`, `m ≥ 1`,
+unless `2k` is a perfect square (`a` odd and `m` even).** Elementary proof. For each prime
+`q ∣ k` fix `λ ∈ ℤ_q` with `λ² = k²+1`; the *direction* of `γ ∈ ℤ[√(k²+1)]` at `q` is
+`v_q(γ|_{√d↦λ}) − v_q(γ|_{√d↦−λ})`. Solutions give primitive elements of norm `s²` (`s ∣ k`)
+whose direction vectors are even and lie in a box; `√d − 1` has direction `E = (2a−2, 2m)`. A
+descent (`small_norm_classify`) shows a primitive element of norm at most `2k` is, up to units,
+`1` or `k ± 1 + √d`, so every nonzero direction vector of a `{2,p}`-smooth element other than
+`±E/2` has weight `2^|u₁| p^|u₂| > k/2`. A two-dimensional lattice argument then rules out two
+distinct solution vectors unless `E/2` is itself an even vector, i.e. `2k` is a square.
+
+| Statement | Lean |
+|---|---|
+| **Unicity for `k = 2ᵃpᵐ`, `a ≥ 2`, `a` even or `m` odd** | `DujellaUnicity.dujella_unicity` |
+| Lattice step in `ℤ²` | `lattice_main` |
+| Primitive `γ`, `\|N γ\| ≤ 2k` ⇒ `γ ~ 1, k±1+√d` | `small_norm_classify` |
+| Same / opposite direction ⇒ same solution | `uniq_same`, `uniq_opp`, `uniq` |
+| `q`-adic directions (Hensel square root, valuations) | `PadicDirection.lean` |
+
 ### The strong Erdős–Frankl–Füredi cover-free conjecture — `LeanPlayground/CoverFree/`
 
 Yanan Hu and Leilei Zhang, [*A proof of the strong Erdős–Frankl–Füredi cover-free
