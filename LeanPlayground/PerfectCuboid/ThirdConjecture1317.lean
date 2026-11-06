@@ -30,8 +30,8 @@ distinctness of `a, b, c` is needed.
 
 These classes contain `294912 / 10793861 ≈ 2.73%` of all triples `(a, b, c) mod 221`. One prime is
 never enough (the constant term `(abc)⁴` is a square and the polynomial is even), and `2.96%` is the
-most that the pair `(13, 17)` can give; other pairs of primes up to `61` give up to about `8.5%`
-each (e.g. `(19, 29)`). Example: `(a, b, c) = (1, 2, 3)`
+most that the pair `(13, 17)` can give; other pairs give more (e.g. about `8.5%` for
+`(19, 29)`; pairs with the smaller prime at most `23` were counted). Example: `(a, b, c) = (1, 2, 3)`
 (`irreducible_cuboidThreePoly_one_two_three`).
 -/
 
