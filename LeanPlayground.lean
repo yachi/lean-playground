@@ -15,6 +15,7 @@ import LeanPlayground.MinusTwelfth.Cutoff
 import LeanPlayground.MinusTwelfth.Physics
 import LeanPlayground.RestrictedDivision.Basic
 import LeanPlayground.DiophantineTuples.IntegerFive
+import LeanPlayground.DiophantineTuples.MasonStothersMany
 import LeanPlayground.DiophantineTuples.PolyFive
 import LeanPlayground.DiophantineTuples.Wronskian
 import LeanPlayground.SumElementOrders.PsiNat
