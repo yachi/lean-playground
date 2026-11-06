@@ -14,6 +14,8 @@ import LeanPlayground.MinusTwelfth.Zeta
 import LeanPlayground.MinusTwelfth.Cutoff
 import LeanPlayground.MinusTwelfth.Physics
 import LeanPlayground.RestrictedDivision.Basic
+import LeanPlayground.DiophantineTuples.IntegerFive
+import LeanPlayground.DiophantineTuples.PolyFive
 import LeanPlayground.SumElementOrders.PsiNat
 import LeanPlayground.SumElementOrders.Basic
 import LeanPlayground.SumElementOrders.PalfySimonyi

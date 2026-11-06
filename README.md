@@ -76,6 +76,34 @@ can trade involutions for elements of order 4. A GAP search over all 56092 group
 (`scripts/amiri-q310/pgroups.g`) shows 256 is the least order: e.g. `C₄ × C₈ × Q₈` (an LCM-group)
 and `SmallGroup(256, 2761)` both have `ψ = 1519`, with 7 against 71 involutions.
 
+### Generalized Diophantine tuples — `LeanPlayground/DiophantineTuples/`
+
+A set `A` has *property `D_k(n)`* if `ab + n` is a `k`-th power for all distinct `a, b ∈ A`.
+K. M. Tsang and C. H. Yip, [*An absolute bound for generalized Diophantine tuples over polynomial
+rings*](https://arxiv.org/abs/2607.01165) (arXiv, 2026-07), prove `|A| ≤ 6` for `A ⊆ F[X]`
+(`F` algebraically closed of characteristic 0, `k ≥ 18`) outside the family `n = s²` a `k`-th
+power, `A ⊆ F s`; and, assuming the Lander–Parkin–Selfridge conjecture, `|A| ≤ 5` for sets of
+positive integers when `k ≥ 7`. Both proofs expand `det (aᵢ bⱼ + n)_{3×3} = 0` for six elements.
+
+**New result: both bounds drop to 4.** Five elements suffice: the `3 × 3` matrix with rows
+`(1, 1, 1)`, `(a₁ bⱼ + n)ⱼ`, `(a₂ bⱼ + n)ⱼ` has rank at most 2 and all its entries are `k`-th
+powers, so its determinant is again a six-term equal sum of `k`-th powers with no term shared by
+the two sides. Over polynomials, the fact that such a relation has all six terms proportional
+(`SixTermRigid`, which is Tsang–Yip's Claims 4.8–4.9 for `k ≥ 18`) forces, for every admissible
+way of splitting five elements as `{a₁, a₂} ∪ {b₁, b₂, b₃}`, the values `aᵢ bⱼ + n` to be
+proportional in `j`; three such splittings put all five elements on a line `F s` with `n ∈ F s²`.
+
+| Statement | Lean |
+|---|---|
+| Integers, LPS conjecture, `k ≥ 7`: `\|A\| ≤ 4` (Tsang–Yip: `≤ 5`) | `DiophantineTuples.card_le_four_of_landerParkinSelfridge` |
+| Five-element core: `k ≤ 6` under LPS | `le_six_of_five` |
+| Polynomials, `SixTermRigid F k`, `F` algebraically closed: `\|A\| ≤ 4` outside the exceptional family (Tsang–Yip: `≤ 6`) | `card_le_four` |
+| Five elements of a `D_k(n)`-tuple lie on a line `F s`, `n ∈ F s²` (any field) | `exists_line_of_card_eq_five`, `exists_line_of_five_le_card` |
+| Six-term rigidity ⇒ each `aᵢ` is flat on `{b₁, b₂, b₃}` | `flat_of_config` |
+
+The threshold `k ≥ 18` comes only from `SixTermRigid`; Tsang–Yip's Remark 4.6 (whether their
+Proposition 4.4 holds for `k ≥ 15`) would lower it here too.
+
 ### The strong Erdős–Frankl–Füredi cover-free conjecture — `LeanPlayground/CoverFree/`
 
 Yanan Hu and Leilei Zhang, [*A proof of the strong Erdős–Frankl–Füredi cover-free
