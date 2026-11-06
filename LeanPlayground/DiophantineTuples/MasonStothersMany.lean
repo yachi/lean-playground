@@ -78,7 +78,8 @@ lemma natDegree_wronskianN_add_le {g : Fin m → R[X]} (hW : wronskianN g ≠ 0)
     apply hW
     rw [wronskianN, Matrix.det_apply]
     exact sum_eq_zero fun σ _ => by simp [wronskianMatrix, h σ]
-  have hSum0 : ∑ i : Fin m, (i : ℕ) ≤ ∑ j, (g j).natDegree := hsum σ ▸ sum_le_sum fun j _ => hterm σ hσ j
+  have hSum0 : ∑ i : Fin m, (i : ℕ) ≤ ∑ j, (g j).natDegree :=
+    hsum σ ▸ sum_le_sum fun j _ => hterm σ hσ j
   have := natDegree_sum_le_of_forall_le (s := univ) _ fun σ _ => hbound σ
   rw [wronskianN, Matrix.det_apply]
   omega
@@ -182,7 +183,8 @@ theorem natDegree_add_le_mul_card_roots [IsAlgClosed F] [CharZero F] [DecidableE
       _ ≤ W.natDegree := card_roots' W
   have hup : W.natDegree + ∑ i : Fin m, (i : ℕ) ≤ ∑ j, (y (l.succAbove j)).natDegree :=
     natDegree_wronskianN_add_le hW
-  have hsplit : ∑ j, (y j).natDegree = (y l).natDegree + ∑ j : Fin m, (y (l.succAbove j)).natDegree :=
+  have hsplit : ∑ j, (y j).natDegree =
+      (y l).natDegree + ∑ j : Fin m, (y (l.succAbove j)).natDegree :=
     Fin.sum_univ_succAbove _ l
   -- `∑ deg ≤ ∑ e + (m - 1) ∑ ν`
   have hpt : ∀ α j, rootMultiplicity α (y j) ≤ (rootMultiplicity α (y j) - (m - 1)) +
