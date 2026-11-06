@@ -97,7 +97,8 @@ proportional in `j`; three such splittings put all five elements on a line `F s`
 |---|---|
 | Integers, LPS conjecture, `k ≥ 7`: `\|A\| ≤ 4` (Tsang–Yip: `≤ 5`) | `DiophantineTuples.card_le_four_of_landerParkinSelfridge` |
 | Five-element core: `k ≤ 6` under LPS | `le_six_of_five` |
-| **Polynomials, `k ≥ 24`, `F` algebraically closed of char 0: `\|A\| ≤ 4` outside the exceptional family, unconditional** | `card_le_four_of_le` |
+| **Polynomials, `k ≥ 18`, `F` algebraically closed of char 0: `\|A\| ≤ 4` outside the exceptional family, unconditional** (Tsang–Yip: `≤ 6`) | `card_le_four_of_eighteen_le` |
+| Same for `k ≥ 24` (Cor. 4.2 only) | `card_le_four_of_le` |
 | Polynomials, `SixTermRigid F k`, `F` algebraically closed: `\|A\| ≤ 4` outside the exceptional family (Tsang–Yip: `≤ 6`) | `card_le_four` |
 | Five elements of a `D_k(n)`-tuple lie on a line `F s`, `n ∈ F s²` (any field) | `exists_line_of_card_eq_five`, `exists_line_of_five_le_card` |
 | Six-term rigidity ⇒ each `aᵢ` is flat on `{b₁, b₂, b₃}` | `flat_of_config` |
@@ -106,10 +107,14 @@ proportional in `j`; three such splittings put all five elements on a line `F s`
 | Vaserstein–Wheland / Tsang–Yip Cor. 4.2: `∑ cᵢ pᵢᵏ = 0` (`s` terms, `p_{i₀}` not proportional to another) ⇒ `k < s(s-2)` | `k_lt_of_relation` |
 | Six-term rigidity for `k ≥ 24` (Tsang–Yip Claims 4.8–4.9 via Cor. 4.2) | `sixTermRigid_of_le` |
 | Collapsed coefficients of a relation vanish when `k ≥ s(s-2)` | `classSum_eq_zero` |
+| Valuation-gap Wronskian bound: `ord_α W ≥ min_{r injective, r ≥ v} ∑ r - m(m-1)/2` | `pow_dvd_wronskianN_of_injective` |
+| Tsang–Yip Prop. 4.4: six nonproportional terms, `q₁ᵏ+q₂ᵏ+q₃ᵏ = r₁ᵏ+r₂ᵏ+r₃ᵏ`, `q₁q₂q₃ = λ r₁r₂r₃` ⇒ `k < 18` | `k_lt_eighteen` |
+| Six-term rigidity for `k ≥ 18` (Tsang–Yip Claims 4.8–4.9) | `sixTermRigid_of_eighteen_le` |
 
-`SixTermRigid` is now proved for `k ≥ 24`; Tsang–Yip's `k ≥ 18` needs their sharper
-Proposition 4.4 in the six-class case. The threshold comes only from `SixTermRigid`; Tsang–Yip's Remark 4.6 (whether their
-Proposition 4.4 holds for `k ≥ 15`) would lower it here too.
+`SixTermRigid` is proved for `k ≥ 18` by formalizing the Vaserstein–Wheland Wronskian method
+(Wronskian non-vanishing, many-term Mason–Stothers, the valuation-gap bound, Tsang–Yip's
+Corollary 4.2 and Proposition 4.4). The threshold comes only from Proposition 4.4; Tsang–Yip's
+Remark 4.6 (whether it holds for `k ≥ 15`) would lower it here too.
 
 ### The strong Erdős–Frankl–Füredi cover-free conjecture — `LeanPlayground/CoverFree/`
 

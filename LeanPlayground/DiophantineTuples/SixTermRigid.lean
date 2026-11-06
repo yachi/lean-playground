@@ -59,7 +59,8 @@ lemma associated_monicPart {p : F[X]} (hp : p ≠ 0) : Associated p (monicPart p
 lemma monic_eq_of_pow_eq {R S : F[X]} (hR : R.Monic) (hS : S.Monic) {d : ℕ} (hd : d ≠ 0)
     (h : R ^ d = S ^ d) : R = S :=
   eq_of_monic_of_associated hR hS (associated_of_dvd_dvd
-    ((IsIntegrallyClosed.pow_dvd_pow_iff hd).1 (by rw [h])) ((IsIntegrallyClosed.pow_dvd_pow_iff hd).1 (by rw [h])))
+    ((IsIntegrallyClosed.pow_dvd_pow_iff hd).1 (by rw [h]))
+    ((IsIntegrallyClosed.pow_dvd_pow_iff hd).1 (by rw [h])))
 
 /-- From `Rᵃ Sᵇ = Rᵃ' Sᵇ'` with `a + b = a' + b'` and `R, S` monic: `a = a'` or `R = S`. -/
 lemma eq_or_eq_of_pow_mul_pow {R S : F[X]} (hR : R.Monic) (hS : S.Monic) {a b a' b' : ℕ}
@@ -69,7 +70,8 @@ lemma eq_or_eq_of_pow_mul_pow {R S : F[X]} (hR : R.Monic) (hS : S.Monic) {a b a'
     obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_lt hlt
     have hb : b = b' + (d + 1) := by omega
     subst hb
-    have h0 : R ^ a * S ^ b' ≠ 0 := mul_ne_zero (pow_ne_zero _ hR.ne_zero) (pow_ne_zero _ hS.ne_zero)
+    have h0 : R ^ a * S ^ b' ≠ 0 :=
+      mul_ne_zero (pow_ne_zero _ hR.ne_zero) (pow_ne_zero _ hS.ne_zero)
     refine (monic_eq_of_pow_eq hR hS (Nat.succ_ne_zero d) (mul_left_cancel₀ h0 ?_)).symm.symm
     have : R ^ a * S ^ b' * S ^ (d + 1) = R ^ a * S ^ b' * R ^ (d + 1) := by
       calc R ^ a * S ^ b' * S ^ (d + 1) = R ^ a * S ^ (b' + (d + 1)) := by ring
@@ -81,22 +83,24 @@ lemma eq_or_eq_of_pow_mul_pow {R S : F[X]} (hR : R.Monic) (hS : S.Monic) {a b a'
     obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_lt hgt
     have hb : b' = b + (d + 1) := by omega
     subst hb
-    have h0 : R ^ a' * S ^ b ≠ 0 := mul_ne_zero (pow_ne_zero _ hR.ne_zero) (pow_ne_zero _ hS.ne_zero)
+    have h0 : R ^ a' * S ^ b ≠ 0 :=
+      mul_ne_zero (pow_ne_zero _ hR.ne_zero) (pow_ne_zero _ hS.ne_zero)
     refine monic_eq_of_pow_eq hR hS (Nat.succ_ne_zero d) (mul_left_cancel₀ h0 ?_)
     calc R ^ a' * S ^ b * R ^ (d + 1) = R ^ (a' + d + 1) * S ^ b := by ring
       _ = R ^ a' * S ^ (b + (d + 1)) := h
       _ = R ^ a' * S ^ b * S ^ (d + 1) := by ring
 
 open scoped Classical in
-/-- **Collapsed coefficients vanish (Tsang–Yip, Claim 4.8).** If `∑ cᵢ pᵢᵏ = 0` with `s` nonzero
-terms and `k ≥ s(s-2)`, then for each monic `g` the coefficient `∑_{pᵢ ∼ g} cᵢ lc(pᵢ)ᵏ` of `gᵏ`
-vanishes. -/
-theorem classSum_eq_zero [IsAlgClosed F] [CharZero F] {s k : ℕ} (hk : 0 < k)
-    (hks : s * (s - 2) ≤ k) (p : Fin s → F[X]) (c : Fin s → F) (hp : ∀ i, p i ≠ 0)
-    (hrel : ∑ i, C (c i) * p i ^ k = 0) (g : F[X]) :
-    ∑ i with monicPart (p i) = g, c i * (p i).leadingCoeff ^ k = 0 := by
+/-- **Collapsing a relation by proportionality classes.** If `∑ cᵢ pᵢᵏ = 0` with nonzero `pᵢ` and
+some class `{pᵢ ∼ g}` has nonzero collapsed coefficient `∑_{pᵢ ∼ g} cᵢ lc(pᵢ)ᵏ`, then
+`k < t(t-2)`, where `t` is the number of classes (Corollary 4.2 for the class representatives). -/
+theorem lt_of_classSum_ne_zero [IsAlgClosed F] [CharZero F] {s k : ℕ} (hk : 0 < k)
+    (p : Fin s → F[X]) (c : Fin s → F) (hp : ∀ i, p i ≠ 0)
+    (hrel : ∑ i, C (c i) * p i ^ k = 0) (g : F[X])
+    (hg : ∑ i with monicPart (p i) = g, c i * (p i).leadingCoeff ^ k ≠ 0) :
+    k < (univ.image fun i => monicPart (p i)).card *
+      ((univ.image fun i => monicPart (p i)).card - 2) := by
   classical
-  by_contra hg
   set M := univ.image fun i => monicPart (p i)
   have hgM : g ∈ M := by
     obtain ⟨i, hi, -⟩ := exists_ne_zero_of_sum_ne_zero hg
@@ -141,8 +145,20 @@ theorem classSum_eq_zero [IsAlgClosed F] [CharZero F] {s k : ℕ} (hk : 0 < k)
         mul_one] at hlc
       have h' : P' x0 = P' j := by rw [h, ← hlc, C_1, one_mul]
       exact h'.symm)
-  have hcard : M.card ≤ s := card_image_le.trans (by simp)
-  have : M.card * (M.card - 2) ≤ s * (s - 2) := Nat.mul_le_mul hcard (by omega)
+  exact hlt
+
+open scoped Classical in
+/-- **Collapsed coefficients vanish (Tsang–Yip, Claim 4.8).** If `∑ cᵢ pᵢᵏ = 0` with `s` nonzero
+terms and `k ≥ s(s-2)`, then for each monic `g` the coefficient `∑_{pᵢ ∼ g} cᵢ lc(pᵢ)ᵏ` of `gᵏ`
+vanishes. -/
+theorem classSum_eq_zero [IsAlgClosed F] [CharZero F] {s k : ℕ} (hk : 0 < k)
+    (hks : s * (s - 2) ≤ k) (p : Fin s → F[X]) (c : Fin s → F) (hp : ∀ i, p i ≠ 0)
+    (hrel : ∑ i, C (c i) * p i ^ k = 0) (g : F[X]) :
+    ∑ i with monicPart (p i) = g, c i * (p i).leadingCoeff ^ k = 0 := by
+  by_contra hg
+  have hlt := lt_of_classSum_ne_zero hk p c hp hrel g hg
+  have hcard : (univ.image fun i => monicPart (p i)).card ≤ s := card_image_le.trans (by simp)
+  have := Nat.mul_le_mul hcard (Nat.sub_le_sub_right hcard 2)
   omega
 
 lemma sum_filter_fin_add {m n : ℕ} {M : Type*} [AddCommMonoid M] (P : Fin (m + n) → Prop)
@@ -152,35 +168,42 @@ lemma sum_filter_fin_add {m n : ℕ} {M : Type*} [AddCommMonoid M] (P : Fin (m +
   simp only [sum_filter]
   exact Fin.sum_univ_add _
 
-/-- **Six-term rigidity for `k ≥ 24`** (Tsang–Yip, Claims 4.8–4.9, with Corollary 4.2 in place of
-their Proposition 4.4). -/
-theorem sixTermRigid_of_le [IsAlgClosed F] [CharZero F] {k : ℕ} (hk : 24 ≤ k) :
+lemma append_ne_zero {q r : Fin 3 → F[X]} (hq : ∀ i, q i ≠ 0) (hr : ∀ j, r j ≠ 0) :
+    ∀ i, Fin.append q r i ≠ 0 := by
+  intro i
+  refine Fin.addCases (fun i => ?_) (fun j => ?_) i
+  · rw [Fin.append_left]; exact hq i
+  · rw [Fin.append_right]; exact hr j
+
+lemma append_relation {k : ℕ} {q r : Fin 3 → F[X]} (hsum : ∑ i, q i ^ k = ∑ j, r j ^ k) :
+    ∑ i, C (Fin.append (fun _ => (1 : F)) (fun _ => -1) i) * Fin.append q r i ^ k = 0 := by
+  rw [Fin.sum_univ_add]
+  simp only [Fin.append_left, Fin.append_right, C_1, one_mul, C_neg, neg_mul,
+    sum_neg_distrib, hsum, add_neg_cancel]
+
+open scoped Classical in
+/-- **Six-term rigidity from vanishing collapsed coefficients** (Tsang–Yip, Claim 4.9). If every
+proportionality class of the six terms has zero collapsed coefficient, the six `k`-th powers are
+associated. -/
+theorem sixTermRigid_of_classSum {k : ℕ} (hk0 : 0 < k)
+    (H : ∀ q r : Fin 3 → F[X], (∀ i, q i ≠ 0) → (∀ j, r j ≠ 0) → (∀ i j, q i ^ k ≠ r j ^ k) →
+      ∑ i, q i ^ k = ∑ j, r j ^ k → ∏ i, q i = ∏ j, r j → ∀ g : F[X],
+      ∑ i with monicPart (Fin.append q r i) = g,
+        Fin.append (fun _ => (1 : F)) (fun _ => -1) i * (Fin.append q r i).leadingCoeff ^ k = 0) :
     SixTermRigid F k := by
   classical
   intro q r hq hr hqr hsum hprod
-  have hk0 : 0 < k := by omega
   set p : Fin (3 + 3) → F[X] := Fin.append q r
   set c : Fin (3 + 3) → F := Fin.append (fun _ => 1) (fun _ => -1)
-  have hp : ∀ i, p i ≠ 0 := by
-    intro i
-    refine Fin.addCases (fun i => ?_) (fun j => ?_) i
-    · show Fin.append q r (Fin.castAdd 3 i) ≠ 0
-      rw [Fin.append_left]; exact hq i
-    · show Fin.append q r (Fin.natAdd 3 j) ≠ 0
-      rw [Fin.append_right]; exact hr j
-  have hrel : ∑ i, C (c i) * p i ^ k = 0 := by
-    rw [Fin.sum_univ_add]
-    simp only [p, c, Fin.append_left, Fin.append_right, C_1, one_mul, C_neg, neg_mul,
-      sum_neg_distrib, hsum, add_neg_cancel]
   set mq := fun i => monicPart (q i)
   set mr := fun j => monicPart (r j)
   -- (F1) collapsed coefficients
   have F1 : ∀ g, ∑ i with mq i = g, (q i).leadingCoeff ^ k =
       ∑ j with mr j = g, (r j).leadingCoeff ^ k := by
     intro g
-    have h := classSum_eq_zero hk0 (by norm_num; omega) p c hp hrel g
+    have h := H q r hq hr hqr hsum hprod g
     rw [sum_filter_fin_add] at h
-    simp only [p, c, Fin.append_left, Fin.append_right, one_mul, neg_one_mul,
+    simp only [c, Fin.append_left, Fin.append_right, one_mul, neg_one_mul,
       sum_neg_distrib] at h
     linear_combination h
   set nq := fun g => #{i | mq i = g}
@@ -312,6 +335,14 @@ theorem sixTermRigid_of_le [IsAlgClosed F] [CharZero F] {k : ℕ} (hk : 24 ≤ k
   simp only [mq, mr] at heq
   rw [heq] at hi
   exact hi.trans hj.symm
+
+/-- **Six-term rigidity for `k ≥ 24`** (Tsang–Yip, Claims 4.8–4.9, with Corollary 4.2 in place of
+their Proposition 4.4). -/
+theorem sixTermRigid_of_le [IsAlgClosed F] [CharZero F] {k : ℕ} (hk : 24 ≤ k) :
+    SixTermRigid F k :=
+  sixTermRigid_of_classSum (by omega) fun q r hq hr _ hsum _ g =>
+    classSum_eq_zero (by omega) (by norm_num; omega) _ _ (append_ne_zero hq hr)
+      (append_relation hsum) g
 
 /-- **Polynomial `D_k(n)`-tuples have at most four elements for `k ≥ 24`, unconditionally.**
 For `F` algebraically closed of characteristic `0`, `n ≠ 0` and `A ⊆ F[X]` with property `D_k(n)`
