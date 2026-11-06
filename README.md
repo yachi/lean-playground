@@ -55,7 +55,10 @@ index `c < q`, and the Sylow `q`-subgroup `Q` of `⟨g⟩` is normal in `G`: the
 each coset has a representative `b` with `b^{o(bQ)} = 1`. Then `(bz)^{o(bQ)} ∈ ⟨z⟩` for `z ∈ Q`,
 so `ψ(G) ≤ ψ(Q) ψ(G/Q)` (`psi_le_mul`), and induction on `G/Q` finishes the proof.
 
-**Amiri's Question 3.10 (2) is false** (`AmiriQuestion.lean`, new result). Call `G` an
+**Amiri's Question 3.10 (2) is false** (`AmiriQuestion.lean`). Both parts of Question 3.10 had
+already been answered negatively by GAP search in M.-A. Lazorec, [*On some problems regarding
+LCM-groups*](https://arxiv.org/abs/2602.06228) (2026-02, Questions 5.3–5.4 there); the Lean
+proofs here are formal verifications. Call `G` an
 LCM-group if `o(xⁿy) ∣ lcm(o(xⁿ), o(y))` for all `x, y, n`. M. Amiri, [*On the sum of element
 orders in finite abelian groups*](https://arxiv.org/abs/2511.08320), asks whether a non-LCM group
 `H` with `|H| = |G|` and `exp(H) ∣ exp(G)` always has `ψ(H) < ψ(G)` when `G` is an LCM-group.
@@ -66,7 +69,7 @@ with `ψ(H) > ψ(G)` (the least odd example has order 3⁵ = 243). At order 16 t
 (`ψ = 47`). The same search found no counterexample to part (1) of the question (equal `ψ` forces
 equal order types) for `|G| ≤ 255`.
 
-**Amiri's Question 3.10 (1) is false too** (`AmiriQuestionOne.lean`, new result). Part (1) asks
+**Amiri's Question 3.10 (1) is false too** (`AmiriQuestionOne.lean`). Part (1) asks
 whether `ψ(G) = ψ(H)` forces `G` and `H` to have the same order type (the same number of elements
 of each order) when `G` is an LCM-group, `|H| = |G|` and `exp(H) ∣ exp(G)`. It does not:
 `G = C₈ × C₂⁷` and `H = Hol(C₈) × (C₄ ≀ C₂)` both have order 1024, exponent 8 and `ψ = 5631`,
@@ -75,6 +78,30 @@ but `G` has 255 involutions and `H` only 127 (`amiri_question_3_10_one_false`). 
 can trade involutions for elements of order 4. A GAP search over all 56092 groups of order 256
 (`scripts/amiri-q310/pgroups.g`) shows 256 is the least order: e.g. `C₄ × C₈ × Q₈` (an LCM-group)
 and `SmallGroup(256, 2761)` both have `ψ = 1519`, with 7 against 71 involutions.
+
+### Minimum covers of groups — `LeanPlayground/MinimumCover/`
+
+A finite group `G` is an `𝓕`-cover if every group in `𝓕` embeds in `G`, and a minimum `𝓕`-cover
+if no `𝓕`-cover is smaller. P. J. Cameron, D. Craven, H. Dorbidi, S. Harper and B. Sambale,
+[*Minimal cover groups*](https://arxiv.org/abs/2311.15652) (J. Algebra 660 (2024)), ask in
+Question 7.2 (and Question 8.2 for abelian groups) whether a set of abelian `p`-groups always has
+an abelian minimum cover. [Lazorec (2026-02)](https://arxiv.org/abs/2602.06220) still lists it as
+open.
+
+**It does not** (`AbelianCover.lean`, new result). Take `𝓕 = {C₂⁴, C₄ × C₄, C₈}`. An abelian group
+containing all three has order at least 128: squaring has kernel `≥ 16` (it contains `C₂⁴`) and
+image `≥ 8` (an element of order 4 and two different involutions). But
+`G64 = (C₈ × C₂) ⋊ (C₂ × C₂)` (GAP `SmallGroup(64,99)`) contains all three and has order 64.
+
+| Statement | Lean |
+|---|---|
+| Abelian `𝓕`-covers have order `≥ 128` | `MinimumCover.card_ge_of_commGroup` |
+| `G64` has order 64 and is an `𝓕`-cover | `card_G64`, `covers_G64` |
+| No minimum `𝓕`-cover is abelian | `not_isMinimumCover_of_commGroup` |
+
+`scripts/minimum-cover/search.g` scans all non-abelian groups of order `2ⁿ` (`n ≤ 6`), `3ⁿ`
+(`n ≤ 5`) and `5ⁿ` (`n ≤ 4`) and finds `SmallGroup(64,99)` as the only group whose abelian
+subgroups need a larger abelian cover, so 64 is the least order of such a counterexample there.
 
 ### Generalized Diophantine tuples — `LeanPlayground/DiophantineTuples/`
 

@@ -191,3 +191,4 @@ import LeanPlayground.DujellaUnicity.Lattice
 import LeanPlayground.DujellaUnicity.SmallNorm
 import LeanPlayground.DujellaUnicity.PadicDirection
 import LeanPlayground.DujellaUnicity.Main
+import LeanPlayground.MinimumCover.AbelianCover
