@@ -183,3 +183,4 @@ import LeanPlayground.PerfectCuboid.PolyTwoRootEdge
 import LeanPlayground.PerfectCuboid.PolyPrimePowerEdge
 import LeanPlayground.PerfectCuboid.PolyTwoRootGeneral
 import LeanPlayground.PerfectCuboid.PolyFaceDiagonalRoot
+import LeanPlayground.PerfectCuboid.ThirdConjecture
