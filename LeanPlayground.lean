@@ -126,6 +126,7 @@ import LeanPlayground.PerfectCuboid.DerivedCuboid
 import LeanPlayground.PerfectCuboid.SqrtTwoJacobi
 import LeanPlayground.FriendshipParadox.Basic
 import LeanPlayground.IsolatedPoint.Basic
+import LeanPlayground.SwappedMetric.Basic
 import LeanPlayground.PerfectCuboid.EulerSecondFamily
 import LeanPlayground.PerfectCuboid.ColmanBrick
 import LeanPlayground.PerfectCuboid.ColmanEdge
