@@ -198,3 +198,4 @@ import LeanPlayground.DujellaUnicity.LatticeSquare
 import LeanPlayground.DujellaUnicity.TwoKSquare
 import LeanPlayground.MinimumCover.AbelianCover
 import LeanPlayground.MinimumCover.LCMCover
+import LeanPlayground.PowerMaps.PowerDigraphs
