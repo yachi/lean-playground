@@ -25,6 +25,8 @@ import LeanPlayground.SumElementOrders.Basic
 import LeanPlayground.SumElementOrders.PalfySimonyi
 import LeanPlayground.SumElementOrders.AmiriQuestion
 import LeanPlayground.SumElementOrders.AmiriQuestionOne
+import LeanPlayground.PowerMapCycles.Frobenius
+import LeanPlayground.PowerMapCycles.Larson
 import LeanPlayground.SimonMarais.Lucas
 import LeanPlayground.SimonMarais.OddSum
 import LeanPlayground.SimonMarais.Quad
