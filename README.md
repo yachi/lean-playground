@@ -79,6 +79,35 @@ can trade involutions for elements of order 4. A GAP search over all 56092 group
 (`scripts/amiri-q310/pgroups.g`) shows 256 is the least order: e.g. `C₄ × C₈ × Q₈` (an LCM-group)
 and `SmallGroup(256, 2761)` both have `ψ = 1519`, with 7 against 71 involutions.
 
+### Cycles of power maps — `LeanPlayground/PowerMapCycles/`
+
+For a finite group `G` and `a ∈ ℕ`, let `N(a, G)` be the number of connected components (equivalently,
+cycles) of the functional graph of `x ↦ xᵃ` on `G`. M. Larson, [*Power maps in finite
+groups*](https://arxiv.org/abs/1707.06696) (Integers 19 (2019) A58), Conjecture 1.2: if
+`|G| = n` then `N(a, G) ≥ N(a, Cₙ)`. Larson proved it for nilpotent `G` and checked
+`|G| ≤ 1000` (except 768) for `2 ≤ a ≤ 20`. We found no later proof in the literature.
+
+**Proved for every finite group and every `a`** (`Larson.lean`, new result). Let `K = φ(n)`.
+The periodic points are `S = {x : x^(aᴷ) = x}`, `ZMod K` acts on them by `j • x = x^(aʲ)`, and the
+components are the orbits. By Burnside's lemma
+`K · N(a, G) = ∑_{j} #{x : x^(a^{mⱼ}) = x}` with `mⱼ ≥ 1`, and `#{x : x^(aᵐ) = x}` is the number of
+solutions of `x^g = 1` for `g = gcd(aᵐ − 1, n)`. By Frobenius' theorem this is at least `g`, with
+equality in `Cₙ`. Compare the two sums term by term.
+
+`Frobenius.lean` proves **Frobenius' theorem** (1895), which Mathlib lacks: if `n ∣ |G|` then
+`n ∣ #{x : xⁿ = 1}`. The proof splits `x = u·v` along coprime exponents, sums over conjugacy
+classes, and inducts on `|G|` (prime powers first, then one prime at a time).
+
+| Statement | Lean |
+|---|---|
+| Frobenius: `n` divides `#G` ⇒ `n ∣ #{x : xⁿ = 1}` | `PowerMapCycles.dvd_card_pow_eq_one` |
+| Prime-power case | `prime_pow_dvd_card_pow_eq_one` |
+| `φ(d) ∣ #{x : o(x) = d}` | `totient_dvd_card_orderOf_eq` |
+| `N(a, G)` = number of classes of `Quot (x ↦ xᵃ)` | `powerMapComponents` |
+| Components = orbits of `ZMod φ(n)` on periodic points | `componentsEquivOrbits` |
+| Burnside count `N(a, G) · φ(n) = ∑ⱼ #{x^(a^{mⱼ}) = x}` | `card_mul_totient` |
+| Larson's Conjecture 1.2 | `larson_conjecture`, `powerMapComponents_zmod_le` |
+
 ### Minimum covers of groups — `LeanPlayground/MinimumCover/`
 
 A finite group `G` is an `𝓕`-cover if every group in `𝓕` embeds in `G`, and a minimum `𝓕`-cover
