@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Split the library's modules into the three stages of the CI build.
 
-    python3 scripts/ci_plan.py ROOT HEAVY_PATTERN [SLOW_FIRST...]
+    python3 scripts/ci_plan.py ROOT HEAVY_PATTERNS [SLOW_FIRST...]
 
-ROOT is the library's root module (e.g. `LeanPlayground`), HEAVY_PATTERN an
-fnmatch pattern for the modules that are too big to build side by side (e.g.
-`LeanPlayground.PerfectCuboid.Fibers.*`), and SLOW_FIRST optional heavy
+ROOT is the library's root module (e.g. `LeanPlayground`), HEAVY_PATTERNS
+whitespace-separated fnmatch patterns for the modules that are too big to
+build side by side (e.g. `LeanPlayground.PerfectCuboid.Fibers.*`), and
+SLOW_FIRST optional heavy
 modules to put at the front of the list so their jobs start first.
 
 Prints JSON with
@@ -34,7 +35,8 @@ def main() -> None:
         mod = ".".join(f.with_suffix("").parts)
         imports[mod] = [m for m in IMPORT.findall(f.read_text()) if m.split(".")[0] == root]
 
-    heavy = sorted(m for m in imports if fnmatch.fnmatchcase(m, pattern))
+    patterns = pattern.split()
+    heavy = sorted(m for m in imports if any(fnmatch.fnmatchcase(m, p) for p in patterns))
     heavy.sort(key=lambda m: slow_first.index(m) if m in slow_first else len(slow_first))
 
     # Everything that reaches a heavy module through its imports.
