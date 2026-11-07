@@ -188,6 +188,8 @@ import LeanPlayground.PerfectCuboid.ThirdConjectureTypeA
 import LeanPlayground.PerfectCuboid.ThirdConjectureTypeAIff
 import LeanPlayground.PerfectCuboid.ThirdConjecture1317
 import LeanPlayground.PerfectCuboid.ThirdConjectureModP
+import LeanPlayground.PerfectCuboid.ThirdConjectureCert
+import LeanPlayground.PerfectCuboid.ThirdConjectureMulti
 import LeanPlayground.DujellaUnicity.Lattice
 import LeanPlayground.DujellaUnicity.SmallNorm
 import LeanPlayground.DujellaUnicity.PadicDirection

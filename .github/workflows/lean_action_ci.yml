@@ -19,9 +19,15 @@ concurrency:
 env:
   # Modules too big to build side by side: each takes ~3 GB and up to 20 min,
   # and four at once on a 16 GB runner got the job killed. Each gets a job.
-  HEAVY: LeanPlayground.PerfectCuboid.Fibers.*
+  HEAVY: >-
+    LeanPlayground.PerfectCuboid.Fibers.*
+    LeanPlayground.PerfectCuboid.ThirdConjectureTables.*
   # Heavy modules to start first, slowest first (timings from run 61).
   SLOW_FIRST: >-
+    LeanPlayground.PerfectCuboid.ThirdConjectureTables.T79
+    LeanPlayground.PerfectCuboid.ThirdConjectureTables.T73
+    LeanPlayground.PerfectCuboid.ThirdConjectureTables.T71
+    LeanPlayground.PerfectCuboid.ThirdConjectureTables.T67
     LeanPlayground.PerfectCuboid.Fibers.F_52_677
     LeanPlayground.PerfectCuboid.Fibers.F_684_1525
     LeanPlayground.PerfectCuboid.Fibers.F_228_397
