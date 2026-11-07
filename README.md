@@ -122,6 +122,31 @@ every exponent-`p` subgroup to be abelian if the cover were LCM.
 | No cover of order `p^{pk+1}` is LCM | `not_isLCMGroup_of_covers` |
 | Answer to Question 4.5 | `answer_question_4_5` |
 
+### Power-map digraphs vs. power graphs — `LeanPlayground/PowerMaps/`
+
+For a finite group `G` and `t ∈ ℤ` let `Γₜ(G)` be the functional digraph of `x ↦ xᵗ`.
+V. H. Fernandes, M. U. Qureshi, R. Reis and M. Ribas,
+[*On a class of combinatorial group invariants*](https://arxiv.org/abs/2609.20516) (arXiv, 2026-09),
+Problem 6.1, ask whether there are finite groups with `Γₜ(G) ≅ Γₜ(H)` for every `t` (`G ∼₅ H`)
+but no bijection commuting with all power maps (`G ≁₂ H`; by their Theorem 1.7 this is the same as
+non-isomorphic power graphs). They prove that there are none among nilpotent groups. The question
+is equivalent to whether `P₄ < P₅` is strict, from M. Larson, *Power maps in finite groups* (Integers 2019).
+
+**There are** (`PowerDigraphs.lean`, new result): `SmallGroup(288,610)` and `SmallGroup(288,621)`,
+both `(C₃ × C₃) ⋊ ((C₂ × C₂ × C₄) ⋊ C₂)` with the order-32 group acting through two sign
+characters. There are twelve explicit bijections `Φ_r` (`r = t mod 12`) with `Φ_r(gʳ) = Φ_r(g)ʳ`.
+Call `g` *special* if it has order 12, 24 elements `h` of order 12 have `h⁴ ∈ {g⁴, g⁸}`, and `g⁶`
+has 84 square roots. A bijection that commutes with every power map keeps special elements
+special, and the first group has special elements while the second has none. A GAP search
+(`scripts/power-maps/`) shows that 288 is the least order.
+
+| Statement | Lean |
+|---|---|
+| `∼₂` invariant: special elements are preserved | `PowerMaps.special_iff` |
+| `Γₜ(G610) ≅ Γₜ(G621)` for all `t ∈ ℤ` | `PowerMaps.sim5` |
+| No power-commuting bijection `G610 ≃ G621` | `PowerMaps.not_sim2` |
+| Answer to Problem 6.1 | `PowerMaps.answer_problem_6_1` |
+
 ### Generalized Diophantine tuples — `LeanPlayground/DiophantineTuples/`
 
 A set `A` has *property `D_k(n)`* if `ab + n` is a `k`-th power for all distinct `a, b ∈ A`.
