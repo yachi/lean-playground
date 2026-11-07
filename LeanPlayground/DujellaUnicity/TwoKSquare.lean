@@ -125,6 +125,7 @@ theorem solvec_half {A m : ℕ} {v : ℤ × ℤ} (h : IsSolVec A m v) :
   obtain ⟨⟨r, hr⟩, ⟨s, hs⟩, -⟩ := h
   exact ⟨(r, s), Prod.ext hr hs⟩
 
+set_option linter.flexible false in
 /-- **At most three solutions.** For `k = 2^a p^m` (`p` an odd prime, `a ≥ 2`, `m ≥ 1`), among
 any four solutions of `x² - (k²+1) y² = k²` with `x, y > 0`, `y < k - 1`, two coincide. -/
 theorem dujella_at_most_three {p a m : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (ha : 2 ≤ a)
