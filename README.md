@@ -28,6 +28,45 @@ lake build
 
 ## Formalizations
 
+### The Andrews–Curtis conjecture — `LeanPlayground/AndrewsCurtis/`
+
+Made for the [SAIR ACC Challenge](https://competition.sair.foundation/competitions/acc)
+(organised by Fagan, Gukov and Tao). `Defs.lean` is the official
+[`AC.lean`](https://github.com/SAIRcompetition/Andrews-Curtis/blob/a0fd6e6f52d82c93ccc06ab91d81e8fa3678256e/competition/tools/lean/AC.lean)
+copied verbatim (Apache-2.0). Every result below is stated with the official `AC.Reachable`.
+
+- **A verified move checker** (`Checker.lean`). The challenge's rank-2 move table (`ac-r2-v1`,
+  ids 0–13) runs on lists of integer letters, with the same free reduction as the official Python
+  verifier. It is proved sound: a run that ends at `([1], [2])` proves official AC-triviality.
+  Also proved: `AC.Reachable` is symmetric, and swapping the two relators takes only official AC
+  moves.
+- **Symmetry** (`Symmetry.lean`). Any endomorphism of the free group maps AC paths to AC paths.
+  A presentation is AC-trivial iff its image under any of the 8 signed permutations of `x, y` is.
+- **AK(3) inside the pool** (`AK3Class.lean`, new). On 2026-11-07, 2,672 pool presentations were
+  unsolved by every team. 47 of them are AC-equivalent to
+  `AK(3) = ⟨x, y | xyx = yxy, x³ = y⁴⟩` up to a signed permutation, so each is AC-trivial iff
+  `AK(3)` is. `ac-00399` is `AK(3)` itself, written differently.
+- **Classes in the unsolved pool** (`PoolClasses.lean`, new). 731 of the unsolved presentations
+  fall into 228 certified classes of size ≥ 2 (search at total length ≤ 20). So they are only 228
+  different open problems.
+
+| Statement | Lean |
+|---|---|
+| Moves are sound for official `AC.Reachable` | `AC.Checker.reachable_run`, `reachable_standard_of_run` |
+| `AC.Reachable` is symmetric | `AC.Reachable.symm` |
+| Relator swap is reachable | `AC.Checker.reachable_swap` |
+| Endomorphisms preserve AC paths | `AC.Reachable.map` |
+| Triviality is invariant under signed permutations | `AC.Checker.triv_phi_iff`, `triv_iff_of_run_eq_perm` |
+| 47 unsolved presentations ⇔ `AK(3)` | `AC.Checker.triv_iff_AK3`, `ak3Certs_length` |
+| 731 unsolved presentations in 228 classes | `AC.Checker.poolClasses_triv_iff`, `poolClasses_members` |
+
+Every certificate is replayed by `decide +kernel` (no `native_decide`). The search code and data
+are in `scripts/andrews-curtis/`. Prior art: Shehper et al.,
+[arXiv:2408.15332](https://arxiv.org/abs/2408.15332), give AK(3)-equivalences among Miller–Schupp
+presentations. Carreras, [arXiv:2607.23611](https://arxiv.org/abs/2607.23611), certifies four
+length-14 equivalences with a Python verifier. The Lean checking and the class structure of the
+SAIR pool are new here.
+
 ### Sums of element orders — `LeanPlayground/SumElementOrders/`
 
 For a finite group `G`, `ψ(G)` is the sum of the orders of its elements, and `ψ(n) = ψ(Cₙ)`.

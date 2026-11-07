@@ -201,3 +201,8 @@ import LeanPlayground.DujellaUnicity.TwoKSquare
 import LeanPlayground.MinimumCover.AbelianCover
 import LeanPlayground.MinimumCover.LCMCover
 import LeanPlayground.PowerMaps.PowerDigraphs
+import LeanPlayground.AndrewsCurtis.Defs
+import LeanPlayground.AndrewsCurtis.Checker
+import LeanPlayground.AndrewsCurtis.Symmetry
+import LeanPlayground.AndrewsCurtis.AK3Class
+import LeanPlayground.AndrewsCurtis.PoolClasses
