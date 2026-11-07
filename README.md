@@ -103,6 +103,25 @@ image `≥ 8` (an element of order 4 and two different involutions). But
 (`n ≤ 5`) and `5ⁿ` (`n ≤ 4`) and finds `SmallGroup(64,99)` as the only group whose abelian
 subgroups need a larger abelian cover, so 64 is the least order of such a counterexample there.
 
+**LCM covers for odd `p`** (`LCMCover.lean`, new result). A group is an *LCM-group* if
+`o(xⁿy) ∣ lcm(o(xⁿ), o(y))` for all `x, y, n`.
+[Lazorec, arXiv:2602.06228](https://arxiv.org/abs/2602.06228), Question 4.5, asks: for an odd prime
+`p`, are there infinitely many sets `𝓕` of LCM-`p`-groups all of whose minimum covers are
+non-LCM? **Yes, for every odd `p`.** Take `𝓕ₖ = {Hₚ, (ℤ/pᵏ)^p}` (`k ≥ 2`, `Hₚ` the Heisenberg
+group of order `p³`). The wreath product `C_{pᵏ} ≀ Cₚ` is a cover of order `p^{pk+1}`; a Sylow
+argument shows no cover is smaller; and in a cover of order `p^{pk+1}` the copy of `(ℤ/pᵏ)^p` is
+an abelian normal subgroup of index `p` whose order-`p` elements are `p`-th powers, which forces
+every exponent-`p` subgroup to be abelian if the cover were LCM.
+
+| Statement | Lean |
+|---|---|
+| Key lemma: such an `A` makes exponent-`p` subgroups abelian | `LCMCover.commute_of_exp_p` |
+| `Hₚ` and `(ℤ/pᵏ)^p` are LCM-groups | `isLCMGroup_heis`, `isLCMGroup_A` |
+| `C_{pᵏ} ≀ Cₚ` is a cover of order `p^{pk+1}` | `covers_W`, `card_W` |
+| Every cover has order `≥ p^{pk+1}` | `card_ge_of_covers` |
+| No cover of order `p^{pk+1}` is LCM | `not_isLCMGroup_of_covers` |
+| Answer to Question 4.5 | `answer_question_4_5` |
+
 ### Generalized Diophantine tuples — `LeanPlayground/DiophantineTuples/`
 
 A set `A` has *property `D_k(n)`* if `ab + n` is a `k`-th power for all distinct `a, b ∈ A`.
