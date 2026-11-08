@@ -133,6 +133,8 @@ import LeanPlayground.PerfectCuboid.SqrtTwoJacobi
 import LeanPlayground.FriendshipParadox.Basic
 import LeanPlayground.IsolatedPoint.Basic
 import LeanPlayground.SwappedMetric.Basic
+import LeanPlayground.Crouzeix.DilationLemma
+import LeanPlayground.Crouzeix.Sharpness
 import LeanPlayground.PerfectCuboid.EulerSecondFamily
 import LeanPlayground.PerfectCuboid.ColmanBrick
 import LeanPlayground.PerfectCuboid.ColmanEdge

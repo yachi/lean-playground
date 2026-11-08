@@ -28,6 +28,27 @@ lake build
 
 ## Formalizations
 
+### Crouzeix's conjecture — `LeanPlayground/Crouzeix/`
+
+Crouzeix's conjecture (2004): for every square complex matrix `A` and polynomial `p`,
+`‖p(A)‖ ≤ 2 · max_{z ∈ W(A)} |p(z)|`, where `W(A) = {⟪x, A x⟫ : ‖x‖ = 1}` is the numerical
+range. Proved in 2026 independently by S. Jin (*The numerical range is a 2-spectral set*,
+Preprints.org 202607.1919) and by E. Lorist and F. L. Schwenninger (*A solution to Crouzeix's
+conjecture*, arXiv:2608.03841). We formalize the operator-theoretic core of the
+Lorist–Schwenninger proof and the sharpness example.
+
+| Statement | Lean |
+|---|---|
+| **Lorist–Schwenninger Lemma 1**: `Q` a contraction, `V` an isometry, `Eₙ = 2V*Q*ⁿV − T*ⁿ` (`n ≥ 1`) uniformly bounded and commuting with `T` ⇒ `‖T‖ ≤ 2` (finite-dim `H`; any `H` if `T` attains its norm) | `Crouzeix.norm_le_two_of_dilation_of_finiteDimensional`, `norm_le_two_of_dilation` |
+| **Abstract Crouzeix theorem** (Remark 3 (iv)): `θ` a bounded homomorphism from a commutative normed algebra, `α` bounded, and `2 V* π(f) V = θ f + θ(α f)*` for a contractive multiplicative `π` and isometry `V` ⇒ `‖θ f‖ ≤ 2‖f‖` | `Crouzeix.norm_le_two_mul_of_dilation` |
+| `W([[0,2],[0,0]])` is the closed unit disk, and `‖[[0,2],[0,0]]‖ = 2` | `Crouzeix.numericalRange_J`, `norm_J`, `J_eq_toEuclideanCLM` |
+| **The constant 2 is optimal**: any `C` with `‖p(J)‖ ≤ C · sup_{W(J)} \|p\|` has `C ≥ 2` | `Crouzeix.two_le_of_crouzeix_bound` |
+
+Not formalized: the classical double-layer potential facts that supply the dilation for
+`θ f = f(A)` on a convex `Ω ⊇ W(A)` (positivity of `P_Ω`, `2Φ(f) − f(A) = α(f)(A)*`; Delyon–Delyon
+1999, Crouzeix 2007). Mathlib has no Cauchy integrals over general convex curves, so the
+full conjecture is reduced to these hypotheses rather than proved outright.
+
 ### The Andrews–Curtis conjecture — `LeanPlayground/AndrewsCurtis/`
 
 Made for the [SAIR ACC Challenge](https://competition.sair.foundation/competitions/acc)
