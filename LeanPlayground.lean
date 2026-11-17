@@ -1,5 +1,6 @@
 import LeanPlayground.Basic
 import LeanPlayground.ComplexDerivative.Basic
+import LeanPlayground.DerivImaginary.Basic
 import LeanPlayground.CliffordCenter.Basic
 import LeanPlayground.CliffordCenter.Block
 import LeanPlayground.CliffordCenter.CharTwo

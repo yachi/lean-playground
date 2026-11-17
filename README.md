@@ -387,6 +387,25 @@ it by `θ`. So a complex derivative is a local rotation and scaling.
 | `sub_rotation_isLittleO_of_hasDerivAt`, `conformalAt_of_hasDerivAt` | Near `a`, `f` is that rotation and scaling up to `o(h)`; conformal when `f'(a) ≠ 0` |
 | `hasDerivAt_exp_I_mul`, `exp_I_mul_z₀`, `deriv_z₀`, `exp_I_mul_local_scale_rotate` | The worked example: `f(z) = e^{iz}` at `z₀ = −π/4 − i ln 2` has `f(z₀) = 2e^{−iπ/4}`, `f'(z₀) = 2e^{iπ/4}`, so near `z₀` it scales by 2 and rotates by 45° |
 
+### Derivatives of `sin` and the imaginary unit — `LeanPlayground/DerivImaginary/`
+
+Claims from Zundamon's Theorem, [*Mysterious Connection Between Derivatives and Imaginary
+Numbers*](https://youtu.be/SH7WwuVhlIs) (YouTube, 2026-11-17): the cycle
+`sin → cos → −sin → −cos` of derivatives matches `1 → i → −1 → −i`, because both are quarter turns.
+
+| Lean | Claim |
+|---|---|
+| `I_mul_eq`, `I_pow_four` | `i(x + yi) = −y + xi`: multiplying by `i` rotates by 90°; `i⁴ = 1` |
+| `deriv_sin_eq_phase_shift`, `iteratedDeriv_sin`, `iteratedDeriv_cos` | `sin' = sin(· + π/2)`; `dⁿ sin = sin(· + nπ/2)`, same for `cos` |
+| `iteratedDeriv_two_sin`, `iteratedDeriv_four_sin` (and `cos`) | `D² sin = −sin`, `D⁴ sin = sin` |
+| `hasDerivAt_r`, `norm_deriv_r`, `r_perp_deriv` | On the unit circle `r(θ) = cos θ + i sin θ`: `r' = i·r`, speed 1, `r ⟂ r'` |
+| `hasDerivAt_exp_mul_I`, `iteratedDeriv_exp_mul_I`, `I_pow_mul_exp` | `(e^{iθ})' = i e^{iθ}`, `dⁿ e^{iθ} = iⁿ e^{iθ} = e^{i(θ + nπ/2)}` |
+| `im_iteratedDeriv_exp_mul_I`, `re_iteratedDeriv_exp_mul_I` | Imaginary and real parts of `iⁿ e^{iθ}` are `dⁿ sin` and `dⁿ cos` |
+| `DerivPair.D`, `D_mul_D`, `D_not_mem_range`, `minpoly_D`, `aeval_D_eq_zero_iff` | If `u' = v`, `v' = c·u` (independent), `d/dθ` is an endomorphism `D` of `span{u, v}` with minimal polynomial `X² − c`, so `ℝ[D] ≅ ℝ[X]/(X² − c)` |
+| `trig_D_sq`, `complexToEnd`, `complexToEnd_injective` | On `span{sin, cos}`: `D² = −1`, and `i ↦ D` embeds `ℂ` |
+| `hyp_D_sq` | On `span{sinh, cosh}`: `D² = 1`, `D ≠ ±1` (split-complex `j`) |
+| `lin_D_sq` | On `span{θ, 1}`: `D² = 0`, `D ≠ 0` (dual `ε`) |
+
 ### The friendship paradox — `LeanPlayground/FriendshipParadox/`
 
 Scott L. Feld, *Why your friends have more friends than you do*, Amer. J. Sociology 96 (1991).
